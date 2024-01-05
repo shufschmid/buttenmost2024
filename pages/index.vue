@@ -1,13 +1,11 @@
 <script setup lang="ts">
-const { data, error, pending } = await useFetch("/.netlify/functions/verkaufsstellen?view=website");
+const data = await useFetch(
+  "/api/verkaufsstellen?view=website"
+);
 </script>
 
 <template>
   <v-btn>test Page</v-btn>
-  <span v-if="pending">Loading...</span>
 
-<span v-else-if="data">Todos: {{ data }}</span>
-
-<span v-else-if="error">Error: {{ error }}</span>
-  <pre>{{ data }}</pre>
+  <span> {{ data }}</span>
 </template>
