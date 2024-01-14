@@ -1,11 +1,18 @@
-<script setup lang="ts">
-const data = await useFetch(
-  "/api/verkaufsstellen?view=website"
-);
+<script setup lang="js">
+
+const store = useButtenmostStore();
+
+
 </script>
 
 <template>
-  <v-btn>test Page</v-btn>
+  <v-btn>test Page</v-btn> 
+  <Signup v-show="store.isSaison"></Signup>
+  Saisonstartdate: 
+  
+  {{ store.saisonStartString }}, isSaison: {{ store.isSaison }}
 
-  <span> {{ data }}</span>
+  <Verkaufsstellen></Verkaufsstellen>
+
+  
 </template>

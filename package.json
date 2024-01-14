@@ -19,8 +19,10 @@
   "dependencies": {
     "@mdi/font": "^7.3.67",
     "@netlify/functions": "^2.4.1",
+    "@pinia/nuxt": "^0.5.1",
     "airtable": "^0.12.2",
     "netlify-cli": "^17.10.1",
+    "pinia": "^2.1.7",
     "qs": "^6.11.2"
   }
 }
