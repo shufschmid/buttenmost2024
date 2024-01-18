@@ -4,9 +4,23 @@ export const useButtenmostStore = defineStore("buttenmost", {
   state: () => {
     return {
       saisonStart: new Date("2024-01-01"),
+      preis: 7,
       saisonEnd: new Date("2024-02-12"),
       shippingWeekDay: "tue",
       heute: new Date(),
+      defaultMenge: 4,
+      minimalMenge: 2,
+      maximalMenge: 28,
+      versandpauschale: 15,
+      verpackungsPreise: [
+        { menge: 5, preis: 4.5 },
+        { menge: 10, preis: 7 },
+        { menge: 12, preis: 8.9 },
+        { menge: 15, preis: 9.7 },
+        { menge: 18, preis: 10 },
+        { menge: 20, preis: 10.5 },
+        { menge: this.maximalMenge, preis: 11.9 },
+      ],
     };
   },
   getters: {
