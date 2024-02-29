@@ -1,5 +1,4 @@
 <script setup lang="js">
-import { setMapStoreSuffix } from 'pinia';
 
 const emits = defineEmits(["formValidity"])
 
@@ -14,7 +13,7 @@ let Email = ref("")
 let Bemerkungen = ref("")
 let formValidity= ref(false)
 
-let nichtLeer = [value => !!value || "Anbabe wird benötigt"]
+let nichtLeer = [value => !!value || "Angabe wird benötigt"]
 let PLZRules= [
         value => !!value || "Postleitzahl fehlt",
         value => /\d\d\d\d/.test(value) || "Postleitzahl ungültig"
@@ -29,11 +28,6 @@ let EmailRules= [
           value.indexOf(".") <= value.length - 2 ||
           "Gültige E-Mail-Adresse wird benötigt"
       ]
-
-function test() {
-  console.log("hallowelt")
-}
-const store = useButtenmostStore();
 </script>
 
 <template>

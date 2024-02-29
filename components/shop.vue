@@ -1,10 +1,33 @@
 <script setup lang="js">
-import { setMapStoreSuffix } from 'pinia';
-
 const store = useButtenmostStore();
 let selected = ref(store.possibleShippingDays[0])
 let menge = ref(store.defaultMenge)
-let formValidity = ref(false)
+
+let Vorname = ref("")
+let Nachname = ref("")
+let Adresse = ref("")
+let Adresszusatz = ref("")
+let PLZ = ref("")
+let Ort = ref("")
+let Email = ref("")
+let Bemerkungen = ref("")
+let formValidity= ref(false)
+
+let nichtLeer = [value => !!value || "Angabe wird benötigt"]
+let PLZRules= [
+        value => !!value || "Postleitzahl fehlt",
+        value => /\d\d\d\d/.test(value) || "Postleitzahl ungültig"
+      ]
+let EmailRules= [
+        value => !!value || "E-Mail-Adresse wird benötigt",
+        value =>
+          value.indexOf("@") !== 0 || "Gültige E-Mail-Adresse wird benötigt ",
+        value => value.includes("@") || "Gültige E-Mail-Adresse wird benötigt",
+        value => value.includes(".") || "Gültige E-Mail-Adresse wird benötigt",
+        value =>
+          value.indexOf(".") <= value.length - 2 ||
+          "Gültige E-Mail-Adresse wird benötigt"
+      ]
 
 let preis = computed(() => {
   return (menge.value * store.preis)
@@ -32,20 +55,37 @@ let verpackung = computed(() =>{
   while (store.verpackungsPreise[i].menge <= menge.value) {
     i++;
   }
-  return store.verpackungsPreise[i].preis
-});
-
-let verpackungneu = computed(() =>{
-  let i = 0;
-  while (store.verpackungsPreiseNeu[i].menge <= menge.value) {
-    i++;
-  }
-  return store.verpackungsPreiseNeu[i].preis
+  return {preis:store.verpackungsPreise[i].preis,gewicht:store.verpackungsPreise[i].gewicht}
 });
 
 let total = computed(() => {
-  return (porto + verpackung + preis + store.versandpauschale)
+  return (porto + verpackung.preis + preis + store.versandpauschale)
 })
+
+async function order() {
+  const order = await $fetch('/api/order', {
+    method: 'POST',
+    body: { 
+      Email: Email,
+      Vorname: Vorname,
+      Betrag: total.value,
+      Name: Nachname,
+      Adresse: Adresse,
+      Adresszusatz: Adresszusatz,
+      PLZ: PLZ,
+      Ort: Ort,
+      Menge: menge,
+      Lieferdatum: selected,
+      Notes:Bemerkungen,
+      Verpackung: verpackung.preis,
+      Porto:porto.value,
+      Lieferpauschale:store.versandpauschale,
+      Gewicht: verpackung.gewicht,
+      Status: "bestellt",
+      Typ: "Post"
+    }
+  })
+}
 </script>
 
 <template>
@@ -55,8 +95,8 @@ let total = computed(() => {
   mit Kreditkarte oder Twint bezahlen.
   <v-container>
     <v-row
-      ><v-spacer /><v-col cols="12" md="6"
-        >Wählen Sie hier die gewünschte Menge aus:<br />
+      ><v-col cols="12" md="5"
+        ><v-spacer />Wählen Sie hier die gewünschte Menge aus:<br />
         <v-slider
           v-model="menge"
           dense
@@ -68,7 +108,7 @@ let total = computed(() => {
           :value="menge"
           persistent-hint
         ></v-slider>
-        <v-simple-table dense class="pt-4">
+        <!-- Vergleich zu Preismodell 2023, kann gelöscht werden <v-simple-table dense class="pt-4">
           <tbody>
             <tr>
               <td>Menge:</td>
@@ -108,9 +148,9 @@ let total = computed(() => {
             </tr>
           </tbody>
         </v-simple-table>
-        <hr />
+        <hr /> -->
 
-        <v-simple-table dense class="pt-4">
+        <table style="table-layout: fixed; border: 1px" width="100%">
           <tbody>
             <tr>
               <td>Menge:</td>
@@ -118,7 +158,7 @@ let total = computed(() => {
               <td>Liter</td>
             </tr>
             <tr>
-              <td>Preis neu:</td>
+              <td>Preis:</td>
               <td class="text-right">
                 {{ (menge * store.preisDirektverkauf).toFixed(2) }}
               </td>
@@ -127,8 +167,8 @@ let total = computed(() => {
             <tr>
               <td>Porto/Verpackung:</td>
               <td class="text-right">
-                {{ porto.toFixed(2) }} + {{ verpackungneu.toFixed(2) }} =
-                {{ (porto + verpackungneu).toFixed(2) }}
+                <!-- zeigt Porto/Verpackung einzeln an, kann gelöscht werden{{ porto.toFixed(2) }} + {{ verpackungneu.toFixed(2) }} = -->
+                {{ (porto + verpackung.preis).toFixed(2) }}
               </td>
               <td>CHF</td>
             </tr>
@@ -145,7 +185,7 @@ let total = computed(() => {
                 {{
                   (
                     porto +
-                    verpackungneu +
+                    verpackung.preis +
                     menge * store.preisDirektverkauf +
                     kleinmengenzuschlag.value
                   ).toFixed(2)
@@ -154,8 +194,8 @@ let total = computed(() => {
               <td>CHF</td>
             </tr>
           </tbody>
-        </v-simple-table> </v-col
-      ><v-spacer /><v-col cols="12" md="6">
+        </table> </v-col
+      ><v-col cols="12" md="5">
         Buttenmost ist ein Frischprodukt. Wenn Sie jetzt bestellen, verschicken
         wir den Buttenmost am:
         <v-select
@@ -165,16 +205,98 @@ let total = computed(() => {
           return-object
         ></v-select>
 
-        <adress
-          @formValidity="(status) => (formValidity = status)"
-        ></adress> </v-col></v-row
+        <v-container>
+          <v-form v-model="formValidity">
+            <v-row>
+              <v-col cols="6">
+                <v-text-field
+                  dense
+                  v-model="Vorname"
+                  label="Vorname"
+                  name="Vorname"
+                  :rules="nichtLeer"
+                  required
+                ></v-text-field></v-col
+              ><v-col cols="6">
+                <v-text-field
+                  dense
+                  v-model="Nachname"
+                  label="Name"
+                  name="Nachname"
+                  :rules="nichtLeer"
+                ></v-text-field>
+              </v-col> </v-row
+            ><v-row dense>
+              <v-col cols="12">
+                <v-text-field
+                  dense
+                  v-model="Adresse"
+                  label="Adresse"
+                  name="Adresse"
+                  :rules="nichtLeer"
+                  required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row dense>
+              <v-col cols="12">
+                <v-text-field
+                  dense
+                  v-model="Adresszusatz"
+                  label="Adresszusatz"
+                  name="Adresszusatz"
+                ></v-text-field>
+              </v-col> </v-row
+            ><v-row dense>
+              <v-col cols="3" md="3">
+                <v-text-field
+                  dense
+                  v-model="PLZ"
+                  label="PLZ"
+                  Name="PLZ"
+                  :rules="PLZRules"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="9" md="9">
+                <v-text-field
+                  dense
+                  v-model="Ort"
+                  label="Ort"
+                  name="Ort"
+                  :rules="nichtLeer"
+                  required
+                ></v-text-field> </v-col></v-row
+            ><v-row dense>
+              <v-col cols="12">
+                <v-text-field
+                  dense
+                  v-model="Email"
+                  label="E-mail"
+                  name="Email"
+                  :rules="EmailRules"
+                  required
+                ></v-text-field>
+                <v-textarea
+                  dense
+                  v-model="Bemerkungen"
+                  name="Bemerkungen"
+                  label="Bemerkungen"
+                  auto-grow
+                  rows="1"
+                ></v-textarea> </v-col
+            ></v-row>
+          </v-form>
+        </v-container>
+
+        <v-spacer /> </v-col></v-row
     ><v-row>
       <v-col cols="12" md="12">
         <v-btn
           color="primary"
           elevation="2"
           large
-          @click="createPayrexxGataway"
+          @click="order"
           :disabled="!formValidity"
           :loading="loading"
         >
@@ -183,7 +305,4 @@ let total = computed(() => {
       ></v-row
     >
   </v-container>
-
-  <v-btn>test Page</v-btn>
-  sel: {{ selected }}
 </template>
