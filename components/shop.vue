@@ -1,7 +1,7 @@
 <script setup lang="js">
 const store = useButtenmostStore();
-let selected = ref(store.possibleShippingDays[0])
-let menge = ref(store.defaultMenge)
+let Lieferdatum = ref(store.MoeglicheLieferdaten[0])
+let Menge = ref(store.StandardMenge)
 
 let Vorname = ref("")
 let Nachname = ref("")
@@ -29,58 +29,59 @@ let EmailRules= [
           "Gültige E-Mail-Adresse wird benötigt"
       ]
 
-let preis = computed(() => {
-  return (menge.value * store.preis)
+let ButtenmostPreis = computed(() => {
+  return (Menge.value * store.PreisProLiter)
 })
 
-let porto = computed(() => {
-  return menge.value < 10 ? 15 : 27
+let Porto = computed(() => {
+  return Menge.value < 10 ? 15 : 27
 })
 
-let kleinmengenzuschlag = computed(() => {
-  if(menge.value<store.kleinmengenzuschlag.grenze){
-    return {"bezeichnung":"Kleinmengenzuschlag","value":store.kleinmengenzuschlag.betrag}
+let Kleinmengenzuschlag = computed(() => {
+  if(Menge.value<store.Kleinmengenzuschlag.Grenze){
+    return {"Bezeichnung":"Kleinmengenzuschlag","value":store.Kleinmengenzuschlag.Betrag}
   }
-  else if(menge.value < store.kleinmengenzuschlag.grenzeReduziert){
-  return {"bezeichnung":"Kleinmengenzuschlag","value":store.kleinmengenzuschlag.betragReduziert}}
-  else if(menge.value > store.rabatt.grenze){
-    return {"bezeichnung":"Rabatt","value":(menge.value * store.preisDirektverkauf)*store.rabatt.value
+  else if(Menge.value < store.Kleinmengenzuschlag.GrenzeReduziert){
+  return {"Bezeichnung":"Kleinmengenzuschlag","value":store.Kleinmengenzuschlag.BetragReduziert}}
+  else if(Menge.value > store.Rabatt.Grenze){
+    return {"Bezeichnung":"Rabatt","value":ButtenmostPreis.value*store.Rabatt.value
 }}
-  else return {"bezeichnung":"Kleinmengenzuschlag","value":0}
+  else return {"Bezeichnung":"Kleinmengenzuschlag","value":0}
 
 })
 
-let verpackung = computed(() =>{
+let Verpackungsindex = computed(() =>{
   let i = 0;
-  while (store.verpackungsPreise[i].menge <= menge.value) {
+  while (store.Verpackung[i].Menge <= Menge.value) {
     i++;
   }
-  return {preis:store.verpackungsPreise[i].preis,gewicht:store.verpackungsPreise[i].gewicht}
+  return i
 });
 
-let total = computed(() => {
-  return (porto + verpackung.preis + preis + store.versandpauschale)
+let Betrag = computed(() => {
+  return(Porto.value + ButtenmostPreis.value + Kleinmengenzuschlag.value.value + store.Verpackung[Verpackungsindex.value].Preis)
 })
 
 async function order() {
+  console.log(Verpackung.Preis)
   const order = await $fetch('/api/order', {
     method: 'POST',
     body: { 
-      Email: Email,
-      Vorname: Vorname,
-      Betrag: total.value,
-      Name: Nachname,
+      Email: Email.value,
+      Vorname: Vorname.value,
+      Betrag: Betrag.value,
+      Name: Nachname.value,
       Adresse: Adresse,
       Adresszusatz: Adresszusatz,
       PLZ: PLZ,
       Ort: Ort,
-      Menge: menge,
-      Lieferdatum: selected,
+      Menge: Menge,
+      Lieferdatum: Lieferdatum,
       Notes:Bemerkungen,
-      Verpackung: verpackung.preis,
-      Porto:porto.value,
-      Lieferpauschale:store.versandpauschale,
-      Gewicht: verpackung.gewicht,
+      Verpackung: Verpackung.Preis,
+      Porto:Porto.value,
+      Lieferpauschale:Kleinmengenzuschlag.value,
+      Gewicht: Verpackung.Gewicht,
       Status: "bestellt",
       Typ: "Post"
     }
@@ -98,14 +99,14 @@ async function order() {
       ><v-col cols="12" md="5"
         ><v-spacer />Wählen Sie hier die gewünschte Menge aus:<br />
         <v-slider
-          v-model="menge"
+          v-model="Menge"
           dense
           :step="1"
           thumb-label="always"
           hint="Regler verstellen, um Menge anzupassen"
-          :max="store.maximalMenge"
-          :min="store.minimalMenge"
-          :value="menge"
+          :max="store.MaximumMenge"
+          :min="store.MinimumMenge"
+          :value="Menge"
           persistent-hint
         ></v-slider>
         <!-- Vergleich zu Preismodell 2023, kann gelöscht werden <v-simple-table dense class="pt-4">
@@ -154,13 +155,13 @@ async function order() {
           <tbody>
             <tr>
               <td>Menge:</td>
-              <td class="text-right">{{ menge }}</td>
+              <td class="text-right">{{ Menge }}</td>
               <td>Liter</td>
             </tr>
             <tr>
               <td>Preis:</td>
               <td class="text-right">
-                {{ (menge * store.preisDirektverkauf).toFixed(2) }}
+                {{ ButtenmostPreis }}
               </td>
               <td>CHF</td>
             </tr>
@@ -168,14 +169,14 @@ async function order() {
               <td>Porto/Verpackung:</td>
               <td class="text-right">
                 <!-- zeigt Porto/Verpackung einzeln an, kann gelöscht werden{{ porto.toFixed(2) }} + {{ verpackungneu.toFixed(2) }} = -->
-                {{ (porto + verpackung.preis).toFixed(2) }}
+                {{ (Porto + store.Verpackung[Verpackungsindex].Preis) }}
               </td>
               <td>CHF</td>
             </tr>
-            <tr :class="menge > store.rabatt.grenze ? 'text-red' : ''">
-              <td>{{ kleinmengenzuschlag.bezeichnung }}</td>
+            <tr :class="Menge > store.Rabatt.Grenze ? 'text-red' : ''">
+              <td>{{ Kleinmengenzuschlag.Bezeichnung }}</td>
               <td class="text-right">
-                {{ kleinmengenzuschlag.value.toFixed(2) }}
+                {{ Kleinmengenzuschlag.value }}
               </td>
               <td>CHF</td>
             </tr>
@@ -183,12 +184,7 @@ async function order() {
               <td>Total:</td>
               <td class="text-right">
                 {{
-                  (
-                    porto +
-                    verpackung.preis +
-                    menge * store.preisDirektverkauf +
-                    kleinmengenzuschlag.value
-                  ).toFixed(2)
+                  Betrag
                 }}
               </td>
               <td>CHF</td>
@@ -200,8 +196,8 @@ async function order() {
         wir den Buttenmost am:
         <v-select
           label="Select"
-          :items="store.possibleShippingDays"
-          v-model="selected"
+          :items="store.MoeglicheLieferdaten"
+          v-model="Lieferdatum"
           return-object
         ></v-select>
 

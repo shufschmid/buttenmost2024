@@ -3,46 +3,46 @@ import { defineStore } from "pinia";
 export const useButtenmostStore = defineStore("buttenmost", {
   state: () => {
     return {
-      saisonStart: new Date("2024-01-01"),
-      preis: 7,
+      SaisonStart: new Date("2024-01-01"),
+      PreisProLiter: 7,
       preisDirektverkauf: 9.4,
-      saisonEnd: new Date("2024-03-12"),
+      SaisonEnde: new Date("2024-03-12"),
       shippingWeekDay: "tue",
       heute: new Date(),
-      defaultMenge: 4,
-      minimalMenge: 2,
-      maximalMenge: 28,
+      StandardMenge: 4,
+      MinimumMenge: 2,
+      MaximumMenge: 28,
       versandpauschale: 15,
-      verpackungsPreise: [
-        { menge: 5, preis: 4.5, gewicht: 190 },  
-        { menge: 10, preis: 7, gewicht: 404 },
-        { menge: 12, preis: 8.9, gewicht: 562 },
-        { menge: 15, preis: 9.7, gewicht: 617 },
-        { menge: 18, preis: 10, gewicht: 654 },
-        { menge: 20, preis: 10.5, gewicht: 720 },
-        { menge: this.maximalMenge, preis: 11.9, gewicht:821 },
+      Verpackung: [
+        { Menge: 5, Preis: 4.5, Gewicht: 190 },  
+        { Menge: 10, Preis: 7, Gewicht: 404 },
+        { Menge: 12, Preis: 8.9, Gewicht: 562 },
+        { Menge: 15, Preis: 9.7, Gewicht: 617 },
+        { Menge: 18, Preis: 10, Gewicht: 654 },
+        { Menge: 20, Preis: 10.5, Gewicht: 720 },
+        { Menge: this.MaximumMenge, Preis: 11.9, Gewicht:821 },
       ],
-      kleinmengenzuschlag: {"grenze":4,"betrag":15,"grenzeReduziert":8,"betragReduziert":7.5},
-      rabatt: {"grenze":12, value:(-0.1)}
+      Kleinmengenzuschlag: {"Grenze":4,"Betrag":15,"GrenzeReduziert":8,"BetragReduziert":7.5},
+      Rabatt: {"Grenze":12, value:(-0.1)}
     };
   },
   getters: {
     isSaison() {
-      return this.heute > this.saisonStart && this.heute < this.saisonEnd
+      return this.heute > this.SaisonStart && this.heute < this.SaisonEnde
         ? true
         : false;
     },
-    saisonStartString() {
+    SaisonStartString() {
       const options = { year: "numeric", month: "long", day: "numeric" };
-      return this.saisonStart.toLocaleDateString("de-DE", options);
+      return this.SaisonStart.toLocaleDateString("de-DE", options);
     },
-    possibleShippingDays() {
+    MoeglicheLieferdaten() {
       var result = [];
       var days = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
       var day = days[this.shippingWeekDay];
-      var current = new Date(this.saisonStart);
+      var current = new Date(this.SaisonStart);
       current.setDate(current.getDate() + ((day - current.getDay() + 7) % 7));
-      while (current < this.saisonEnd) {
+      while (current < this.SaisonEnde) {
         if (current > this.heute) {
           result.push({
             title: new Date(+current).toLocaleDateString("de-DE"),
