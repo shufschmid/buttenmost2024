@@ -63,7 +63,7 @@ let Betrag = computed(() => {
 })
 
 async function order() {
-  console.log(Verpackung.Preis)
+  console.log(Lieferdatum.value.value)
   const order = await $fetch('/api/order', {
     method: 'POST',
     body: { 
@@ -71,17 +71,17 @@ async function order() {
       Vorname: Vorname.value,
       Betrag: Betrag.value,
       Name: Nachname.value,
-      Adresse: Adresse,
-      Adresszusatz: Adresszusatz,
-      PLZ: PLZ,
-      Ort: Ort,
-      Menge: Menge,
-      Lieferdatum: Lieferdatum,
-      Notes:Bemerkungen,
-      Verpackung: Verpackung.Preis,
+      Adresse: Adresse.value,
+      Adresszusatz: Adresszusatz.value,
+      PLZ: PLZ.value,
+      Ort: Ort.value,
+      Menge: Menge.value,
+      Lieferdatum: Lieferdatum.value.value,
+      Notes:Bemerkungen.value,
+      Verpackung: store.Verpackung[Verpackungsindex.value].Preis,
       Porto:Porto.value,
-      Lieferpauschale:Kleinmengenzuschlag.value,
-      Gewicht: Verpackung.Gewicht,
+      Lieferpauschale:Kleinmengenzuschlag.value.value,
+      Gewicht: store.Verpackung[Verpackungsindex.value].Gewicht,
       Status: "bestellt",
       Typ: "Post"
     }

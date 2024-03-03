@@ -6,7 +6,7 @@ export const useButtenmostStore = defineStore("buttenmost", {
       SaisonStart: new Date("2024-01-01"),
       PreisProLiter: 7,
       preisDirektverkauf: 9.4,
-      SaisonEnde: new Date("2024-03-12"),
+      SaisonEnde: new Date("2024-04-12"),
       shippingWeekDay: "tue",
       heute: new Date(),
       StandardMenge: 4,
@@ -46,7 +46,7 @@ export const useButtenmostStore = defineStore("buttenmost", {
         if (current > this.heute) {
           result.push({
             title: new Date(+current).toLocaleDateString("de-DE"),
-            value: new Date(+current),
+            value: new Date(+current).toISOString().substring(0, 10) //weil Airtable nur XXXX-MM-DD akzeptiert
           });
         }
         current.setDate(current.getDate() + 7);
