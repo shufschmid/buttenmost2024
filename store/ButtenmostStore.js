@@ -14,16 +14,23 @@ export const useButtenmostStore = defineStore("buttenmost", {
       MaximumMenge: 28,
       versandpauschale: 15,
       Verpackung: [
-        { Menge: 5, Preis: 4.5, Gewicht: 190 },  
+        { Menge: 5, Preis: 4.5, Gewicht: 190 },
         { Menge: 10, Preis: 7, Gewicht: 404 },
         { Menge: 12, Preis: 8.9, Gewicht: 562 },
         { Menge: 15, Preis: 9.7, Gewicht: 617 },
         { Menge: 18, Preis: 10, Gewicht: 654 },
         { Menge: 20, Preis: 10.5, Gewicht: 720 },
-        { Menge: this.MaximumMenge, Preis: 11.9, Gewicht:821 },
+        { Menge: this.MaximumMenge, Preis: 11.9, Gewicht: 821 },
       ],
-      Kleinmengenzuschlag: {"Grenze":4,"Betrag":15,"GrenzeReduziert":8,"BetragReduziert":7.5},
-      Rabatt: {"Grenze":12, value:(-0.1)}
+      Kleinmengenzuschlag: {
+        Grenze: 4,
+        Betrag: 15,
+        GrenzeReduziert: 8,
+        BetragReduziert: 7.5,
+      },
+      Rabatt: { Grenze: 12, value: -0.1 },
+      authenticated: false,
+      loading: false,
     };
   },
   getters: {
@@ -46,12 +53,27 @@ export const useButtenmostStore = defineStore("buttenmost", {
         if (current > this.heute) {
           result.push({
             title: new Date(+current).toLocaleDateString("de-DE"),
-            value: new Date(+current).toISOString().substring(0, 10) //weil Airtable nur XXXX-MM-DD akzeptiert
+            value: new Date(+current).toISOString().substring(0, 10), //weil Airtable nur XXXX-MM-DD akzeptiert
           });
         }
         current.setDate(current.getDate() + 7);
       }
       return result;
+    },
+  },
+  actions: {
+    async login(Passwort) {
+      // useFetch from nuxt 3
+      const { data, pending } = await useFetch("api/auth", {
+        method: "post",
+        headers: { "Content-Type": "application/json" },
+        body: {
+          Passwort,
+        },
+      });
+      this.loading = pending;
+      console.log(data.value.body);
+      this.authenticated = data.value.body; // set authenticated  state value to true
     },
   },
 });

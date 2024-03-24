@@ -2,7 +2,7 @@
 
 
 <template>
-  <div>Hello Home Page ADMIN!!!
+  <div>Admin 2 - sehr wichtig
   <v-btn>Admin</v-btn></div>
 </template>
 <script setup>

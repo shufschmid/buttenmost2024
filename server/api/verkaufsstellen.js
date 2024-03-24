@@ -7,8 +7,6 @@ Airtable.configure({
 
 const base = new Airtable.base("app8cUEZWBvWHDfaN");
 
-const API_ENDPOINT = "https://cat-fact.herokuapp.com/facts";
-
 export default defineEventHandler(async (event, request, context) => {
   try {
     const { view } = getQuery(event);

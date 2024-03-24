@@ -6,40 +6,38 @@ Airtable.configure({
 });
 const base = new Airtable.base("app8cUEZWBvWHDfaN");
 
-export default defineEventHandler(async (event, request, context) => {
-  const params = JSON.parse(event.body)
-  console.log(params)
-  await base("Table 1").create(
-    {
-      Email: params.email,
-      Vorname: params.forename.trim(),
-      Betrag: params.Preis,
-      Name: params.surname.trim(),
-      Adresse: params.street.trim(),
-      PLZ: params.postcode.trim(),
-      Ort: params.place.trim(),
-      Menge: params.menge,
-      Lieferdatum: params.versanddatum,
-      Notes:params.bemerkungen,
-      Verpackung: params.verpackung,
-      Porto:params.porto,
-      Lieferpauschale:params.versandpauschale,
-      Gewicht: params.gewicht,
-      Status: "bestellt",
-      Typ: "Post"
-    }
-  ).then(res => {
-    console.log(res, 'response') // find getID in console log
-    console.log(res.getId()) // check if desired result
-    recordID = res.getId() // assing to var
-
-  }).catch(e => {
-    console.log(e, 'Error')
-  })
-  
-  console.log(recordID)
+export default defineEventHandler(async (event) => {
+  let body = await readBody(event);
+  let recordID = " test";
+  await base("Table 1")
+    .create({
+      Email: body.Email.trim(),
+      Vorname: body.Vorname.trim(),
+      Betrag: body.Betrag,
+      Name: body.Name.trim(),
+      Adresse: body.Adresse.trim(),
+      Adresszusatz: body.Adresszusatz.trim(),
+      PLZ: body.PLZ,
+      Ort: body.Ort.trim(),
+      Menge: body.Menge,
+      Lieferdatum: body.Lieferdatum,
+      Notes: body.Notes,
+      Verpackung: body.Verpackung,
+      Porto: body.Porto,
+      Lieferpauschale: body.Lieferpauschale,
+      Gewicht: body.Gewicht,
+      Status: body.Status,
+      Typ: body.Typ,
+    })
+    .then((res) => {
+      //console.log(res, "response"); // find getID in console log
+      recordID = res.getId(); // assing to var
+    })
+    .catch((e) => {
+      console.log(e, "Error");
+    });
   return {
     statusCode: 200,
-    body: `${recordID}`
-  }
-})
+    body: `${recordID}`,
+  };
+});

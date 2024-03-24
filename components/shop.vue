@@ -63,8 +63,7 @@ let Betrag = computed(() => {
 })
 
 async function order() {
-  console.log(Lieferdatum.value.value)
-  const order = await $fetch('/api/order', {
+  const airtable = await $fetch('/api/airtable', {
     method: 'POST',
     body: { 
       Email: Email.value,
@@ -86,6 +85,25 @@ async function order() {
       Typ: "Post"
     }
   })
+  console.log("Bestellung erfolgreich in Airtable eingetragen, ID: "+airtable.body)
+
+  const payrexx = await $fetch('/api/payrexx', {
+    method: 'POST',
+    body: { 
+      Email: Email.value,
+      Vorname: Vorname.value,
+      Name: Nachname.value,
+      Betrag: Betrag.value,
+      Menge: Menge.value,
+      Adresse: Adresse.value,
+      PLZ: PLZ.value,
+      Ort: Ort.value,
+      Lieferdatum: Lieferdatum.value.value,
+      AirtableRecordID: airtable.body
+    }
+  })
+  console.log("Payrexx Gateway erfolgreich eröffnet: "+payrexx.body)
+  window.location.href = payrexx.body;
 }
 </script>
 
@@ -161,7 +179,7 @@ async function order() {
             <tr>
               <td>Preis:</td>
               <td class="text-right">
-                {{ ButtenmostPreis }}
+                {{ ButtenmostPreis.toFixed(2) }}
               </td>
               <td>CHF</td>
             </tr>
@@ -169,14 +187,14 @@ async function order() {
               <td>Porto/Verpackung:</td>
               <td class="text-right">
                 <!-- zeigt Porto/Verpackung einzeln an, kann gelöscht werden{{ porto.toFixed(2) }} + {{ verpackungneu.toFixed(2) }} = -->
-                {{ (Porto + store.Verpackung[Verpackungsindex].Preis) }}
+                {{ (Porto + store.Verpackung[Verpackungsindex].Preis).toFixed(2) }}
               </td>
               <td>CHF</td>
             </tr>
             <tr :class="Menge > store.Rabatt.Grenze ? 'text-red' : ''">
               <td>{{ Kleinmengenzuschlag.Bezeichnung }}</td>
               <td class="text-right">
-                {{ Kleinmengenzuschlag.value }}
+                {{ Kleinmengenzuschlag.value.toFixed(2) }}
               </td>
               <td>CHF</td>
             </tr>
@@ -184,7 +202,7 @@ async function order() {
               <td>Total:</td>
               <td class="text-right">
                 {{
-                  Betrag
+                  Betrag.toFixed(2)
                 }}
               </td>
               <td>CHF</td>
