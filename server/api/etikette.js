@@ -1,7 +1,7 @@
 import qs from "qs";
 import axios from "axios";
 import Airtable from "airtable";
-import { createCanvas, loadImage } from "canvas";
+import { createCanvas, loadImage } from "canvas"; //funktioniert nur mit node 12.x oder 20.x
 
 // const logoWithWeight = require("logo.json");
 
