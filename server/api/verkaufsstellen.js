@@ -9,13 +9,22 @@ const base = new Airtable.base("app8cUEZWBvWHDfaN");
 
 export default defineEventHandler(async (event, request, context) => {
   try {
-    const { view } = getQuery(event);
+    const { view, filterByFormulaField, filterByFormulaValue } = getQuery(event);
+    
+    let filterbyFormulaString = ""
+    if(filterByFormulaField){      
+    filterbyFormulaString = "{"+filterByFormulaField+"} = '"+filterByFormulaValue+"'"
+    }
+
+    console.log(filterbyFormulaString)
+    
     let resp, sendBack;
     let sendBackBody = [];
 
     resp = await base("Verkaufsstellen")
       .select({
         view: view,
+        filterByFormula: filterbyFormulaString,
       })
       .all();
 

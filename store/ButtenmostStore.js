@@ -4,9 +4,11 @@ export const useButtenmostStore = defineStore("buttenmost", {
   state: () => {
     return {
       SaisonStart: new Date("2024-01-01"),
+      SaisonStartFirmen: new Date("2024-01-01"),
       PreisProLiter: 7,
       preisDirektverkauf: 9.4,
       SaisonEnde: new Date("2024-04-12"),
+      SaisonEndeFirmen: new Date("2024-04-12"),
       shippingWeekDay: "tue",
       heute: new Date(),
       StandardMenge: 4,
@@ -39,9 +41,19 @@ export const useButtenmostStore = defineStore("buttenmost", {
         ? true
         : false;
     },
+    isSaisonFirmen() {
+      return this.heute > this.SaisonStartFirmen &&
+        this.heute < this.SaisonEndeFirmen
+        ? true
+        : false;
+    },
     SaisonStartString() {
       const options = { year: "numeric", month: "long", day: "numeric" };
       return this.SaisonStart.toLocaleDateString("de-DE", options);
+    },
+    SaisonStartStringFirmen(){
+      const options = { year: "numeric", month: "long", day: "numeric" };
+      return this.SaisonStartFirmen.toLocaleDateString("de-DE", options);
     },
     MoeglicheLieferdaten() {
       var result = [];
