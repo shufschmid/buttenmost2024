@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 const data = await useFetch(
-  "/api/verkaufsstellen?view=website"
+  "/api/airtable_get?basis=Verkaufsstellen&view=website"
 );
 
 </script>

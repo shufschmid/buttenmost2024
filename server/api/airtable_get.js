@@ -9,35 +9,51 @@ const base = new Airtable.base("app8cUEZWBvWHDfaN");
 
 export default defineEventHandler(async (event, request, context) => {
   try {
-    const { view, filterByFormulaField, filterByFormulaValue } = getQuery(event);
+    let { view, basis, filter, specialfields } = getQuery(event);
     
-    let filterbyFormulaString = ""
-    if(filterByFormulaField){      
-    filterbyFormulaString = "{"+filterByFormulaField+"} = '"+filterByFormulaValue+"'"
+    if(!filter){      
+      filter = ""
+    }
+    if(!view){
+      view="website"
+    }
+    if(!basis){
+      basis = "Verkaufsstellen"
+    }
+    let fields = []
+    if(specialfields == "verfuegbare_menge"){
+      fields = ["Menge"]
     }
 
-    console.log(filterbyFormulaString)
+    console.log(filter)
     
     let resp, sendBack;
     let sendBackBody = [];
 
-    resp = await base("Verkaufsstellen")
+    resp = await base(basis)
       .select({
         view: view,
-        filterByFormula: filterbyFormulaString,
+        filterByFormula: filter,
+        fields: fields
       })
       .all();
 
     resp.forEach((element) => {
       sendBackBody.push(element.fields);
     });
-    sendBack = {
+
+    console.log(resp.length + " Element(e) von Airtable geladen...");
+    
+    return {
       statusCode: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(sendBackBody),
     };
-    console.log(resp.length + " Verkaufstellen geladen...");
-    return sendBack;
+
+
   } catch (error) {
     console.log(error);
     return Response.json({ error: "Failed fetching data" }, { status: 500 });

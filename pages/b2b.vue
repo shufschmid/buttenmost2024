@@ -1,8 +1,8 @@
 <template>
   <div>
     <v-container class="pt-12">
-        Firma: {{ firma }}<br/>
-        Nächster möglicher Versandtag: {{ bestellung }}
+      Firma: {{ firma }}<br />
+      Nächster möglicher Versandtag: {{ bestellung }}
       <v-form v-model="formValidity" name="bestellung" ref="form"
         ><v-row v-show="showpin"
           ><v-spacer />
@@ -52,25 +52,28 @@
 const store = useButtenmostStore();
 const showpin = ref(true);
 let PINRules = [
-        value => !!value || "PIN fehlt",
-        value => /\d\d\d\d/.test(value) || "PIN ungültig"
-      ]
-let formValidity = ref(false)
-let pin = ref()
-let firma = ref()
+  (value) => !!value || "PIN fehlt",
+  (value) => /\d\d\d\d/.test(value) || "PIN ungültig",
+];
+let formValidity = ref(false);
+let pin = ref();
+let firma = ref();
+let verfuegbareMenge = ref();
 
 async function checkPin() {
-    firma.value = await fetch(
-        "/api/verkaufsstellen/?view=laeden&filterByFormulaField=Code&filterByFormulaValue="+pin.value
-      ).then(res => res.json());
-    console.log(JSON.parse(firma.value.body))
+  firma.value = await fetch(
+    '/api/airtable_get/?basis=Verkaufsstellen&view=website&filter={Code}="' +
+      pin.value +
+      '"'
+  ).then((res) => res.json());
+  let verfuegbarkeit = await fetch(
+    '/api/airtable_get/?basis=Table 1&view=verfuegbare_menge&filter=DATESTR({Lieferdatum})="2023-09-26"&specialfields=verfuegbare_menge'
+  ).then((res) => res.json());
+
+  console.log(verfuegbarkeit);
 }
 
-
-
 let bestellung = computed(() => {
-  return "das ist der nächste Tag unabhängig von Menge/Verfügbarkeit"
-  
-
-})
+  return "das ist der nächste Tag unabhängig von Menge/Verfügbarkeit";
+});
 </script>
