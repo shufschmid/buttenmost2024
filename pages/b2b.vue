@@ -1,8 +1,9 @@
 <template>
   <div>
     <v-container class="pt-12">
-      Firma: {{ firma }}<br />
-      Nächster möglicher Versandtag: {{ bestellung }}
+      Firma: {{ firma }}<br /><hr/>
+      Nächster möglicher Versandtag: {{ bestellung }}<hr/>
+      Verfüegbarkeit: {{ verfuegbareMenge }}
       <v-form v-model="formValidity" name="bestellung" ref="form"
         ><v-row v-show="showpin"
           ><v-spacer />
@@ -61,16 +62,34 @@ let firma = ref();
 let verfuegbareMenge = ref();
 
 async function checkPin() {
-  firma.value = await fetch(
+
+  
+  const {Laden}  = await $fetch(
     '/api/airtable_get/?basis=Verkaufsstellen&view=website&filter={Code}="' +
       pin.value +
-      '"'
-  ).then((res) => res.json());
-  let verfuegbarkeit = await fetch(
-    '/api/airtable_get/?basis=Table 1&view=verfuegbare_menge&filter=DATESTR({Lieferdatum})="2023-09-26"&specialfields=verfuegbare_menge'
-  ).then((res) => res.json());
+      '"');
 
-  console.log(verfuegbarkeit);
+  // let antwort = await fetch(
+  //   '/api/airtable_get/?basis=Verkaufsstellen&view=website&filter={Code}="' +
+  //     pin.value +
+  //     '"'
+  // ).then((res) => res.json());
+
+  // firma.value = antwort.body[0].Laden
+  firma.value= Laden
+  console.log(Laden)
+
+  //console.log(firma.value.body);
+  const Menge = await $fetch(
+    '/api/airtable_get/?basis=Table 1&view=verfuegbare_menge&filter=DATESTR({Lieferdatum})="2023-09-26"&specialfields=verfuegbare_menge'
+  );
+
+  //total bereits an diesem Tag ausgegebene Menge
+  const einzelmengen = Menge.map((einzelmenge) => einzelmenge.Menge)
+  verfuegbareMenge.value = einzelmengen.reduce((acc, curr) => acc + curr)
+  
+  //erklärung für diese Formel hier: https://www.linkedin.com/pulse/how-sum-total-from-array-object-properties-javascript-schouwenaar
+
 }
 
 let bestellung = computed(() => {

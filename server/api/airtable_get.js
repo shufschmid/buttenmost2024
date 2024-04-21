@@ -27,7 +27,7 @@ export default defineEventHandler(async (event, request, context) => {
 
     console.log(filter)
     
-    let resp, sendBack;
+    let resp
     let sendBackBody = [];
 
     resp = await base(basis)
@@ -38,20 +38,15 @@ export default defineEventHandler(async (event, request, context) => {
       })
       .all();
 
-    resp.forEach((element) => {
+      //Antwort aufbereiten
+    
+      resp.forEach((element) => {
       sendBackBody.push(element.fields);
     });
-
-    console.log(resp.length + " Element(e) von Airtable geladen...");
-    
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(sendBackBody),
-    };
+    if(sendBackBody.length == 1){
+      sendBackBody = sendBackBody[0]
+    }
+    return Response.json(sendBackBody, { status: 200 });
 
 
   } catch (error) {
