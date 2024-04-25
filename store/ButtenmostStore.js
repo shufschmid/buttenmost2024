@@ -3,13 +3,20 @@ import { defineStore } from "pinia";
 export const useButtenmostStore = defineStore("buttenmost", {
   state: () => {
     return {
-      SaisonStart: new Date("2024-01-01"),
-      SaisonStartFirmen: new Date("2024-01-01"),
+      SaisonStart: new Date("2024-01-01 12:00:00"),
+      SaisonStartFirmen: new Date("2024-01-01 12:00:00"),
       PreisProLiter: 7,
+      PreisBecher: 1,
       preisDirektverkauf: 9.4,
-      SaisonEnde: new Date("2024-09-12"),
-      SaisonEndeFirmen: new Date("2024-09-12"),
+      SaisonEnde: new Date("2024-09-12 12:00:00"),
+      SaisonEndeFirmen: new Date("2024-09-12 12:00:00"),
       shippingWeekDay: "tue",
+      lieferpauschale: 22,
+      kistli: 2, //Voreinstellung für Bestellformular Läden
+      liter_pro_kistli: 14,
+      konfi_gross_preis: 7.2,
+      konfi_klein_preis: 4.3,
+      tee_preis: 5,
       heute: new Date(),
       StandardMenge: 4,
       MinimumMenge: 2,
@@ -69,6 +76,26 @@ export const useButtenmostStore = defineStore("buttenmost", {
           });
         }
         current.setDate(current.getDate() + 7);
+      }
+      return result;
+    },
+    MoeglicheLieferdatenFirmen() {
+      var result = [];
+      var current = new Date(this.SaisonStartFirmen);
+
+      current.setDate(current.getDate());
+
+      while (current < this.SaisonEndeFirmen) {
+        if (current > this.heute && (current.getDay() == 2 || current.getDay() == 4 || current.getDay() == 6 )) {
+          
+          result.push({
+            title: new Date(current).toLocaleDateString("de-DE"),
+            value: new Date(current).toISOString().substring(0, 10) //weil Airtable nur XXXX-MM-DD akzeptiert
+          });
+        }
+        current.setDate(current.getDate() + 1);
+        console.log(current+":"+current.getDay())
+        
       }
       return result;
     },
