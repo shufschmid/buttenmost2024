@@ -1,55 +1,58 @@
 <template>
   <div>
-    Firma: {{ firma }}<br />
-    <hr />
-    Nächster möglicher Versandtag: {{ nextPossibleShippingDay }}
-    <hr />
-    Verfüegbarkeit: {{ verfuegbareMenge }}
-    <v-container class="pt-12">
+    <v-container>
       <v-form v-model="formValidity" name="bestellung" ref="form"
-        ><v-row v-show="showpin"
-          ><v-spacer />
-          <v-col cols="6" md="6" v-show="store.isSaisonFirmen">
-            Dieser Bereich ist unseren bestehenden Firmenkunden vorbehalten.
-            Bitte identifizieren Sie sich mit dem vierstelligen PIN-Code, den
-            wir Ihnen mitgeteilt haben. Bei Fragen: Tel 061 751 48 21.
-            Saisonstart: {{ store.SaisonStartStringFirmen }}. </v-col
-          ><v-col cols="6" md="6" v-show="!store.isSaisonFirmen">
-            Dieser Bereich ist während der Buttenmost-Saison unseren bestehenden
-            Firmenkunden vorbehalten. Diese können sich mittels eines PIN-Codes,
-            den wir Ihnen vor Saisonstart zustellen, identifizieren. Bei Fragen:
-            Tel 061 751 48 21.
+        ><v-row>
+          <v-col cols="12" md="6">
+            <div v-if="!store.isSaisonFirmen">
+              Dieser Bereich ist während der Buttenmost-Saison unseren
+              bestehenden Firmenkunden vorbehalten. Diese können sich mittels
+              eines PIN-Codes, den wir Ihnen vor Saisonstart zustellen,
+              identifizieren. Bei Fragen: Tel 061 751 48 21. Saisonstart:
+              {{ store.SaisonStartStringFirmen }}.
+            </div>
+            <div v-else-if="showpin">
+              Dieser Bereich ist unseren bestehenden Firmenkunden vorbehalten.
+              Bitte identifizieren Sie sich mit dem vierstelligen PIN-Code, den
+              wir Ihnen mitgeteilt haben. Bei Fragen: Tel 061 751 48 21.
+              <v-container>
+                <v-row>
+                  <v-col cols="4">
+                    <v-text-field
+                      v-model="pin"
+                      label="PIN"
+                      Name="PIN"
+                      :rules="PINRules"
+                      required
+                    ></v-text-field>
+                  </v-col>
+
+                  <v-col cols="8">
+                    <v-btn
+                      color="success"
+                      elevation="2"
+                      block
+                      @click="checkPin"
+                      :disabled="!formValidity"
+                      :loading="loading"
+                    >
+                      Anmelden</v-btn
+                    ></v-col
+                  >
+                </v-row>
+              </v-container>
+            </div>
+            <div v-else>
+              Firma: {{ firma }}<br />
+              <hr />
+              Nächster möglicher Versandtag: {{ nextPossibleShippingDay }}
+              <hr />
+              Verfüegbarkeit: {{ verfuegbareMenge }}
+            </div>
           </v-col>
-          <v-spacer
-        /></v-row>
-        <v-row v-show="store.isSaisonFirmen && showpin"
-          ><v-spacer />
-          <v-col cols="6" md="2">
-            <v-text-field
-              dense
-              v-model="pin"
-              label="PIN"
-              Name="PIN"
-              :rules="PINRules"
-              required
-            ></v-text-field>
-          </v-col>
-          <v-col cols="6" md="2">
-            <v-btn
-              color="primary"
-              elevation="2"
-              large
-              @click="checkPin"
-              :disabled="!formValidity"
-              :loading="loading"
-            >
-              Anmelden</v-btn
-            > </v-col
-          ><v-spacer
-        /></v-row>
-        <v-row
-          ><v-col cols="12" md="12">
-            <v-simple-table>
+
+          <v-col cols="12" md="6">
+            <v-table v-if="!showpin">
               <tbody>
                 <tr>
                   <td>
@@ -149,7 +152,7 @@
                   <td>Total:</td>
                   <td></td>
                   <td class="text-right">
-                    {{ total() }}
+                    {{ total().toFixed(2) }}
                   </td>
                   <td>CHF</td>
                 </tr>
@@ -160,16 +163,17 @@
                       <td>CHF</td>
                     </tr> -->
               </tbody>
-            </v-simple-table> </v-col
-          ></v-row>
-        </v-form
-    ></v-container>
+            </v-table>
+          </v-col></v-row
+        >
+      </v-form></v-container
+    >
   </div>
 </template>
 
 <script setup>
 const store = useButtenmostStore();
-const showpin = ref(true);
+let showpin = ref(true);
 let PINRules = [
   (value) => !!value || "PIN fehlt",
   (value) => /\d\d\d\d/.test(value) || "PIN ungültig",
@@ -192,7 +196,8 @@ async function checkPin() {
   const { Laden } = await $fetch(LadenURL);
   firma.value = Laden;
 
-  nextPossibleShippingDay.value = store.MoeglicheLieferdatenFirmen;
+  nextPossibleShippingDay.value = store.MoeglicheLieferdatenFirmen[0];
+  showpin.value = false;
 
   let MengeURL =
     '/api/airtable_get/?basis=Table 1&view=verfuegbare_menge&filter=DATESTR({Lieferdatum})="' +
