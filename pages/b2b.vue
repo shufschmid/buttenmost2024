@@ -155,12 +155,21 @@
                   </td>
                   <td>CHF</td>
                 </tr>
-                <!-- <tr>
-                      <td>Total vor Einheitspreis:</td>
-                      <td></td>
-                      <td class="text-right">{{ total_alt.toFixed(2) }}</td>
-                      <td>CHF</td>
-                    </tr> -->
+
+                <tr>
+                  <td>
+                    <v-btn
+                      color="primary"
+                      elevation="2"
+                      large
+                      @click="order"
+                      :disabled="!formValidity"
+                      :loading="loading"
+                    >
+                      Jetzt bestellen</v-btn
+                    >
+                  </td>
+                </tr>
               </tbody>
             </v-table>
           </v-col></v-row
@@ -181,14 +190,15 @@ let formValidity = ref(false);
 let pin = ref();
 let firma = ref();
 let verfuegbareMenge = ref();
+let totalMengeOnShippinday = ref();
 let nextPossibleShippingDay = ref();
 let kistli = ref(2); //Voreinstellung
 let konfi_gross = ref(0);
 let konfi_klein = ref(0);
 let tee = ref(0);
 
-const shippingDays = await useFetch(
-  "/api/airtable_get?basis=Lieferdaten&view=b2b"
+let shippingDays = await useFetch(
+  "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
 );
 
 async function checkPin() {
@@ -196,15 +206,12 @@ async function checkPin() {
     '/api/airtable_get/?basis=Verkaufsstellen&view=website&filter={Code}="' +
     pin.value +
     '"';
-  const { Laden } = await $fetch(LadenURL);
+  let { Geschaeft } = await $fetch(LadenURL);
 
-  if (Laden) {
-    firma.value = Laden;
+  if (Geschaeft) {
+    firma.value = Geschaeft;
     nextPossibleShippingDay = await findNextPossibleShippingDay();
-
     showpin.value = false;
-
-    //erklärung für diese Formel hier: https://www.linkedin.com/pulse/how-sum-total-from-array-object-properties-javascript-schouwenaar
   }
 }
 
@@ -214,27 +221,30 @@ async function getMenge(Datum) {
     Datum +
     '"';
   const recordsList = await $fetch(recordsURL);
-  if (recordsList.length > 0) {
+  if (recordsList.length > 1) {
     const einzelmengen = await recordsList.map(
       (einzelmenge) => einzelmenge.Menge
     );
-    if (einzelmengen.length > 0) {
-      return einzelmengen.reduce((acc, curr) => acc + curr);
-    } else {
-      return 0;
-    }
+    return einzelmengen.reduce((acc, curr) => acc + curr);
+    //erklärung für diese Formel hier: https://www.linkedin.com/pulse/how-sum-total-from-array-object-properties-javascript-schouwenaar
+  } else if (recordsList.Menge > 0) {
+    return recordsList.Menge;
+  } else {
+    return 0;
   }
 }
 
 async function findNextPossibleShippingDay() {
   let returnvalue = "";
   for (let i = 0; i < shippingDays.data.value.length; i++) {
+    console.log(shippingDays.data.value[i].Datum);
     var current = new Date(shippingDays.data.value[i].Datum);
-
     if (current > store.heute) {
       let currentMenge = await getMenge(shippingDays.data.value[i].Datum);
-      if (currentMenge > 0) {
+      if (currentMenge < shippingDays.data.value[i].Menge) {
         returnvalue = shippingDays.data.value[i].Datum;
+        verfuegbareMenge.value = shippingDays.data.value[i].Menge - currentMenge;
+        totalMengeOnShippinday.value = shippingDays.data.value[i].Menge
         break;
       }
     }
@@ -254,5 +264,30 @@ function total() {
     tee.value * store.tee_preis +
     store.lieferpauschale
   );
+}
+
+async function order() {
+  const finalCheckMenge = await getMenge(nextPossibleShippingDay);
+  if (totalMengeOnShippinday.value < (kistli.value*store.liter_pro_kistli+finalCheckMenge)) {
+    console.log("---Log-Status fehlerhaft, Logik eventuell korrekt. Menge hat sich verändert, Eintrag nicht erstellt. Verfügbare Menge beim Start Bestellvorgang war: "+totalMengeOnShippinday.value+", Verfügbare Menge J: "+(kistli.value*store.liter_pro_kistli+finalCheckMenge));
+  } else {
+    const airtable = await $fetch("/api/airtable", {
+      method: "POST",
+      body: {
+        Geschaeft: firma.value,
+        Typ: "Laden",
+        Preis: total(),
+        Menge: kistli.value * store.liter_pro_kistli,
+        Lieferdatum: nextPossibleShippingDay, //formatiert in yyyy-mm-dd
+        Konfi_gr: konfi_gross.value,
+        Konfi_kl: konfi_klein.value,
+        Tee: tee.value,
+        Lieferpauschale: store.lieferpauschale,
+      },
+    });
+    console.log(
+      "Bestellung erfolgreich in Airtable eingetragen, ID: " + airtable.body
+    );
+  }
 }
 </script>
