@@ -25,7 +25,6 @@ export default defineEventHandler(async (event, request, context) => {
       fields = ["Menge"]
     }
 
-    console.log(filter)
     
     let resp
     let sendBackBody = [];

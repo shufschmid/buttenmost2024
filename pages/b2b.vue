@@ -34,7 +34,6 @@
                       block
                       @click="checkPin"
                       :disabled="!formValidity"
-                      :loading="loading"
                     >
                       Anmelden</v-btn
                     ></v-col
@@ -188,49 +187,61 @@ let konfi_gross = ref(0);
 let konfi_klein = ref(0);
 let tee = ref(0);
 
+const shippingDays = await useFetch(
+  "/api/airtable_get?basis=Lieferdaten&view=b2b"
+);
+
 async function checkPin() {
   let LadenURL =
     '/api/airtable_get/?basis=Verkaufsstellen&view=website&filter={Code}="' +
     pin.value +
     '"';
   const { Laden } = await $fetch(LadenURL);
-  firma.value = Laden;
 
-  nextPossibleShippingDay.value = store.MoeglicheLieferdatenFirmen[0];
-  showpin.value = false;
+  if (Laden) {
+    firma.value = Laden;
+    nextPossibleShippingDay = await findNextPossibleShippingDay();
 
-  let MengeURL =
+    showpin.value = false;
+
+    //erklärung für diese Formel hier: https://www.linkedin.com/pulse/how-sum-total-from-array-object-properties-javascript-schouwenaar
+  }
+}
+
+async function getMenge(Datum) {
+  let recordsURL =
     '/api/airtable_get/?basis=Table 1&view=verfuegbare_menge&filter=DATESTR({Lieferdatum})="' +
-    store.MoeglicheLieferdaten[0].value +
-    '"&specialfields=verfuegbare_menge';
+    Datum +
+    '"';
+  const recordsList = await $fetch(recordsURL);
+  if (recordsList.length > 0) {
+    const einzelmengen = await recordsList.map(
+      (einzelmenge) => einzelmenge.Menge
+    );
+    if (einzelmengen.length > 0) {
+      return einzelmengen.reduce((acc, curr) => acc + curr);
+    } else {
+      return 0;
+    }
+  }
+}
 
-  const Menge = await $fetch(MengeURL);
+async function findNextPossibleShippingDay() {
+  let returnvalue = "";
+  for (let i = 0; i < shippingDays.data.value.length; i++) {
+    var current = new Date(shippingDays.data.value[i].Datum);
 
-  //total bereits an diesem Tag ausgegebene Menge
-  const einzelmengen = Menge.map((einzelmenge) => einzelmenge.Menge);
-  if (einzelmengen.length > 0) {
-    verfuegbareMenge.value = einzelmengen.reduce((acc, curr) => acc + curr);
-  } else {
-    verfuegbareMenge.value = "max";
+    if (current > store.heute) {
+      let currentMenge = await getMenge(shippingDays.data.value[i].Datum);
+      if (currentMenge > 0) {
+        returnvalue = shippingDays.data.value[i].Datum;
+        break;
+      }
+    }
   }
 
-  //erklärung für diese Formel hier: https://www.linkedin.com/pulse/how-sum-total-from-array-object-properties-javascript-schouwenaar
-}
-
-let bestellung = computed(() => {
-  return "das ist der nächste Tag unabhängig von Menge/Verfügbarkeit";
-});
-
-function preis() {
-  return (
-    kistli.value *
-    store.liter_pro_kistli *
-    (store.PreisProLiter + store.PreisBecher)
-  );
-}
-
-function calculateBooksMessage() {
-  return author.books.length > 0 ? "Yes" : "No";
+  console.log(returnvalue);
+  return returnvalue;
 }
 
 function total() {
