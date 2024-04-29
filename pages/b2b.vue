@@ -1,6 +1,20 @@
 <template>
   <div>
     <v-container>
+      <v-alert
+        v-show="finalCheckError"
+        color="error"
+        icon="$error"
+        title="Menge nicht verfügbar"
+        text="bitte neu einloggen und bestellen"
+      ></v-alert>
+      <v-alert
+        v-show="finalCheckSuccess"
+        color="success"
+        icon="$success"
+        title="Herzlichen Dank für Ihre Bestelung"
+        :text="Bestaetigung"
+      ></v-alert>
       <v-form v-model="formValidity" name="bestellung" ref="form"
         ><v-row>
           <v-col cols="12" md="6">
@@ -46,7 +60,10 @@
               <hr />
               Nächster möglicher Versandtag: {{ nextPossibleShippingDay }}
               <hr />
-              Verfüegbarkeit: {{ verfuegbareMenge }}
+              Verfüegbare Menge: {{ verfuegbareMengeKistli }} Kistli ({{
+                verfuegbareMenge
+              }}
+              Liter)
             </div>
           </v-col>
 
@@ -59,6 +76,8 @@
                       v-model="kistli"
                       Name="Konfi gross"
                       type="number"
+                      :max="verfuegbareMengeKistli"
+                      :min="0"
                       dense
                     ></v-text-field>
                   </td>
@@ -90,6 +109,7 @@
                       label=""
                       Name="Konfi klein"
                       type="number"
+                      :min="0"
                     ></v-text-field>
                   </td>
                   <td>
@@ -110,6 +130,7 @@
                       label=""
                       Name="Konfi gross"
                       type="number"
+                      :min="0"
                     ></v-text-field>
                   </td>
                   <td>
@@ -129,6 +150,7 @@
                       v-model="tee"
                       Name="Tee"
                       type="number"
+                      :min="0"
                     ></v-text-field>
                   </td>
                   <td>Säckli Tee à CHF {{ store.tee_preis.toFixed(2) }}</td>
@@ -196,6 +218,10 @@ let kistli = ref(2); //Voreinstellung
 let konfi_gross = ref(0);
 let konfi_klein = ref(0);
 let tee = ref(0);
+let verfuegbareMengeKistli = ref(2);
+let finalCheckError = ref(false);
+let finalCheckSuccess = ref(false);
+let Bestaetigung = ref("");
 
 let shippingDays = await useFetch(
   "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
@@ -241,10 +267,20 @@ async function findNextPossibleShippingDay() {
     var current = new Date(shippingDays.data.value[i].Datum);
     if (current > store.heute) {
       let currentMenge = await getMenge(shippingDays.data.value[i].Datum);
-      if (currentMenge < shippingDays.data.value[i].Menge) {
+      if (
+        currentMenge < shippingDays.data.value[i].Menge &&
+        shippingDays.data.value[i].Menge - currentMenge > store.liter_pro_kistli
+      ) {
         returnvalue = shippingDays.data.value[i].Datum;
-        verfuegbareMenge.value = shippingDays.data.value[i].Menge - currentMenge;
-        totalMengeOnShippinday.value = shippingDays.data.value[i].Menge
+        verfuegbareMenge.value =
+          shippingDays.data.value[i].Menge - currentMenge;
+        verfuegbareMengeKistli.value = Math.floor(
+          verfuegbareMenge.value / store.liter_pro_kistli
+        );
+        if (verfuegbareMengeKistli.value < 3) {
+          kistli.value = verfuegbareMengeKistli.value;
+        }
+        totalMengeOnShippinday.value = shippingDays.data.value[i].Menge;
         break;
       }
     }
@@ -268,8 +304,18 @@ function total() {
 
 async function order() {
   const finalCheckMenge = await getMenge(nextPossibleShippingDay);
-  if (totalMengeOnShippinday.value < (kistli.value*store.liter_pro_kistli+finalCheckMenge)) {
-    console.log("---Log-Status fehlerhaft, Logik eventuell korrekt. Menge hat sich verändert, Eintrag nicht erstellt. Verfügbare Menge beim Start Bestellvorgang war: "+totalMengeOnShippinday.value+", Verfügbare Menge J: "+(kistli.value*store.liter_pro_kistli+finalCheckMenge));
+  if (
+    totalMengeOnShippinday.value <
+    kistli.value * store.liter_pro_kistli + finalCheckMenge
+  ) {
+    finalCheckError.value = true;
+    showpin.value = true;
+    console.log(
+      "---Log-Status fehlerhaft, Logik eventuell korrekt. Menge hat sich verändert, Eintrag nicht erstellt. Verfügbare Menge beim Start Bestellvorgang war: " +
+        totalMengeOnShippinday.value +
+        ", Verfügbare Menge Neu: " +
+        finalCheckMenge
+    );
   } else {
     const airtable = await $fetch("/api/airtable", {
       method: "POST",
@@ -288,6 +334,18 @@ async function order() {
     console.log(
       "Bestellung erfolgreich in Airtable eingetragen, ID: " + airtable.body
     );
+    finalCheckSuccess.value = true;
+    Bestaetigung.value = JSON.stringify({
+      Lieferdatum: nextPossibleShippingDay, //formatiert in yyyy-mm-dd
+      Geschaeft: firma.value,
+      Preis: total(),
+      Menge: kistli.value * store.liter_pro_kistli,
+      KonfiGross: konfi_gross.value,
+      KonfiKlein: konfi_klein.value,
+      Tee: tee.value,
+      Lieferpauschale: store.lieferpauschale,
+    });
+    showpin.value = true;
   }
 }
 </script>
