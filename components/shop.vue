@@ -209,7 +209,7 @@ async function order() {
             </tr>
           </tbody>
         </table> </v-col
-      ><v-col cols="12" md="5">
+      ><v-col cols="12" md="5"><v-spacer/>
         Buttenmost ist ein Frischprodukt. Wenn Sie jetzt bestellen, verschicken
         wir den Buttenmost am:
         <v-select

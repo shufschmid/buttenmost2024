@@ -6,5 +6,5 @@ const store = useButtenmostStore();
   <shop v-if="store.isSaison"></shop>
   <Signup v-if="!store.isSaison"></Signup>
 
-  <Verkaufsstellen></Verkaufsstellen>
+  <!-- <Verkaufsstellen></Verkaufsstellen> -->
 </template>
