@@ -209,7 +209,7 @@ async function order() {
             </tr>
           </tbody>
         </table> </v-col
-      ><v-col cols="12" md="5"><v-spacer/>
+      ><v-col cols="12" md="6">
         Buttenmost ist ein Frischprodukt. Wenn Sie jetzt bestellen, verschicken
         wir den Buttenmost am:
         <v-select
@@ -304,19 +304,19 @@ async function order() {
         </v-container>
 
         <v-spacer /> </v-col></v-row
-    ><v-row>
-      <v-col cols="12" md="12">
+    ><v-row><v-spacer/>
+      <v-col>
         <v-btn
-          color="primary"
+          color="success"
           elevation="2"
-          large
+          size="x-large"
           @click="order"
           :disabled="!formValidity"
           :loading="loading"
         >
-          Jetzt bestellen</v-btn
-        ></v-col
-      ></v-row
+          Jetzt bestellen</v-btn>
+        </v-col
+      ><v-spacer/></v-row
     >
   </v-container>
 </template>
