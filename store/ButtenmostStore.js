@@ -58,7 +58,7 @@ export const useButtenmostStore = defineStore("buttenmost", {
       const options = { year: "numeric", month: "long", day: "numeric" };
       return this.SaisonStart.toLocaleDateString("de-DE", options);
     },
-    SaisonStartStringFirmen(){
+    SaisonStartStringFirmen() {
       const options = { year: "numeric", month: "long", day: "numeric" };
       return this.SaisonStartFirmen.toLocaleDateString("de-DE", options);
     },
@@ -86,16 +86,19 @@ export const useButtenmostStore = defineStore("buttenmost", {
       current.setDate(current.getDate());
 
       while (current < this.SaisonEndeFirmen) {
-        if (current > this.heute && (current.getDay() == 2 || current.getDay() == 4 || current.getDay() == 6 )) {
-          
+        if (
+          current > this.heute &&
+          (current.getDay() == 2 ||
+            current.getDay() == 4 ||
+            current.getDay() == 6)
+        ) {
           result.push({
             title: new Date(current).toLocaleDateString("de-DE"),
-            value: new Date(current).toISOString().substring(0, 10) //weil Airtable nur XXXX-MM-DD akzeptiert
+            value: new Date(current).toISOString().substring(0, 10), //weil Airtable nur XXXX-MM-DD akzeptiert
           });
         }
         current.setDate(current.getDate() + 1);
-        console.log(current+":"+current.getDay())
-        
+        console.log(current + ":" + current.getDay());
       }
       return result;
     },
@@ -111,8 +114,17 @@ export const useButtenmostStore = defineStore("buttenmost", {
         },
       });
       this.loading = pending;
-      console.log(data.value.body);
-      this.authenticated = data.value.body; // set authenticated  state value to true
+      console.log("login: " + data.value.body);
+      if (data.value.body) {
+        const token = useCookie("token"); // useCookie new hook in nuxt 3
+        token.value = data?.value?.body; // set token to cookie
+        this.authenticated = data.value.body; // set authenticated  state value to true
+      }
+    },
+    logUserOut() {
+      const token = useCookie('token'); // useCookie new hook in nuxt 3
+      this.authenticated = false; // set authenticated  state value to false
+      token.value = null; // clear the token cookie
     },
   },
 });
