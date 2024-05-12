@@ -1,6 +1,7 @@
 <template>
   <div>
-    {{ lieferscheine }}
+
+
     <v-form name="rechnung" ref="form">
       <v-btn
         block
@@ -15,13 +16,11 @@
       <v-container
         id="rechnungen"
         style="page-break-after: always"
-        v-for="Bestellung in lieferscheine.data.value"
-        :key="lieferscheine.data.value.Kunde"
       >
         <v-row
-          ><v-col cols="12">
-            <h1>Lieferschein</h1>
-            to do: {{Bestellung.b2b_Geschaeft}} </v-col
+          ><v-col cols="12"
+            ><h1>Lieferschein</h1>
+            to do: Name {{ lieferscheine.data.value.Name }} {{ lieferscheine.data.value.Vorname }} </v-col
           ><v-col cols="8" align-self="center">
             Datum: {{ printdate }}<br /><br />
 
@@ -30,9 +29,7 @@
             </div> -->
 
             <div>
-              to do: Name<br />
-              to do: Adresse <br />
-              to do: PLZ/ORT
+              todo: Adresse etc
             </div>
           </v-col>
           <v-col cols="4"
@@ -54,20 +51,20 @@
               </thead>
               <tbody></tbody>
               <tr>
-                <td valign="top">{{ Bestellung.Lieferdatum }}</td>
+                <td valign="top">{{ lieferscheine.data.value.Lieferdatum }}</td>
                 <td valign="top">
-                  {{ Bestellung.Menge }} Liter Buttenmost im Becher à CHF
+                  {{ lieferscheine.data.value.Menge }} Liter Buttenmost im Becher à CHF
                   {{ (store.PreisProLiter + store.PreisProBecher).toFixed(2) }}
-                  <span v-show="Bestellung.Konfi_gr > 0"
-                    ><br />{{ Bestellung.Konfi_gr }} grosse Gläser Konfitüre à
+                  <span v-show="lieferscheine.data.value.Konfi_gr > 0"
+                    ><br />{{ lieferscheine.data.value.Konfi_gr }} grosse Gläser Konfitüre à
                     CHF {{ store.konfi_gross_preis.toFixed(2) }}</span
                   >
-                  <span v-show="Bestellung.Konfi_kl > 0"
-                    ><br />{{ Bestellung.Konfi_kl }} kleine Gläser Konfitüre à
+                  <span v-show="lieferscheine.data.value.Konfi_kl > 0"
+                    ><br />{{ lieferscheine.data.value.Konfi_kl }} kleine Gläser Konfitüre à
                     CHF {{ store.konfi_klein_preis.toFixed(2) }}</span
                   >
-                  <span v-show="Bestellung.Tee > 0"
-                    ><br />{{ Bestellung.Tee }} Päckli Tee à CHF
+                  <span v-show="lieferscheine.data.value.Tee > 0"
+                    ><br />{{ lieferscheine.data.value.Tee }} Päckli Tee à CHF
                     {{ store.tee_preis.toFixed(2) }}</span
                   >
                   <span><br />{{ 1 }} x Lieferpauschale</span>
@@ -76,28 +73,28 @@
                   CHF
                   {{
                     (
-                      Bestellung.Menge *
+                      lieferscheine.data.value.Menge *
                       (Number(store.PreisProBecher) +
                         Number(store.PreisProLiter))
                     ).toFixed(2)
                   }}
-                  <span v-show="Bestellung.Konfi_gr > 0"
+                  <span v-show="lieferscheine.data.value.Konfi_gr > 0"
                     ><br />CHF
                     {{
-                      (Bestellung.Konfi_gr * store.konfi_gross_preis).toFixed(2)
+                      (lieferscheine.data.value.Konfi_gr * store.konfi_gross_preis).toFixed(2)
                     }}</span
                   >
-                  <span v-show="Bestellung.Konfi_kl > 0"
+                  <span v-show="lieferscheine.data.value.Konfi_kl > 0"
                     ><br />CHF
                     {{
-                      (Bestellung.Konfi_kl * store.konfi_klein_preis).toFixed(2)
+                      (lieferscheine.data.value.Konfi_kl * store.konfi_klein_preis).toFixed(2)
                     }}</span
                   >
-                  <span v-show="Bestellung.Tee > 0"
+                  <span v-show="lieferscheine.data.value.Tee > 0"
                     ><br />CHF
-                    {{ (Bestellung.Tee * store.tee_preis).toFixed(2) }}</span
+                    {{ (lieferscheine.data.value.Tee * store.tee_preis).toFixed(2) }}</span
                   ><span
-                    ><br />CHF {{ Bestellung.Lieferpauschale.toFixed(2) }}</span
+                    ><br />CHF {{ lieferscheine.data.value.Lieferpauschale.toFixed(2) }}</span
                   >
                 </td>
               </tr>
@@ -105,7 +102,7 @@
                 <td><b>Total</b></td>
                 <td></td>
                 <td class="text-right">
-                  <b>{{ Bestellung.Betrag.toFixed(2) }}</b>
+                  <b>{{ lieferscheine.data.value.Betrag.toFixed(2) }}</b>
                 </td>
               </tr></v-table
             >
@@ -127,8 +124,7 @@ function Bezeichnung(Bestellung) {
   if (Bestellung.Lieferung_Bezeichnung[0]) {
     return Bestellung.Lieferung_Bezeichnung[0];
   } else if (Bestellung.b2b_Geschaeft[0]) {
-    console.log(test);
-    return "test";
+    return Bestellung.b2b_Geschaeft[0];
   } else {
     return Bestellung.Vorname + " " + Bestellung.Name;
   }
@@ -158,9 +154,7 @@ const store = useButtenmostStore();
 const route = useRoute();
 
 const lieferscheine = await useFetch(
-  '/api/airtable_get/?basis=Table 1&view=b2b_lieferscheine&filter=DATESTR({Lieferdatum})="' +
-    route.params.datum +
-    '"'
+  "/api/airtable_get/?basis=Table 1&recID=" + route.params.id
 );
 
 const printdate = computed(() => {

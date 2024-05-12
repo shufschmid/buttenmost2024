@@ -8,7 +8,7 @@ const base = new Airtable.base("app8cUEZWBvWHDfaN");
 
 export default defineEventHandler(async (event, request, context) => {
   try {
-    let { view, basis, filter, sort, specialfields } = getQuery(event);
+    let { view, basis, filter, sort, specialfields, recID } = getQuery(event);
 
     if (!filter) {
       filter = "";
@@ -33,19 +33,24 @@ export default defineEventHandler(async (event, request, context) => {
         sort: [{ field: "Datum", direction: "asc" }],
       };
     }
-    let resp;
+    let resp = [];
     let sendBackBody = [];
-
-    resp = await base(basis).select(query).all();
+    if (recID) {
+      resp = await base(basis).find(recID);
+      sendBackBody = resp.fields
+    } else {
+      resp = await base(basis).select(query).all();
+      resp.forEach((element) => {
+        sendBackBody.push(element.fields);
+      });
+      if (sendBackBody.length == 1) {
+        sendBackBody = sendBackBody[0];
+      }
+    }
 
     //Antwort aufbereiten
 
-    resp.forEach((element) => {
-      sendBackBody.push(element.fields);
-    });
-    if (sendBackBody.length == 1) {
-      sendBackBody = sendBackBody[0];
-    }
+    console.log(sendBackBody);
     return Response.json(sendBackBody, { status: 200 });
   } catch (error) {
     console.log(error);

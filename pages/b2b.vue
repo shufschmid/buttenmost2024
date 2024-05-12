@@ -226,62 +226,19 @@ let Bestaetigung = ref("");
 let shippingDays = await useFetch(
   "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
 );
-let Adresse2 = ref("");
-let Adresszusatz2 = ref("");
-let PLZ2 = ref("");
-let Ort2 = ref("");
-let Lieferung_Bezeichnung2 = ref("");
-let Lieferung_Adresse2 = ref("");
-let Lieferung_Adresszusatz2 = ref("");
-let Lieferung_PLZ2 = ref("");
-let Lieferung_Ort2 = ref("");
-let Rechnung_Bezeichnung2 = ref("");
-let Rechnung_Adresse2 = ref("");
-let Rechnung_Adresszusatz2 = ref("");
-let Rechnung_PLZ2 = ref("");
-let Rechnung_Ort2 = ref("");
+
 
 async function checkPin() {
   let LadenURL =
     '/api/airtable_get/?basis=Verkaufsstellen&view=website&filter={Code}="' +
     pin.value +
     '"';
-  let {
-    Geschaeft,
-    Adresse,
-    Adresszusatz,
-    PLZ,
-    Ort,
-    Lieferung_Bezeichnung,
-    Lieferung_Adresse,
-    Lieferung_Adresszusatz,
-    Lieferung_PLZ,
-    Lieferung_Ort,
-    Rechnung_Bezeichnung,
-    Rechnung_Adresse,
-    Rechnung_Adresszusatz,
-    Rechnung_PLZ,
-    Rechnung_Ort,
-  } = await $fetch(LadenURL);
+  let { Geschaeft } = await $fetch(LadenURL);
 
   if (Geschaeft) {
     firma.value = Geschaeft;
     nextPossibleShippingDay = await findNextPossibleShippingDay();
     showpin.value = false;
-    Adresse2.value = Adresse;
-    Adresszusatz2.value = Adresszusatz;
-    PLZ2.value = PLZ;
-    Ort2.value = Ort;
-    Lieferung_Bezeichnung2.value = Lieferung_Bezeichnung;
-    Lieferung_Adresse2.value = Lieferung_Adresse;
-    Lieferung_Adresszusatz2.value = Lieferung_Adresszusatz;
-    Lieferung_PLZ2.value = Lieferung_PLZ;
-    Lieferung_Ort2.value = Lieferung_Ort;
-    Rechnung_Bezeichnung2.value = Rechnung_Bezeichnung;
-    Rechnung_Adresse2.value = Rechnung_Adresse;
-    Rechnung_Adresszusatz2.value = Rechnung_Adresszusatz;
-    Rechnung_PLZ2.value = Rechnung_PLZ;
-    Rechnung_Ort2.value = Rechnung_Ort;
   }
 }
 
@@ -373,20 +330,6 @@ async function order() {
         Konfi_kl: konfi_klein.value,
         Tee: tee.value,
         Lieferpauschale: store.lieferpauschale,
-        Adresse: Adresse2.value,
-        Adresszusatz: Adresszusatz2.value,
-        PLZ: PLZ2.value,
-        Ort: Ort2.value,
-        Lieferung_Bezeichnung: Lieferung_Bezeichnung2.value,
-        Lieferung_Adresse: Lieferung_Adresse2.value,
-        Lieferung_Adresszusatz: Lieferung_Adresszusatz2.value,
-        Lieferung_PLZ: Lieferung_PLZ2.value,
-        Lieferung_Ort: Lieferung_Ort2.value,
-        Rechnung_Bezeichnung: Rechnung_Bezeichnung2.value,
-        Rechnung_Adresse: Rechnung_Adresse2.value,
-        Rechnung_Adresszusatz: Rechnung_Adresszusatz2.value,
-        Rechnung_PLZ: Rechnung_PLZ2.value,
-        Rechnung_Ort: Rechnung_Ort2.value,
       },
     });
     console.log(
