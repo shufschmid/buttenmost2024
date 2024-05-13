@@ -20,7 +20,7 @@
         <v-row
           ><v-col cols="12"
             ><h1>Lieferschein</h1>
-            to do: Name {{ lieferscheine.data.value.Name }} {{ lieferscheine.data.value.Vorname }} </v-col
+            {{bezeichnung(data,"Lieferung","Name")}}</v-col
           ><v-col cols="8" align-self="center">
             Datum: {{ printdate }}<br /><br />
 
@@ -29,7 +29,9 @@
             </div> -->
 
             <div>
-              todo: Adresse etc
+              {{bezeichnung(data,"Lieferung","Name")}}<br/>
+              {{bezeichnung(data,"Lieferung","Adresse")}}<br/>
+              {{bezeichnung(data,"Lieferung","PLZundOrt")}}
             </div>
           </v-col>
           <v-col cols="4"
@@ -51,20 +53,20 @@
               </thead>
               <tbody></tbody>
               <tr>
-                <td valign="top">{{ lieferscheine.data.value.Lieferdatum }}</td>
+                <td valign="top">{{ data.Lieferdatum }}</td>
                 <td valign="top">
-                  {{ lieferscheine.data.value.Menge }} Liter Buttenmost im Becher à CHF
+                  {{ data.Menge }} Liter Buttenmost im Becher à CHF
                   {{ (store.PreisProLiter + store.PreisProBecher).toFixed(2) }}
-                  <span v-show="lieferscheine.data.value.Konfi_gr > 0"
-                    ><br />{{ lieferscheine.data.value.Konfi_gr }} grosse Gläser Konfitüre à
+                  <span v-show="data.Konfi_gr > 0"
+                    ><br />{{ data.Konfi_gr }} grosse Gläser Konfitüre à
                     CHF {{ store.konfi_gross_preis.toFixed(2) }}</span
                   >
-                  <span v-show="lieferscheine.data.value.Konfi_kl > 0"
-                    ><br />{{ lieferscheine.data.value.Konfi_kl }} kleine Gläser Konfitüre à
+                  <span v-show="data.Konfi_kl > 0"
+                    ><br />{{ data.Konfi_kl }} kleine Gläser Konfitüre à
                     CHF {{ store.konfi_klein_preis.toFixed(2) }}</span
                   >
-                  <span v-show="lieferscheine.data.value.Tee > 0"
-                    ><br />{{ lieferscheine.data.value.Tee }} Päckli Tee à CHF
+                  <span v-show="data.Tee > 0"
+                    ><br />{{ data.Tee }} Päckli Tee à CHF
                     {{ store.tee_preis.toFixed(2) }}</span
                   >
                   <span><br />{{ 1 }} x Lieferpauschale</span>
@@ -73,28 +75,28 @@
                   CHF
                   {{
                     (
-                      lieferscheine.data.value.Menge *
+                      data.Menge *
                       (Number(store.PreisProBecher) +
                         Number(store.PreisProLiter))
                     ).toFixed(2)
                   }}
-                  <span v-show="lieferscheine.data.value.Konfi_gr > 0"
+                  <span v-show="data.Konfi_gr > 0"
                     ><br />CHF
                     {{
-                      (lieferscheine.data.value.Konfi_gr * store.konfi_gross_preis).toFixed(2)
+                      (data.Konfi_gr * store.konfi_gross_preis).toFixed(2)
                     }}</span
                   >
-                  <span v-show="lieferscheine.data.value.Konfi_kl > 0"
+                  <span v-show="data.Konfi_kl > 0"
                     ><br />CHF
                     {{
-                      (lieferscheine.data.value.Konfi_kl * store.konfi_klein_preis).toFixed(2)
+                      (data.Konfi_kl * store.konfi_klein_preis).toFixed(2)
                     }}</span
                   >
-                  <span v-show="lieferscheine.data.value.Tee > 0"
+                  <span v-show="data.Tee > 0"
                     ><br />CHF
-                    {{ (lieferscheine.data.value.Tee * store.tee_preis).toFixed(2) }}</span
+                    {{ (data.Tee * store.tee_preis).toFixed(2) }}</span
                   ><span
-                    ><br />CHF {{ lieferscheine.data.value.Lieferpauschale.toFixed(2) }}</span
+                    ><br />CHF {{ data.Lieferpauschale.toFixed(2) }}</span
                   >
                 </td>
               </tr>
@@ -102,7 +104,7 @@
                 <td><b>Total</b></td>
                 <td></td>
                 <td class="text-right">
-                  <b>{{ lieferscheine.data.value.Betrag.toFixed(2) }}</b>
+                  <b>{{ data.Betrag.toFixed(2) }}</b>
                 </td>
               </tr></v-table
             >
@@ -111,7 +113,7 @@
       </v-container>
     </v-form>
 
-    {{ lieferscheine.data }}
+    {{ data }}
     {{ route.params.datum }}
   </div>
 </template>
@@ -120,15 +122,6 @@ definePageMeta({
   middleware: "auth", // https://dev.to/rafaelmagalhaes/authentication-in-nuxt-3-375o
 });
 
-function Bezeichnung(Bestellung) {
-  if (Bestellung.Lieferung_Bezeichnung[0]) {
-    return Bestellung.Lieferung_Bezeichnung[0];
-  } else if (Bestellung.b2b_Geschaeft[0]) {
-    return Bestellung.b2b_Geschaeft[0];
-  } else {
-    return Bestellung.Vorname + " " + Bestellung.Name;
-  }
-}
 
 function Adresse(Bestellung) {
   if (Bestellung.Lieferung_Adresse[0]) {
@@ -153,7 +146,7 @@ function PLZundOrt(Bestellung) {
 const store = useButtenmostStore();
 const route = useRoute();
 
-const lieferscheine = await useFetch(
+const {data} = await useFetch(
   "/api/airtable_get/?basis=Table 1&recID=" + route.params.id
 );
 
