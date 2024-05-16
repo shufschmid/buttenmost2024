@@ -40,6 +40,9 @@ export const useButtenmostStore = defineStore("buttenmost", {
       Rabatt: { Grenze: 12, value: -0.1 },
       authenticated: false,
       loading: false,
+      mehrwertsteuernummer: "CHE-369.928.965",
+      mehrwertsteuersatz: 2.5,
+
     };
   },
   getters: {

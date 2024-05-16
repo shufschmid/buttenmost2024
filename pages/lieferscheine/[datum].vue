@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ lieferscheine }}
     <v-form name="rechnung" ref="form">
       <v-btn
         block
@@ -21,7 +20,7 @@
         <v-row
           ><v-col cols="12">
             <h1>Lieferschein</h1>
-            to do: {{Bestellung.b2b_Geschaeft}} </v-col
+            {{ bezeichnung(Bestellung, "Lieferung", "Name") }} </v-col
           ><v-col cols="8" align-self="center">
             Datum: {{ printdate }}<br /><br />
 
@@ -30,9 +29,10 @@
             </div> -->
 
             <div>
-              to do: Name<br />
-              to do: Adresse <br />
-              to do: PLZ/ORT
+              {{ bezeichnung(Bestellung, "Lieferung", "Name") }}<br />
+              {{ bezeichnung(Bestellung, "Lieferung", "Adresse") }}<br />
+              {{ bezeichnung(Bestellung, "Lieferung", "Adresszusatz") }}<br v-show="bezeichnung(Bestellung, 'Lieferung', 'Adresszusatz')"/>
+              {{ bezeichnung(Bestellung, "Lieferung", "PLZundOrt") }}
             </div>
           </v-col>
           <v-col cols="4"
@@ -57,7 +57,7 @@
                 <td valign="top">{{ Bestellung.Lieferdatum }}</td>
                 <td valign="top">
                   {{ Bestellung.Menge }} Liter Buttenmost im Becher à CHF
-                  {{ (store.PreisProLiter + store.PreisProBecher).toFixed(2) }}
+                  {{ (store.PreisProLiter + store.PreisBecher).toFixed(2) }}
                   <span v-show="Bestellung.Konfi_gr > 0"
                     ><br />{{ Bestellung.Konfi_gr }} grosse Gläser Konfitüre à
                     CHF {{ store.konfi_gross_preis.toFixed(2) }}</span
@@ -77,8 +77,7 @@
                   {{
                     (
                       Bestellung.Menge *
-                      (Number(store.PreisProBecher) +
-                        Number(store.PreisProLiter))
+                      (Number(store.PreisBecher) + Number(store.PreisProLiter))
                     ).toFixed(2)
                   }}
                   <span v-show="Bestellung.Konfi_gr > 0"
@@ -113,46 +112,12 @@
         </v-row>
       </v-container>
     </v-form>
-
-    {{ lieferscheine.data }}
-    {{ route.params.datum }}
   </div>
 </template>
 <script setup>
 definePageMeta({
   middleware: "auth", // https://dev.to/rafaelmagalhaes/authentication-in-nuxt-3-375o
 });
-
-function Bezeichnung(Bestellung) {
-  if (Bestellung.Lieferung_Bezeichnung[0]) {
-    return Bestellung.Lieferung_Bezeichnung[0];
-  } else if (Bestellung.b2b_Geschaeft[0]) {
-    console.log(test);
-    return "test";
-  } else {
-    return Bestellung.Vorname + " " + Bestellung.Name;
-  }
-}
-
-function Adresse(Bestellung) {
-  if (Bestellung.Lieferung_Adresse[0]) {
-    return Bestellung.Lieferung_Adresse[0];
-  } else if (Bestellung.b2b_Adresse[0]) {
-    return Bestellung.b2b_Adresse[0];
-  } else {
-    return Bestellung.Adresse;
-  }
-}
-
-function PLZundOrt(Bestellung) {
-  if (Bestellung.Lieferung_PLZ[0]) {
-    return Bestellung.Lieferung_PLZ[0] + " " + Bestellung.Rechnung_Ort[0];
-  } else if (Bestellung.b2b_PLZ[0]) {
-    return Bestellung.b2b_PLZ[0] + " " + Bestellung.b2b_Ort[0];
-  } else {
-    return Bestellung.PLZ + " " + Bestellung.Ort;
-  }
-}
 
 const store = useButtenmostStore();
 const route = useRoute();

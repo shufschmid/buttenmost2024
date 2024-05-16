@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     .create(
       {
         Menge: body.Menge,
-        Betrag: body.Betrag,
+        Betrag: body.Preis,
         Lieferdatum: body.Lieferdatum,
         Typ: body.Typ,
         Geschaeft: body.Geschaeft ? body.Geschaeft : "",

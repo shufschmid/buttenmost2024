@@ -17,7 +17,7 @@
       ></v-alert>
       <v-form v-model="formValidity" name="bestellung" ref="form"
         ><v-row>
-          <v-col cols="12" md="6">
+          <v-col cols="12" md="6">{{ shippingDays }}
             <div v-if="!store.isSaisonFirmen">
               Dieser Bereich ist während der Buttenmost-Saison unseren
               bestehenden Firmenkunden vorbehalten. Diese können sich mittels
@@ -223,7 +223,7 @@ let finalCheckError = ref(false);
 let finalCheckSuccess = ref(false);
 let Bestaetigung = ref("");
 
-let shippingDays = await useFetch(
+const shippingDays = await $fetch(
   "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
 );
 
@@ -237,7 +237,7 @@ async function checkPin() {
 
   if (Geschaeft) {
     firma.value = Geschaeft;
-    nextPossibleShippingDay = await findNextPossibleShippingDay();
+    nextPossibleShippingDay.value = await findNextPossibleShippingDay();
     showpin.value = false;
   }
 }
@@ -263,31 +263,30 @@ async function getMenge(Datum) {
 
 async function findNextPossibleShippingDay() {
   let returnvalue = "";
-  for (let i = 0; i < shippingDays.data.value.length; i++) {
-    console.log(shippingDays.data.value[i].Datum);
-    var current = new Date(shippingDays.data.value[i].Datum);
+  for (let i = 0; i < shippingDays.length; i++) {
+    var current = new Date(shippingDays[i].Datum);
     if (current > store.heute) {
-      let currentMenge = await getMenge(shippingDays.data.value[i].Datum);
+      let currentMenge = await getMenge(shippingDays[i].Datum);
       if (
-        currentMenge < shippingDays.data.value[i].Menge &&
-        shippingDays.data.value[i].Menge - currentMenge > store.liter_pro_kistli
+        currentMenge < shippingDays[i].Menge &&
+        shippingDays[i].Menge - currentMenge > store.liter_pro_kistli
       ) {
-        returnvalue = shippingDays.data.value[i].Datum;
+        returnvalue = shippingDays[i].Datum;
         verfuegbareMenge.value =
-          shippingDays.data.value[i].Menge - currentMenge;
+          shippingDays[i].Menge - currentMenge;
         verfuegbareMengeKistli.value = Math.floor(
           verfuegbareMenge.value / store.liter_pro_kistli
         );
         if (verfuegbareMengeKistli.value < 3) {
           kistli.value = verfuegbareMengeKistli.value;
         }
-        totalMengeOnShippinday.value = shippingDays.data.value[i].Menge;
+        totalMengeOnShippinday.value = shippingDays[i].Menge;
         break;
       }
     }
   }
 
-  console.log(returnvalue);
+  console.log("return");
   return returnvalue;
 }
 
@@ -304,7 +303,7 @@ function total() {
 }
 
 async function order() {
-  const finalCheckMenge = await getMenge(nextPossibleShippingDay);
+  const finalCheckMenge = await getMenge(nextPossibleShippingDay.value);
   if (
     totalMengeOnShippinday.value <
     kistli.value * store.liter_pro_kistli + finalCheckMenge
@@ -323,9 +322,10 @@ async function order() {
       body: {
         Geschaeft: firma.value,
         Typ: "Laden",
+        Status: "bestellt",
         Preis: total(),
         Menge: kistli.value * store.liter_pro_kistli,
-        Lieferdatum: nextPossibleShippingDay, //formatiert in yyyy-mm-dd
+        Lieferdatum: nextPossibleShippingDay.value, //formatiert in yyyy-mm-dd
         Konfi_gr: konfi_gross.value,
         Konfi_kl: konfi_klein.value,
         Tee: tee.value,
@@ -337,7 +337,7 @@ async function order() {
     );
     finalCheckSuccess.value = true;
     Bestaetigung.value = JSON.stringify({
-      Lieferdatum: nextPossibleShippingDay, //formatiert in yyyy-mm-dd
+      Lieferdatum: nextPossibleShippingDay.value, //formatiert in yyyy-mm-dd
       Geschaeft: firma.value,
       Preis: total(),
       Menge: kistli.value * store.liter_pro_kistli,
