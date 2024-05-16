@@ -1,7 +1,3 @@
-import qs from "qs";
-import axios from "axios";
-import Airtable from "airtable";
-
 import fetch from "node-fetch";
 import querystring from "querystring";
 
@@ -12,7 +8,7 @@ export default defineEventHandler(async (event) => {
     let myEndpointPath = "/api/qrinvoice/create/";
     let myApiKey = process.env.QR_CODE_API_KEY;
     let qrcode = "";
-    let { Name, Strasse, Ort, Betrag, Rechnung_Referenz_Nummer, Bemerkungen } =
+    let { Name, Strasse, Ort, betrag, Rechnung_Referenz_Nummer, Bemerkungen } =
       getQuery(event);
 
     let myConfiguration = {
@@ -25,7 +21,7 @@ export default defineEventHandler(async (event) => {
       DebtorAddress1: Strasse,
       DebtorAddress2: Ort,
       DebtorCountryCode: "CH",
-      Amount: Betrag,
+      Amount: betrag,
       ReferenceNr: Rechnung_Referenz_Nummer,
       UnstructuredMessage: Bemerkungen,
       Currency: "CHF",
@@ -33,14 +29,16 @@ export default defineEventHandler(async (event) => {
       Format: "png",
       Language: "DE",
     };
-    console.log("test")
+    
     // GET parameters
-    let myGetParams = querystring.stringify(myConfiguration);
-    console.log(myGetParams);
+    //let myGetParams = querystring.stringify(myConfiguration);
     // Perform request
+    let myGetParams = new URLSearchParams(myConfiguration);
+
+
+    
     let response = await fetch(
-      myEndpointUrl + myEndpointPath + "?" + myGetParams,
-      {
+      myEndpointUrl + myEndpointPath + "?" + myGetParams,{
         method: "GET",
         mode: "cors",
         cache: "no-cache",
@@ -50,10 +48,10 @@ export default defineEventHandler(async (event) => {
         },
       }
     );
-    let myResponse = response.json();
+    const body = await response.json()
 
-    qrcode = myResponse.base64Content;
-
+    qrcode = await body.base64Content;
+    console.log("qr-code created")
     return Response.json(qrcode, { status: 200 });
   } catch (error) {
     console.log(error);
