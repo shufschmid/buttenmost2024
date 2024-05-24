@@ -156,13 +156,6 @@ export default defineEventHandler(async (event) => {
     });
 
   //setTimeout(function(){console.log(barcode)}, 1000);
+  return Response.json(barcode, { status: 200 });
 
-  return {
-    statusCode: 200,
-    headers: {
-      "Content-Type": "image/png",
-    },
-    body: `${barcode}`,
-    isBase64Encoded: true,
-  };
 });

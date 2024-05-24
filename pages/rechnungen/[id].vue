@@ -7,6 +7,7 @@
         </template>
         <v-btn
           @click="changeStatus"
+          :color="buttoncolor"
         >
           Status auf "Rechnung" setzen</v-btn
         ><v-btn
@@ -135,6 +136,7 @@ definePageMeta({
 
 const store = useButtenmostStore();
 const route = useRoute();
+let buttoncolor = ref("primary")
 
 let image = ref();
 
@@ -162,5 +164,13 @@ async function loadImage(data) {
       printdate(data.Lieferdatum) +
       "&Rechnung_Referenz_Nummer=122"
   );
+}
+
+async function changeStatus() {
+  await $fetch("/api/airtable_update", {
+    method: "POST",
+    body: [{ id: route.params.id, fields: { Status: "Rechnung" } }], //muss zwingend als array übergeben werden, auch wenn einzelner eintrag
+  });
+  buttoncolor.value="green"
 }
 </script>
