@@ -1,25 +1,21 @@
 <template>
   <div>
     <v-form name="rechnung" ref="form">
-      <v-btn
-        block
-        color="primary"
-        elevation="2"
-        large
-        @click="changeStatus"
-        class="d-print-none"
-      >
-        Status auf "Rechnung" setzen</v-btn
-      ><v-btn
-        block
-        color="primary"
-        elevation="2"
-        large
-        @click="loadImage(data)"
-        class="d-print-none"
-      >
-        QR-Code laden</v-btn
-      >
+      <v-toolbar class="d-print-none">
+        <template v-slot:prepend>
+          <v-btn icon="mdi-table-edit"></v-btn>
+        </template>
+        <v-btn
+          @click="changeStatus"
+        >
+          Status auf "Rechnung" setzen</v-btn
+        ><v-btn
+          @click="loadImage(data)"
+        >
+          QR-Code laden</v-btn
+        >
+      </v-toolbar>
+
       <v-container id="rechnungen" style="page-break-after: always">
         <v-row
           ><v-col cols="12"
@@ -58,8 +54,11 @@
               <tr>
                 <td valign="top">{{ data.Lieferdatum }}</td>
                 <td valign="top">
-                  {{ data.Menge }} Liter Buttenmost im Becher à CHF
-                  {{ (store.PreisProLiter + store.PreisBecher).toFixed(2) }}
+                  {{ data.Menge }} Liter Buttenmost<span
+                    v-show="data.Typ == 'Laden'"
+                    >im Becher à CHF
+                    {{ (store.PreisProLiter + store.PreisBecher).toFixed(2) }}
+                  </span>
                   <span v-show="data.Konfi_gr > 0"
                     ><br />{{ data.Konfi_gr }} grosse Gläser Konfitüre à CHF
                     {{ store.konfi_gross_preis.toFixed(2) }}</span
@@ -72,9 +71,15 @@
                     ><br />{{ data.Tee }} Päckli Tee à CHF
                     {{ store.tee_preis.toFixed(2) }}</span
                   >
-                  <span><br />{{ 1 }} x Lieferpauschale</span>
+                  <span v-show="data.Typ == 'Laden'"
+                    ><br />{{ 1 }} x Lieferpauschale</span
+                  >
                 </td>
-                <td valign="top" class="text-right">
+                <td
+                  valign="top"
+                  class="text-right"
+                  v-show="data.Typ == 'Laden'"
+                >
                   CHF
                   {{
                     (
@@ -156,7 +161,6 @@ async function loadImage(data) {
       " Rechnung vom " +
       printdate(data.Lieferdatum) +
       "&Rechnung_Referenz_Nummer=122"
-  )
-  
+  );
 }
 </script>

@@ -50,7 +50,7 @@ export default defineEventHandler(async (event, request, context) => {
 
     //Antwort aufbereiten
 
-    console.log(sendBackBody);
+    //console.log(sendBackBody);
     return Response.json(sendBackBody, { status: 200 });
   } catch (error) {
     console.log(error);

@@ -1,26 +1,27 @@
 <template>
   <div>
-
-
     <v-form name="rechnung" ref="form">
-      <v-btn
-        block
-        color="primary"
-        elevation="2"
-        large
-        @click="changeStatus"
-        class="d-print-none"
-      >
-        Die ersten zehn Einträge als "verschickt" markieren</v-btn
-      >
-      <v-container
-        id="rechnungen"
-        style="page-break-after: always"
-      >
+
+
+      <v-toolbar class="d-print-none">
+        <template v-slot:prepend>
+          <v-btn icon="mdi-table-edit"></v-btn>
+        </template>
+        <v-btn
+        :color=buttoncolor
+          @click="changeStatus"
+        >
+        Eintrag als "verschickt" markieren</v-btn
+        >
+      </v-toolbar>
+
+
+
+      <v-container id="rechnungen" style="page-break-after: always">
         <v-row
           ><v-col cols="12"
             ><h1>Lieferschein</h1>
-            {{bezeichnung(data,"Lieferung","Name")}}</v-col
+            {{ bezeichnung(data, "Lieferung", "Name") }}</v-col
           ><v-col cols="8" align-self="center">
             Datum: {{ printdate(data.Lieferdatum) }}<br /><br />
 
@@ -29,10 +30,11 @@
             </div> -->
 
             <div>
-              {{bezeichnung(data,"Lieferung","Name")}}<br/>
-              {{bezeichnung(data,"Lieferung","Adresse")}}<br/>
-              {{bezeichnung(data,"Lieferung","Adresszusatz") }}<br v-show="bezeichnung(data, 'Lieferung', 'Adresszusatz')"/>
-              {{bezeichnung(data,"Lieferung","PLZundOrt")}}
+              {{ bezeichnung(data, "Lieferung", "Name") }}<br />
+              {{ bezeichnung(data, "Lieferung", "Adresse") }}<br />
+              {{ bezeichnung(data, "Lieferung", "Adresszusatz")
+              }}<br v-show="bezeichnung(data, 'Lieferung', 'Adresszusatz')" />
+              {{ bezeichnung(data, "Lieferung", "PLZundOrt") }}
             </div>
           </v-col>
           <v-col cols="4"
@@ -59,12 +61,12 @@
                   {{ data.Menge }} Liter Buttenmost im Becher à CHF
                   {{ (store.PreisProLiter + store.PreisBecher).toFixed(2) }}
                   <span v-show="data.Konfi_gr > 0"
-                    ><br />{{ data.Konfi_gr }} grosse Gläser Konfitüre à
-                    CHF {{ store.konfi_gross_preis.toFixed(2) }}</span
+                    ><br />{{ data.Konfi_gr }} grosse Gläser Konfitüre à CHF
+                    {{ store.konfi_gross_preis.toFixed(2) }}</span
                   >
                   <span v-show="data.Konfi_kl > 0"
-                    ><br />{{ data.Konfi_kl }} kleine Gläser Konfitüre à
-                    CHF {{ store.konfi_klein_preis.toFixed(2) }}</span
+                    ><br />{{ data.Konfi_kl }} kleine Gläser Konfitüre à CHF
+                    {{ store.konfi_klein_preis.toFixed(2) }}</span
                   >
                   <span v-show="data.Tee > 0"
                     ><br />{{ data.Tee }} Päckli Tee à CHF
@@ -77,8 +79,7 @@
                   {{
                     (
                       data.Menge *
-                      (Number(store.PreisBecher) +
-                        Number(store.PreisProLiter))
+                      (Number(store.PreisBecher) + Number(store.PreisProLiter))
                     ).toFixed(2)
                   }}
                   <span v-show="data.Konfi_gr > 0"
@@ -96,9 +97,7 @@
                   <span v-show="data.Tee > 0"
                     ><br />CHF
                     {{ (data.Tee * store.tee_preis).toFixed(2) }}</span
-                  ><span
-                    ><br />CHF {{ data.Lieferpauschale.toFixed(2) }}</span
-                  >
+                  ><span><br />CHF {{ data.Lieferpauschale.toFixed(2) }}</span>
                 </td>
               </tr>
               <tr>
@@ -113,24 +112,29 @@
         </v-row>
       </v-container>
     </v-form>
-
-    {{ data }}
-    {{ route.params.datum }}
   </div>
 </template>
 <script setup>
 definePageMeta({
   middleware: "auth", // https://dev.to/rafaelmagalhaes/authentication-in-nuxt-3-375o
 });
-
+let buttoncolor = ref("primary")
 const store = useButtenmostStore();
 const route = useRoute();
 
-const {data} = await useFetch(
+const { data } = await useFetch(
   "/api/airtable_get/?basis=Table 1&recID=" + route.params.id
 );
 
-function printdate(datum){
+function printdate(datum) {
   return new Date(datum).toLocaleDateString();
-};
+}
+
+async function changeStatus() {
+  await $fetch("/api/airtable_update", {
+    method: "POST",
+    body: [{ id: route.params.id, fields: { Status: "verschickt" } }], //muss zwingend als array übergeben werden, auch wenn einzelner eintrag
+  });
+  buttoncolor.value="green"
+}
 </script>

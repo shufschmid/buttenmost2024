@@ -1,16 +1,18 @@
 <template>
   <div>
+    
     <v-form name="rechnung" ref="form">
-      <v-btn
-        block
-        color="primary"
-        elevation="2"
-        large
-        @click="changeStatus"
-        class="d-print-none"
-      >
+      <v-toolbar class="d-print-none">
+        <template v-slot:prepend>
+          <v-btn icon="mdi-table-edit"></v-btn>
+        </template>
+        <v-btn
+        :color=buttoncolor
+          @click="changeStatus"
+        >
         Die ersten zehn Einträge als "verschickt" markieren</v-btn
-      >
+        >
+      </v-toolbar>
       <v-container
         id="rechnungen"
         style="page-break-after: always"
@@ -31,7 +33,10 @@
             <div>
               {{ bezeichnung(Bestellung, "Lieferung", "Name") }}<br />
               {{ bezeichnung(Bestellung, "Lieferung", "Adresse") }}<br />
-              {{ bezeichnung(Bestellung, "Lieferung", "Adresszusatz") }}<br v-show="bezeichnung(Bestellung, 'Lieferung', 'Adresszusatz')"/>
+              {{ bezeichnung(Bestellung, "Lieferung", "Adresszusatz")
+              }}<br
+                v-show="bezeichnung(Bestellung, 'Lieferung', 'Adresszusatz')"
+              />
               {{ bezeichnung(Bestellung, "Lieferung", "PLZundOrt") }}
             </div>
           </v-col>
@@ -121,6 +126,7 @@ definePageMeta({
 
 const store = useButtenmostStore();
 const route = useRoute();
+let buttoncolor = ref("primary")
 
 const lieferscheine = await useFetch(
   '/api/airtable_get/?basis=Table 1&view=b2b_lieferscheine&filter=DATESTR({Lieferdatum})="' +
@@ -131,4 +137,26 @@ const lieferscheine = await useFetch(
 const printdate = computed(() => {
   return new Date(route.params.datum).toLocaleDateString();
 });
+
+let params = computed(() => {
+  return lieferscheine.data.value
+    .map((item) => {
+      const container = {}; //refactor array, damit es für jeden Eintrag den Vorgaben von Airtable entspricht: {    "id": "reckBfjBRf0an97CE", "fields": {"Status": "etikette" }}
+      container.id = item.Id;
+      container.fields = {};
+      container.fields.Status = "verschickt";
+      return container;
+    })
+    .slice(0, 9); //Airtable kann nur 10 Einträge aufs Mal umstellen auf "verschickt"
+});
+
+async function changeStatus() {
+  await $fetch("/api/airtable_update", {
+    method: "POST",
+    body: params.value
+  });
+  buttoncolor.value="green"
+
+  reloadNuxtApp()
+}
 </script>

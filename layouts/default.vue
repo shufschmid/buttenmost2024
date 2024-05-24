@@ -11,7 +11,7 @@
         ><v-icon v-if="!authenticated">mdi-lock</v-icon></nuxt-link
       >
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer">
+    <v-navigation-drawer v-model="drawer" class="d-print-none">
       <v-list-item title="Home" to="/"></v-list-item>
       <v-list-item title="Admin" to="/admin"></v-list-item>
       <v-list-item
@@ -22,7 +22,7 @@
 
       <v-list-item title="b2b" to="/b2b"></v-list-item>
     </v-navigation-drawer>
-    <v-main style="min-height: 300px">
+    <v-main style="min-height: 300px;">
       <slot />
     </v-main>
   </v-layout>

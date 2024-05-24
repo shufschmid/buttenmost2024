@@ -8,7 +8,6 @@ const base = new Airtable.base("app8cUEZWBvWHDfaN");
 
 export default defineEventHandler(async (event) => {
   let body = await readBody(event);
-  let recordID = "test";
   await base("Table 1")
     .create(
       {
