@@ -1,0 +1,3 @@
+<template>
+  <verkaufsstellen></verkaufsstellen>
+</template>

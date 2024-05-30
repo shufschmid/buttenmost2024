@@ -14,15 +14,15 @@
     <v-navigation-drawer v-model="drawer" class="d-print-none">
       <v-list-item title="Home" to="/"></v-list-item>
       <v-list-item title="Admin" to="/admin"></v-list-item>
-      <v-list-item
-        title="Lieferscheine"
-        to="/lieferscheine/2024-05-09"
-      ></v-list-item>
-      <v-list-item title="Login" to="/login"></v-list-item>
 
-      <v-list-item title="b2b" to="/b2b"></v-list-item>
+      <v-list-item title="Login für Firmenkunden" to="/b2b"></v-list-item>
+      <v-list-item
+        href="https://www.patrimoineculinaire.ch/Produkt/Buttenmost/242"
+      >
+        <v-img src="/logo_patrimoine.svg"></v-img>
+      </v-list-item>
     </v-navigation-drawer>
-    <v-main style="min-height: 300px;">
+    <v-main style="min-height: 300px">
       <slot />
     </v-main>
   </v-layout>

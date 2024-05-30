@@ -8,7 +8,7 @@ const base = new Airtable.base("app8cUEZWBvWHDfaN");
 
 export default defineEventHandler(async (event, request, context) => {
   try {
-    let { view, basis, filter, sort, specialfields, recID } = getQuery(event);
+    let { view, basis, filter, sort, specialfields, recID, verkaufsstellensort } = getQuery(event);
 
     if (!filter) {
       filter = "";
@@ -31,6 +31,15 @@ export default defineEventHandler(async (event, request, context) => {
         filterByFormula: filter,
         fields: fields,
         sort: [{ field: "Datum", direction: "asc" }],
+      };
+    }
+
+    if(verkaufsstellensort){
+      query = {
+        view: view,
+        filterByFormula: filter,
+        fields: fields,
+        sort: [{ field: "Ort", direction: "asc" }],
       };
     }
     let resp = [];
