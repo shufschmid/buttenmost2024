@@ -1,3 +1,3 @@
 <template>
-  <verkaufsstellen></verkaufsstellen>
+  <verkaufsstellen anzahl="100"></verkaufsstellen>
 </template>

@@ -13,9 +13,14 @@
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" class="d-print-none">
       <v-list-item title="Home" to="/"></v-list-item>
-      <v-list-item title="Admin" to="/admin"></v-list-item>
-
+      <v-list-item title="Verkaufsstellen" to="/verkaufsstellen"></v-list-item>
+      <v-list-item title="Rezepte" to="rezepte"></v-list-item>
+      
+      
       <v-list-item title="Login für Firmenkunden" to="/b2b"></v-list-item>
+      <v-list-item title="Facebook" to="https://www.facebook.com/buttenmost"></v-list-item>
+      <v-list-item title="Instagram" to="https://instagram.com/buttenmost"></v-list-item>
+      
       <v-list-item
         href="https://www.patrimoineculinaire.ch/Produkt/Buttenmost/242"
       >
