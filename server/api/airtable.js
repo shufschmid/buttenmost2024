@@ -8,11 +8,12 @@ const base = new Airtable.base("app8cUEZWBvWHDfaN");
 
 export default defineEventHandler(async (event) => {
   let body = await readBody(event);
+  let recordID = ""
   await base("Table 1")
     .create(
       {
         Menge: body.Menge,
-        Betrag: body.Preis,
+        Betrag: body.Betrag,
         Lieferdatum: body.Lieferdatum,
         Typ: body.Typ,
         Geschaeft: body.Geschaeft ? body.Geschaeft : "",
@@ -29,12 +30,15 @@ export default defineEventHandler(async (event) => {
         Lieferpauschale: body.Lieferpauschale,
         Gewicht: body.Gewicht,
         Status: body.Status,
+        Tour: body.Tour ? body.Tour.trim() : ""
       },
       { typecast: true }
     )
     .then((res) => {
-      //console.log(res, "response"); // find getID in console log
+      
       recordID = res.getId(); // assing to var
+      console.log(recordID); // find getID in console log
+      console.log(body.Betrag)
     })
     .catch((e) => {
       console.log(e, "Error");

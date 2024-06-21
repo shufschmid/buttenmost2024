@@ -65,23 +65,23 @@ export const useButtenmostStore = defineStore("buttenmost", {
       const options = { year: "numeric", month: "long", day: "numeric" };
       return this.SaisonStartFirmen.toLocaleDateString("de-DE", options);
     },
-    MoeglicheLieferdaten() {
-      var result = [];
-      var days = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
-      var day = days[this.shippingWeekDay];
-      var current = new Date(this.SaisonStart);
-      current.setDate(current.getDate() + ((day - current.getDay() + 7) % 7));
-      while (current < this.SaisonEnde) {
-        if (current > this.heute) {
-          result.push({
-            title: new Date(+current).toLocaleDateString("de-DE"),
-            value: new Date(+current).toISOString().substring(0, 10), //weil Airtable nur XXXX-MM-DD akzeptiert
-          });
-        }
-        current.setDate(current.getDate() + 7);
-      }
-      return result;
-    },
+    // MoeglicheLieferdaten() {
+    //   var result = [];
+    //   var days = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
+    //   var day = days[this.shippingWeekDay];
+    //   var current = new Date(this.SaisonStart);
+    //   current.setDate(current.getDate() + ((day - current.getDay() + 7) % 7));
+    //   while (current < this.SaisonEnde) {
+    //     if (current > this.heute) {
+    //       result.push({
+    //         title: new Date(+current).toLocaleDateString("de-DE"),
+    //         value: new Date(+current).toISOString().substring(0, 10), //weil Airtable nur XXXX-MM-DD akzeptiert
+    //       });
+    //     }
+    //     current.setDate(current.getDate() + 7);
+    //   }
+    //   return result;
+    // },
     MoeglicheLieferdatenFirmen() {
       var result = [];
       var current = new Date(this.SaisonStartFirmen);

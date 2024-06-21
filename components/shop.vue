@@ -1,6 +1,11 @@
 <script setup lang="js">
 const store = useButtenmostStore();
-let Lieferdatum = ref(store.MoeglicheLieferdaten[0])
+let Lieferdatum = ref()
+
+onMounted(() => {
+  Lieferdatum.value = shippingDays[0] // <div>
+})
+
 let Menge = ref(store.StandardMenge)
 
 let Vorname = ref("")
@@ -61,6 +66,10 @@ let Verpackungsindex = computed(() =>{
 let Betrag = computed(() => {
   return(Porto.value + ButtenmostPreis.value + Kleinmengenzuschlag.value.value + store.Verpackung[Verpackungsindex.value].Preis)
 })
+
+const shippingDays = await $fetch(
+  "/api/airtable_get?basis=Lieferdaten&view=post&sort=true")
+;
 
 async function order() {
   const airtable = await $fetch('/api/airtable', {
@@ -214,11 +223,10 @@ async function order() {
         wir den Buttenmost am:
         <v-select
           label="Select"
-          :items="store.MoeglicheLieferdaten"
+          :items="shippingDays"
           v-model="Lieferdatum"
           return-object
         ></v-select>
-
         <v-container>
           <v-form v-model="formValidity">
             <v-row>

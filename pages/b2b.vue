@@ -17,7 +17,7 @@
       ></v-alert>
       <v-form v-model="formValidity" name="bestellung" ref="form"
         ><v-row>
-          <v-col cols="12" md="6">{{ shippingDays }}
+          <v-col cols="12" md="6">
             <div v-if="!store.isSaisonFirmen">
               Dieser Bereich ist während der Buttenmost-Saison unseren
               bestehenden Firmenkunden vorbehalten. Diese können sich mittels
@@ -58,12 +58,18 @@
             <div v-else>
               Firma: {{ firma }}<br />
               <hr />
-              Nächster möglicher Versandtag: {{ nextPossibleShippingDay }}
+              Nächster möglicher Liefertermin: intern:
+              {{ nextPossibleShippingDay }} angezeigt:
+              {{ lieferdatum_angezeigt(nextPossibleShippingDay, tour) }}
               <hr />
               Verfüegbare Menge: {{ verfuegbareMengeKistli }} Kistli ({{
                 verfuegbareMenge
               }}
-              Liter)
+              Liter). Für die aktuelle Tour bereits bestellt:
+
+              {{ totalMengeOnShippingdayTour }}
+
+              noch verfügbar: {{ verfuegbareMengeTour }}
             </div>
           </v-col>
 
@@ -211,8 +217,11 @@ let PINRules = [
 let formValidity = ref(false);
 let pin = ref();
 let firma = ref();
+let tour = ref();
 let verfuegbareMenge = ref();
-let totalMengeOnShippinday = ref();
+let verfuegbareMengeTour = ref();
+let totalMengeOnShippingday = ref();
+let totalMengeOnShippingdayTour = ref();
 let nextPossibleShippingDay = ref();
 let kistli = ref(2); //Voreinstellung
 let konfi_gross = ref(0);
@@ -227,16 +236,16 @@ const shippingDays = await $fetch(
   "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
 );
 
-
 async function checkPin() {
   let LadenURL =
-    '/api/airtable_get/?basis=Verkaufsstellen&view=website&filter={Code}="' +
+    '/api/airtable_get/?basis=Verkaufsstellen&view=alle&filter={Code}="' +
     pin.value +
     '"';
-  let { Geschaeft } = await $fetch(LadenURL);
+  let { Geschaeft, Tour } = await $fetch(LadenURL);
 
   if (Geschaeft) {
     firma.value = Geschaeft;
+    tour.value = Tour;
     nextPossibleShippingDay.value = await findNextPossibleShippingDay();
     showpin.value = false;
   }
@@ -252,7 +261,18 @@ async function getMenge(Datum) {
     const einzelmengen = await recordsList.map(
       (einzelmenge) => einzelmenge.Menge
     );
-    return einzelmengen.reduce((acc, curr) => acc + curr);
+    const einzelmengen_tour = await recordsList.map((einzelmenge) => {
+      if (einzelmenge.Tour == "Kurier") {
+        return einzelmenge.Menge;
+      } else {
+        return 0;
+      }
+    });
+    let einzelmengen_total = einzelmengen.reduce((acc, curr) => acc + curr);
+    let einzelmengen_tour_total = einzelmengen_tour.reduce(
+      (acc, curr) => acc + curr
+    );
+    return { total: einzelmengen_total, tour: einzelmengen_tour_total };
     //erklärung für diese Formel hier: https://www.linkedin.com/pulse/how-sum-total-from-array-object-properties-javascript-schouwenaar
   } else if (recordsList.Menge > 0) {
     return recordsList.Menge;
@@ -268,25 +288,25 @@ async function findNextPossibleShippingDay() {
     if (current > store.heute) {
       let currentMenge = await getMenge(shippingDays[i].Datum);
       if (
-        currentMenge < shippingDays[i].Menge &&
-        shippingDays[i].Menge - currentMenge > store.liter_pro_kistli
+        currentMenge.total < shippingDays[i].Menge &&
+        shippingDays[i].Menge - currentMenge.total > store.liter_pro_kistli &&
+        currentMenge.tour < 392
       ) {
         returnvalue = shippingDays[i].Datum;
-        verfuegbareMenge.value =
-          shippingDays[i].Menge - currentMenge;
+        verfuegbareMenge.value = shippingDays[i].Menge - currentMenge.total;
+        verfuegbareMengeTour.value = 392 - currentMenge.tour;
         verfuegbareMengeKistli.value = Math.floor(
           verfuegbareMenge.value / store.liter_pro_kistli
         );
         if (verfuegbareMengeKistli.value < 3) {
           kistli.value = verfuegbareMengeKistli.value;
         }
-        totalMengeOnShippinday.value = shippingDays[i].Menge;
+        totalMengeOnShippingday.value = shippingDays[i].Menge;
+        totalMengeOnShippingdayTour.value = currentMenge.tour;
         break;
       }
     }
   }
-
-  console.log("return");
   return returnvalue;
 }
 
@@ -302,17 +322,27 @@ function total() {
   );
 }
 
+function lieferdatum_angezeigt(nextPossibleShippingDay, tour) {
+  if (tour === "Kurier") {
+    let date = new Date(nextPossibleShippingDay);
+
+    // add a day
+    date.setDate(date.getDate() + 1);
+    return date.toLocaleDateString("de-DE");
+  }
+}
+
 async function order() {
   const finalCheckMenge = await getMenge(nextPossibleShippingDay.value);
   if (
-    totalMengeOnShippinday.value <
+    totalMengeOnShippingday.value <
     kistli.value * store.liter_pro_kistli + finalCheckMenge
   ) {
     finalCheckError.value = true;
     showpin.value = true;
     console.log(
       "---Log-Status fehlerhaft, Logik eventuell korrekt. Menge hat sich verändert, Eintrag nicht erstellt. Verfügbare Menge beim Start Bestellvorgang war: " +
-        totalMengeOnShippinday.value +
+        totalMengeOnShippingday.value +
         ", Verfügbare Menge Neu: " +
         finalCheckMenge
     );
@@ -330,6 +360,7 @@ async function order() {
         Konfi_kl: konfi_klein.value,
         Tee: tee.value,
         Lieferpauschale: store.lieferpauschale,
+        Tour: tour.value,
       },
     });
     console.log(
@@ -345,6 +376,7 @@ async function order() {
       KonfiKlein: konfi_klein.value,
       Tee: tee.value,
       Lieferpauschale: store.lieferpauschale,
+      Tour: tour.value,
     });
     showpin.value = true;
   }

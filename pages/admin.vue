@@ -19,13 +19,26 @@
         >
       </v-toolbar>
       
-  <v-btn>Admin</v-btn></div>
+  <ul>
+
+    <li v-for="Liefertag in shippingDays"><nuxt-link :to="'/lieferscheine/' + Liefertag.Datum">
+      {{Liefertag.Datum}}</nuxt-link>
+    </li>
+  
+  </ul>
+  
+  
+  
+  </div>
 </template>
 <script setup>
   definePageMeta({
     middleware: 'auth' // https://dev.to/rafaelmagalhaes/authentication-in-nuxt-3-375o
 })
 
+const shippingDays = await $fetch(
+  "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
+);
 const store = useButtenmostStore();
 </script>
 

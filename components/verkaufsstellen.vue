@@ -40,7 +40,7 @@ const props = defineProps(["anzahl"]);
             </v-toolbar>
           </template>
           <template v-slot:default="{ items, isExpanded, toggleExpand }">
-            <template v-for="item in items" :key="item.raw.Laden">
+            <template v-for="item in items" :key="item.raw.Id">
               <v-card class="pl-3" link @click="() => toggleExpand(item)"
                 ><b>{{ item.raw.Ort }}</b> {{ item.raw.Laden }}
                 <v-expand-transition>
