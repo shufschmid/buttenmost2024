@@ -1,6 +1,33 @@
 <template>
   <div>
     <v-container>
+      <v-table v-if="store.authenticated">
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Menge</th>
+            <th>bereits bestellt</th>
+            <th>noch verfügbar</th>
+            <th>Menge Lieferwagen</th>
+            <th>bereits bestellt Lieferwagen</th>
+            <th>verfügbar Lieferwagen</th>
+            <th>verfügbar Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="Details in AdminInfos" :key="Details.Datum">
+            <td>{{ Details.Datum }}</td>
+            <td>{{ Details.Menge }}</td>
+            <td>{{ Details.bestellt }}</td>
+            <td>{{ Details.verfuegbar }}</td>
+            <td>{{ Details.MengeLieferwagen }}</td>
+            <td>{{ Details.bestelltLieferwagen }}</td>
+            <td>{{ Details.verfuegbarLieferwagen }}</td>
+            <td>{{ Details.verfuegbarTotal }}</td>
+          </tr>
+        </tbody>
+      </v-table>
+
       <v-alert
         v-show="finalCheckError"
         color="error"
@@ -231,7 +258,7 @@ let verfuegbareMengeKistli = ref(2);
 let finalCheckError = ref(false);
 let finalCheckSuccess = ref(false);
 let Bestaetigung = ref("");
-
+let AdminInfos = ref([]);
 const shippingDays = await $fetch(
   "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
 );
@@ -262,7 +289,7 @@ async function getMenge(Datum) {
       (einzelmenge) => einzelmenge.Menge
     );
     const einzelmengen_tour = await recordsList.map((einzelmenge) => {
-      if (einzelmenge.Tour == "Kurier") {
+      if (einzelmenge.Tour == tour.value) {
         return einzelmenge.Menge;
       } else {
         return 0;
@@ -272,12 +299,13 @@ async function getMenge(Datum) {
     let einzelmengen_tour_total = einzelmengen_tour.reduce(
       (acc, curr) => acc + curr
     );
+
     return { total: einzelmengen_total, tour: einzelmengen_tour_total };
     //erklärung für diese Formel hier: https://www.linkedin.com/pulse/how-sum-total-from-array-object-properties-javascript-schouwenaar
   } else if (recordsList.Menge > 0) {
-    return recordsList.Menge;
+    return { total: recordsList.Menge, tour: recordsList.Menge };
   } else {
-    return 0;
+    return { total: 0, tour: 0 };
   }
 }
 
@@ -286,23 +314,32 @@ async function findNextPossibleShippingDay() {
   for (let i = 0; i < shippingDays.length; i++) {
     var current = new Date(shippingDays[i].Datum);
     if (current > store.heute) {
-      let currentMenge = await getMenge(shippingDays[i].Datum);
-      if (
-        currentMenge.total < shippingDays[i].Menge &&
-        shippingDays[i].Menge - currentMenge.total > store.liter_pro_kistli &&
-        currentMenge.tour < 392
-      ) {
+      let currentMenge = await getMenge(shippingDays[i].Datum); //liefert zurück: currentMenge.total & currentMenge.tour
+      let verfuegbar = {
+        total: shippingDays[i].Menge - currentMenge.total,
+        tour: store.KapazitaetLieferwagen - currentMenge.tour,
+      };
+      let verfuegbarMaximal =
+        verfuegbar.total > verfuegbar.tour ? verfuegbar.tour : verfuegbar.total;
+
+      AdminInfos.value.push({
+        Datum: shippingDays[i].Datum,
+        Menge: shippingDays[i].Menge,
+        bestellt: currentMenge.total,
+        verfuegbar: verfuegbar.total,
+        MengeLieferwagen: store.KapazitaetLieferwagen,
+        bestelltLieferwagen: currentMenge.tour,
+        verfuegbarLieferwagen: verfuegbar.tour,
+        verfuegbarTotal: verfuegbarMaximal,
+      });
+      if (verfuegbarMaximal > store.liter_pro_kistli) {
         returnvalue = shippingDays[i].Datum;
-        verfuegbareMenge.value = shippingDays[i].Menge - currentMenge.total;
-        verfuegbareMengeTour.value = 392 - currentMenge.tour;
         verfuegbareMengeKistli.value = Math.floor(
-          verfuegbareMenge.value / store.liter_pro_kistli
+          verfuegbarMaximal / store.liter_pro_kistli
         );
         if (verfuegbareMengeKistli.value < 3) {
           kistli.value = verfuegbareMengeKistli.value;
         }
-        totalMengeOnShippingday.value = shippingDays[i].Menge;
-        totalMengeOnShippingdayTour.value = currentMenge.tour;
         break;
       }
     }

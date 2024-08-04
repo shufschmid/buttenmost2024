@@ -13,7 +13,7 @@ const base = new Airtable.base("app8cUEZWBvWHDfaN");
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
-
+  console.log(query.id)
   const airtableAntwort = await base("Table 1")
     .update(query.id, {
       Status: "etikette",
@@ -96,6 +96,7 @@ export default defineEventHandler(async (event) => {
       /**
        * eingefügt, weil es Probleme gab mit zweistelligen Logo-Dateien. Nun wir die grosse Zahl nur bis 9 ausgegeben, danach ein Standard-Logo.
        */
+      console.log(response)
       var options2 = {
         method: "POST",
         url: "https://wedec.post.ch/api/barcode/v1/generateAddressLabel",
@@ -107,7 +108,7 @@ export default defineEventHandler(async (event) => {
           frankingLicense: "60144346",
           customer: {
             name1: "Verena Ming",
-            street: "Mattenweg log17",
+            street: "Mattenweg 17",
             zip: "4146",
             city: "Hochwald",
             country: "CH",
@@ -121,13 +122,13 @@ export default defineEventHandler(async (event) => {
             imageFileType: "JPG",
             imageResolution: 300,
           },
-          item: {
+          item: { //Adresszusatz führt ev zu problemen wenn leer? addressSuffix: airtableAntwort.fields.Adresszusatz,
             itemID: airtableAntwort.fields.id,
             recipient: {
               name1: airtableAntwort.fields.Name,
               firstName: airtableAntwort.fields.Vorname,
-              addressSuffix: airtableAntwort.fields.Adresszusatz,
               street: airtableAntwort.fields.Adresse,
+              addressSuffix: airtableAntwort.fields.Adresszusatz,
               zip: airtableAntwort.fields.PLZ,
               city: airtableAntwort.fields.Ort,
               country: "CH",
@@ -146,13 +147,14 @@ export default defineEventHandler(async (event) => {
           //console.log(JSON.stringify(options2));
           //console.log(response.data.item.label);
           barcode = response.data.item.label;
+          console.log(barcode)
         })
         .catch(function (error) {
-          console.log(JSON.stringify(error));
+          //console.log(JSON.stringify(error));
         });
     })
     .catch(function (error) {
-      console.error(JSON.stringify(error));
+      //console.error(JSON.stringify(error));
     });
 
   //setTimeout(function(){console.log(barcode)}, 1000);
