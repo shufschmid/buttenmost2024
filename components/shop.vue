@@ -39,7 +39,7 @@ let ButtenmostPreis = computed(() => {
 })
 
 let Porto = computed(() => {
-  return Menge.value < 10 ? 15 : 27
+  return Menge.value < 10 ? 17.5 : 27
 })
 
 let Kleinmengenzuschlag = computed(() => {

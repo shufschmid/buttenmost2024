@@ -7,6 +7,11 @@ export default defineNuxtConfig({
   build: {
     transpile: ["vuetify"],
   },
+  routeRules: {
+    '/': {prerender:true},
+    '/rezepte': {prerender:true},
+    '/rezepte/**': {prerender:true},
+  },
   modules: [
     (_options, nuxt) => {
       nuxt.hooks.hook("vite:extendConfig", (config) => {

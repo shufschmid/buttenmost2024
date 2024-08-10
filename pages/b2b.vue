@@ -390,7 +390,7 @@ async function order() {
         Geschaeft: firma.value,
         Typ: "Laden",
         Status: "bestellt",
-        Preis: total(),
+        Betrag: total(),
         Menge: kistli.value * store.liter_pro_kistli,
         Lieferdatum: nextPossibleShippingDay.value, //formatiert in yyyy-mm-dd
         Konfi_gr: konfi_gross.value,
