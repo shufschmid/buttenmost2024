@@ -18,8 +18,8 @@
       
       
       <v-list-item title="Login für Firmenkunden" to="/b2b"></v-list-item>
-      <v-list-item title="Facebook" to="https://www.facebook.com/buttenmost"></v-list-item>
-      <v-list-item title="Instagram" to="https://instagram.com/buttenmost"></v-list-item>
+      <v-list-item title="Facebook" href="https://www.facebook.com/buttenmost" target="_blank"></v-list-item>
+      <v-list-item title="Instagram" href="https://instagram.com/buttenmost" target="_blank"></v-list-item>
       
       <v-list-item
         href="https://www.patrimoineculinaire.ch/Produkt/Buttenmost/242"
@@ -27,7 +27,7 @@
         <v-img src="/logo_patrimoine.svg"></v-img>
       </v-list-item>
     </v-navigation-drawer>
-    <v-main style="min-height: 300px">
+    <v-main style="min-height: 600px" >
       <slot />
     </v-main>
   </v-layout>
@@ -45,3 +45,11 @@ const logout = () => {
   router.push("/login");
 };
 </script>
+
+<style scoped>
+@media print{
+    .v-main {
+        padding: 0 !important;
+    }
+}   
+</style>

@@ -235,7 +235,10 @@
 </template>
 
 <script setup>
+//import { storeToRefs } from 'pinia';
 const store = useButtenmostStore();
+
+//const { } = storeToRefs(store) --> dadurch könnte man alles "store." ersetzen, Achtung: keine gleichen Variablennamen hier verwenden
 let showpin = ref(true);
 let PINRules = [
   (value) => !!value || "PIN fehlt",

@@ -2,7 +2,7 @@
   <div>
     
     <v-form name="rechnung" ref="form">
-      <v-toolbar class="d-print-none">
+      <!--<v-toolbar class="d-print-none">
         <template v-slot:prepend>
           <v-btn icon="mdi-table-edit"></v-btn>
         </template>
@@ -12,7 +12,19 @@
         >
         Die ersten zehn Einträge als "verschickt" markieren</v-btn
         >
-      </v-toolbar>
+      </v-toolbar>-->
+      <adminbar>
+        <template #actions>
+  
+          <v-btn
+        :color=buttoncolor
+          @click="changeStatus"
+        >
+        Die ersten zehn Einträge als "verschickt" markieren</v-btn
+        >
+
+          </template>
+        </adminbar>
       <v-container
         id="rechnungen"
         style="page-break-after: always"

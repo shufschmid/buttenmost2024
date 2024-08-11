@@ -1,21 +1,20 @@
 <template>
   <div>
     <v-form name="rechnung" ref="form">
-      <v-toolbar class="d-print-none">
-        <template v-slot:prepend>
-          <v-btn icon="mdi-table-edit"></v-btn>
-        </template>
-        <v-btn
-          @click="changeStatus"
-          :color="buttoncolor"
-        >
-          Status auf "Rechnung" setzen</v-btn
-        ><v-btn
-          @click="loadImage(data)"
-        >
-          QR-Code laden</v-btn
-        >
-      </v-toolbar>
+<adminbar :is-rechnung="true">
+  <template #actions>
+    <v-btn
+      @click="changeStatus"
+      :color="buttoncolor"
+    >
+      Status auf "Rechnung" setzen</v-btn
+    ><v-btn
+      @click="loadImage(data)"
+    >
+      QR-Code laden</v-btn
+    >
+  </template>
+</adminbar>
 
       <v-container id="rechnungen" style="page-break-after: always">
         <v-row
