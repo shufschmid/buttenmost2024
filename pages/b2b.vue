@@ -1,6 +1,20 @@
 <template>
   <div>
     <v-container>
+      <adminbar v-if="store.authenticated">
+  <template #actions>
+    <v-btn
+      @click="changeStatus"
+      :color="buttoncolor"
+    >
+      Status auf "Rechnung" setzen</v-btn
+    ><v-btn
+      @click="loadImage(data)"
+    >
+      QR-Code laden</v-btn
+    >
+  </template>
+</adminbar>
       <v-table v-if="store.authenticated">
         <thead>
           <tr>
@@ -235,17 +249,15 @@
 </template>
 
 <script setup>
-//import { storeToRefs } from 'pinia';
 const store = useButtenmostStore();
-
-//const { } = storeToRefs(store) --> dadurch könnte man alles "store." ersetzen, Achtung: keine gleichen Variablennamen hier verwenden
+const route = useRoute();
 let showpin = ref(true);
 let PINRules = [
   (value) => !!value || "PIN fehlt",
   (value) => /\d\d\d\d/.test(value) || "PIN ungültig",
 ];
 let formValidity = ref(false);
-let pin = ref();
+let pin = ref(route.query.PIN);
 let firma = ref();
 let tour = ref();
 let verfuegbareMenge = ref();

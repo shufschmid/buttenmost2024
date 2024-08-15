@@ -74,7 +74,7 @@ const shippingDays = await $fetch(
 async function order() {
   const airtable = await $fetch('/api/airtable', {
     method: 'POST',
-    body: { 
+    body: {
       Email: Email.value,
       Vorname: Vorname.value,
       Betrag: Betrag.value,
@@ -98,7 +98,7 @@ async function order() {
 
   const payrexx = await $fetch('/api/payrexx', {
     method: 'POST',
-    body: { 
+    body: {
       Email: Email.value,
       Vorname: Vorname.value,
       Name: Nachname.value,
@@ -117,26 +117,37 @@ async function order() {
 </script>
 
 <template>
-  <h2 id="onlineshop">Online-Shop (Versand nur CH):</h2>
-  Jeweils am Dienstag verschicken wir den Buttenmost ab zwei Liter per Post. Wir
-  verschicken den Buttenmost gegen Vorauskasse, nach Ihrer Bestellung können Sie
-  mit Kreditkarte oder Twint bezahlen.
-  <v-container>
-    <v-row
-      ><v-col cols="12" md="5"
-        ><v-spacer />Wählen Sie hier die gewünschte Menge aus:<br />
-        <v-slider
-          v-model="Menge"
-          dense
-          :step="1"
-          thumb-label="always"
-          hint="Regler verstellen, um Menge anzupassen"
-          :max="store.MaximumMenge"
-          :min="store.MinimumMenge"
-          :value="Menge"
-          persistent-hint
-        ></v-slider>
-        <!-- Vergleich zu Preismodell 2023, kann gelöscht werden <v-simple-table dense class="pt-4">
+  <v-container class="pa-6" fluid>
+    Ab {{ store.SaisonStartString }} bis Anfangs November ist unser frischer
+    Buttenmost wieder bei uns am 
+    <a href="https://goo.gl/maps/vfXWt5riNgEBkc5eA"
+      >Kirchrain 17 in Hochwald</a
+    >
+    erhältlich. Preis Direktverkauf: {{ store.preisDirektverkauf.toFixed(2) }} Franken pro
+    Liter. Ebenfalls angeboten wird unser Buttenmost an diversen Märkten sowie
+    <a href="verkaufsstellen/">in über 70 Läden in der ganzen Region.</a>
+    
+    <br /><br />
+    <h2 id="onlineshop">Online-Shop</h2>
+    Wir verschicken Buttenmost ab zwei Liter per A-Post gegen Vorauskasse, nach
+    Eingabe Ihrer Bestellung können Sie mit Kreditkarte oder per Twint
+    bezahlen.<br /><br />
+    <v-container class="pa-0 ma-0">
+      <v-row
+        ><v-col cols="12" md="5"
+          ><v-spacer />Wählen Sie hier die gewünschte Menge aus:<br />
+          <v-slider
+            v-model="Menge"
+            dense
+            :step="1"
+            thumb-label="always"
+            hint="Regler verstellen, um Menge anzupassen"
+            :max="store.MaximumMenge"
+            :min="store.MinimumMenge"
+            :value="Menge"
+            persistent-hint
+          ></v-slider>
+          <!-- Vergleich zu Preismodell 2023, kann gelöscht werden <v-simple-table dense class="pt-4">
           <tbody>
             <tr>
               <td>Menge:</td>
@@ -178,153 +189,157 @@ async function order() {
         </v-simple-table>
         <hr /> -->
 
-        <table style="table-layout: fixed; border: 1px" width="100%">
-          <tbody>
-            <tr>
-              <td>Menge:</td>
-              <td class="text-right">{{ Menge }}</td>
-              <td>Liter</td>
-            </tr>
-            <tr>
-              <td>Preis:</td>
-              <td class="text-right">
-                {{ ButtenmostPreis.toFixed(2) }}
-              </td>
-              <td>CHF</td>
-            </tr>
-            <tr>
-              <td>Porto/Verpackung:</td>
-              <td class="text-right">
-                <!-- zeigt Porto/Verpackung einzeln an, kann gelöscht werden{{ porto.toFixed(2) }} + {{ verpackungneu.toFixed(2) }} = -->
-                {{ (Porto + store.Verpackung[Verpackungsindex].Preis).toFixed(2) }}
-              </td>
-              <td>CHF</td>
-            </tr>
-            <tr :class="Menge > store.Rabatt.Grenze ? 'text-red' : ''">
-              <td>{{ Kleinmengenzuschlag.Bezeichnung }}</td>
-              <td class="text-right">
-                {{ Kleinmengenzuschlag.value.toFixed(2) }}
-              </td>
-              <td>CHF</td>
-            </tr>
-            <tr>
-              <td>Total:</td>
-              <td class="text-right">
-                {{
-                  Betrag.toFixed(2)
-                }}
-              </td>
-              <td>CHF</td>
-            </tr>
-          </tbody>
-        </table> </v-col
-      ><v-col cols="12" md="6">
-        Buttenmost ist ein Frischprodukt. Wenn Sie jetzt bestellen, verschicken
-        wir den Buttenmost am:
-        <v-select
-          label="Select"
-          :items="shippingDays"
-          v-model="Lieferdatum"
-          return-object
-        ></v-select>
-        <v-container>
-          <v-form v-model="formValidity">
-            <v-row>
-              <v-col cols="6">
-                <v-text-field
-                  dense
-                  v-model="Vorname"
-                  label="Vorname"
-                  name="Vorname"
-                  :rules="nichtLeer"
-                  required
-                ></v-text-field></v-col
-              ><v-col cols="6">
-                <v-text-field
-                  dense
-                  v-model="Nachname"
-                  label="Name"
-                  name="Nachname"
-                  :rules="nichtLeer"
-                ></v-text-field>
-              </v-col> </v-row
-            ><v-row dense>
-              <v-col cols="12">
-                <v-text-field
-                  dense
-                  v-model="Adresse"
-                  label="Adresse"
-                  name="Adresse"
-                  :rules="nichtLeer"
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row dense>
-              <v-col cols="12">
-                <v-text-field
-                  dense
-                  v-model="Adresszusatz"
-                  label="Adresszusatz"
-                  name="Adresszusatz"
-                ></v-text-field>
-              </v-col> </v-row
-            ><v-row dense>
-              <v-col cols="3" md="3">
-                <v-text-field
-                  dense
-                  v-model="PLZ"
-                  label="PLZ"
-                  Name="PLZ"
-                  :rules="PLZRules"
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="9" md="9">
-                <v-text-field
-                  dense
-                  v-model="Ort"
-                  label="Ort"
-                  name="Ort"
-                  :rules="nichtLeer"
-                  required
-                ></v-text-field> </v-col></v-row
-            ><v-row dense>
-              <v-col cols="12">
-                <v-text-field
-                  dense
-                  v-model="Email"
-                  label="E-mail"
-                  name="Email"
-                  :rules="EmailRules"
-                  required
-                ></v-text-field>
-                <v-textarea
-                  dense
-                  v-model="Bemerkungen"
-                  name="Bemerkungen"
-                  label="Bemerkungen"
-                  auto-grow
-                  rows="1"
-                ></v-textarea> </v-col
-            ></v-row>
-          </v-form>
-        </v-container>
+          <table style="table-layout: fixed; border: 1px" width="100%">
+            <tbody>
+              <tr>
+                <td>Menge:</td>
+                <td class="text-right">{{ Menge }}</td>
+                <td>Liter</td>
+              </tr>
+              <tr>
+                <td>Preis:</td>
+                <td class="text-right">
+                  {{ ButtenmostPreis.toFixed(2) }}
+                </td>
+                <td>CHF</td>
+              </tr>
+              <tr>
+                <td>Porto/Verpackung:</td>
+                <td class="text-right">
+                  <!-- zeigt Porto/Verpackung einzeln an, kann gelöscht werden{{ porto.toFixed(2) }} + {{ verpackungneu.toFixed(2) }} = -->
+                  {{
+                    (Porto + store.Verpackung[Verpackungsindex].Preis).toFixed(
+                      2
+                    )
+                  }}
+                </td>
+                <td>CHF</td>
+              </tr>
+              <tr :class="Menge > store.Rabatt.Grenze ? 'text-red' : ''">
+                <td>{{ Kleinmengenzuschlag.Bezeichnung }}</td>
+                <td class="text-right">
+                  {{ Kleinmengenzuschlag.value.toFixed(2) }}
+                </td>
+                <td>CHF</td>
+              </tr>
+              <tr>
+                <td>Total:</td>
+                <td class="text-right">
+                  {{ Betrag.toFixed(2) }}
+                </td>
+                <td>CHF</td>
+              </tr>
+            </tbody>
+          </table> </v-col
+        ><v-col cols="12" md="6">
+          <!-- Buttenmost ist ein Frischprodukt. Wenn Sie jetzt bestellen,
+          verschicken wir den Buttenmost am: -->
+          <v-select
+            label="Datum"
+            :items="shippingDays"
+            v-model="Lieferdatum"
+            return-object
+          ></v-select>
+          <v-container>
+            <v-form v-model="formValidity">
+              <v-row>
+                <v-col cols="6">
+                  <v-text-field
+                    dense
+                    v-model="Vorname"
+                    label="Vorname"
+                    name="Vorname"
+                    :rules="nichtLeer"
+                    required
+                  ></v-text-field></v-col
+                ><v-col cols="6">
+                  <v-text-field
+                    dense
+                    v-model="Nachname"
+                    label="Name"
+                    name="Nachname"
+                    :rules="nichtLeer"
+                  ></v-text-field>
+                </v-col> </v-row
+              ><v-row dense>
+                <v-col cols="12">
+                  <v-text-field
+                    dense
+                    v-model="Adresse"
+                    label="Adresse"
+                    name="Adresse"
+                    :rules="nichtLeer"
+                    required
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row dense>
+                <v-col cols="12">
+                  <v-text-field
+                    dense
+                    v-model="Adresszusatz"
+                    label="Adresszusatz"
+                    name="Adresszusatz"
+                  ></v-text-field>
+                </v-col> </v-row
+              ><v-row dense>
+                <v-col cols="3" md="3">
+                  <v-text-field
+                    dense
+                    v-model="PLZ"
+                    label="PLZ"
+                    Name="PLZ"
+                    :rules="PLZRules"
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="9" md="9">
+                  <v-text-field
+                    dense
+                    v-model="Ort"
+                    label="Ort"
+                    name="Ort"
+                    :rules="nichtLeer"
+                    required
+                  ></v-text-field> </v-col></v-row
+              ><v-row dense>
+                <v-col cols="12">
+                  <v-text-field
+                    dense
+                    v-model="Email"
+                    label="E-mail"
+                    name="Email"
+                    :rules="EmailRules"
+                    required
+                  ></v-text-field>
+                  <v-textarea
+                    dense
+                    v-model="Bemerkungen"
+                    name="Bemerkungen"
+                    label="Bemerkungen"
+                    auto-grow
+                    rows="1"
+                  ></v-textarea> </v-col
+              ></v-row>
+            </v-form>
+          </v-container>
 
-        <v-spacer /> </v-col></v-row
-    ><v-row><v-spacer/>
-      <v-col>
-        <v-btn
-          color="success"
-          elevation="2"
-          size="x-large"
-          @click="order"
-          :disabled="!formValidity"
-          :loading="loading"
-        >
-          Jetzt bestellen</v-btn>
-        </v-col
-      ><v-spacer/></v-row
-    >
+          <v-spacer /> </v-col></v-row
+      ><v-row
+        ><v-spacer />
+        <v-col>
+          <v-btn
+            color="success"
+            elevation="2"
+            size="x-large"
+            @click="order"
+            :disabled="!formValidity"
+            :loading="loading"
+          >
+            Jetzt bestellen</v-btn
+          > </v-col
+        ><v-spacer
+      /></v-row>
+    </v-container>
   </v-container>
 </template>

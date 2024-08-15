@@ -10,7 +10,6 @@ const props = defineProps(["anzahl"]);
 <template>
   <v-container>
     <v-row>
-     
       <v-col col="12" lg="8">
         <v-data-iterator
           :items="items"
@@ -95,6 +94,9 @@ const props = defineProps(["anzahl"]);
               ></v-btn>
             </div>
           </template>
-        </v-data-iterator> </v-col> <v-col col="4" class="d-none d-lg-block"> <v-img height="100%" src="/map.png" cover/></v-col></v-row
+        </v-data-iterator>
+      </v-col>
+      <v-col col="4" class="d-none d-lg-block">
+        <v-img height="100%" src="/abfuellen.jpg" cover /></v-col></v-row
   ></v-container>
 </template>

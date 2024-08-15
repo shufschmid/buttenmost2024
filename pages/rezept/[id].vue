@@ -1,6 +1,6 @@
 <template>
   <v-card class="mx-auto my-12" max-width="500">
-    <v-img height="350" :src="data.Bild ? data.Bild[0].url : ''" cover></v-img>
+    <v-img height="350" :src="data.Bild ? data.Bild[0].url : '/kein-bild-vorhanden.jpg'" cover></v-img>
 
     <v-card-item>
       <v-card-title>{{ data.Rezept }}</v-card-title>
