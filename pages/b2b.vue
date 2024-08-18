@@ -2,19 +2,23 @@
   <div>
     <v-container>
       <adminbar v-if="store.authenticated">
-  <template #actions>
-    <v-btn
-      @click="changeStatus"
-      :color="buttoncolor"
-    >
-      Status auf "Rechnung" setzen</v-btn
-    ><v-btn
-      @click="loadImage(data)"
-    >
-      QR-Code laden</v-btn
-    >
-  </template>
-</adminbar>
+        <template #actions>
+          <v-btn @click="changeStatus" :color="buttoncolor">
+            Status auf "Rechnung" setzen</v-btn
+          ><v-btn @click="loadImage(data)"> QR-Code laden</v-btn>
+        </template>
+      </adminbar>
+      <template v-if="store.authenticated">
+        <v-card
+          ><v-autocomplete
+            v-model="Code"
+            :items="Laeden"
+            outlined
+            placeholder="Start typing to Search"
+            return-object
+            label="Läden suchen"
+          ></v-autocomplete></v-card
+      ></template>
       <v-table v-if="store.authenticated">
         <thead>
           <tr>
@@ -257,7 +261,7 @@ let PINRules = [
   (value) => /\d\d\d\d/.test(value) || "PIN ungültig",
 ];
 let formValidity = ref(false);
-let pin = ref(route.query.PIN);
+let pin = ref();
 let firma = ref();
 let tour = ref();
 let verfuegbareMenge = ref();
@@ -433,4 +437,18 @@ async function order() {
     showpin.value = true;
   }
 }
+
+const { data } = await useFetch(
+  "/api/airtable_get?basis=Verkaufsstellen&view=website&verkaufsstellensort=true"
+);
+const items = await JSON.parse(JSON.stringify(data.value));
+let Laeden = items.map((data) => ({ title: data.Laden, value: data.Code }));
+let Code = ref();
+
+
+watch(Code, (newCode) => {
+  pin.value = newCode.value
+})
+
+
 </script>

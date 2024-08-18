@@ -1,36 +1,38 @@
-
-
-
 <template>
   <div>
     <v-toolbar class="d-print-none">
-        <template v-slot:prepend>
-          <v-btn icon="mdi-table-edit"></v-btn>
-        </template>
-        <v-btn
-          @click="changeStatus"
-          :color="buttoncolor"
-        >
-          Status auf "Rechnung" setzen</v-btn
-        ><v-btn
-          @click="loadImage(data)"
-        >
-          QR-Code laden</v-btn
-        >
-      </v-toolbar>
-      
-  <ul>
+      <template v-slot:prepend>
+        <v-btn icon="mdi-table-edit"></v-btn>
+      </template>
+      <v-btn @click="changeStatus" :color="buttoncolor">
+        Status auf "Rechnung" setzen</v-btn
+      ><v-btn @click="loadImage(data)"> QR-Code laden</v-btn>
+    </v-toolbar>
 
-    <li v-for="Liefertag in shippingDays"><nuxt-link :to="'/lieferscheine/' + Liefertag.Datum">
-      {{Liefertag.Datum}}</nuxt-link>
-    </li>
-  
-  </ul>
-  
-  <v-container>
-    <v-row>
-      <v-col col="12" lg="8">
-        <v-data-iterator
+    <ul>
+      <li v-for="Liefertag in shippingDays">
+        <nuxt-link :to="'/lieferscheine/' + Liefertag.Datum">
+          {{ Liefertag.Datum }}</nuxt-link
+        >
+      </li>
+    </ul>
+
+    <v-container>
+      <v-row>
+        <v-col col="12" lg="8"
+          >{{ Code }}
+          <template>
+            <v-card
+              ><v-autocomplete
+                v-model="Code"
+                :items="Laeden"
+                outlined
+                placeholder="Start typing to Search"
+                return-object
+                label="Läden suchen"
+              ></v-autocomplete></v-card
+          ></template>
+          <!-- <v-data-iterator
           :items="items"
           :page="page"
           items-per-page="100"
@@ -57,6 +59,7 @@
               ></v-text-field>
             </v-toolbar>
           </template>
+          
           <template v-slot:default="{ items, isExpanded, toggleExpand }">
             <template v-for="item in items" :key="item.raw.Id">
               <v-card class="pl-3" link @click="() => toggleExpand(item)"
@@ -110,27 +113,28 @@
               ></v-btn>
             </div>
           </template>
-        </v-data-iterator>
-      </v-col>
-      <v-col col="4" class="d-none d-lg-block">
-        <v-img height="100%" src="/abfuellen.jpg" cover /></v-col></v-row
-  ></v-container>  
+        </v-data-iterator> -->
+        </v-col>
+        <v-col col="4" class="d-none d-lg-block">
+          <v-img height="100%" src="/abfuellen.jpg" cover /></v-col></v-row
+    ></v-container>
   </div>
 </template>
 <script setup>
-  definePageMeta({
-    middleware: 'auth' // https://dev.to/rafaelmagalhaes/authentication-in-nuxt-3-375o
-})
+definePageMeta({
+  middleware: "auth", // https://dev.to/rafaelmagalhaes/authentication-in-nuxt-3-375o
+});
 const { data } = await useFetch(
   "/api/airtable_get?basis=Verkaufsstellen&view=website&verkaufsstellensort=true"
 );
 const shippingDays = await $fetch(
   "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
 );
-const items = JSON.parse(JSON.stringify(data.value));
-let search = ref();
+const items = await JSON.parse(JSON.stringify(data.value));
+let Laeden = items.map((data) => ({ title: data.Laden, value: data.Code }));
+let Code = ref();
 
+let search = ref();
 
 const store = useButtenmostStore();
 </script>
-
