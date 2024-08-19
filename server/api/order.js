@@ -9,7 +9,7 @@ const base = new Airtable.base("app8cUEZWBvWHDfaN");
 export default defineEventHandler(async (event) => {
   let body = await readBody(event);
   let recordID = " test";
-  await base("Table 1")
+  await base("tblbU1zmZ2kumAXEY")
     .create({
       Email: body.Email.trim(),
       Vorname: body.Vorname.trim(),

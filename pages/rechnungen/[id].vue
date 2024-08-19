@@ -140,7 +140,7 @@ let buttoncolor = ref("primary")
 let image = ref();
 
 const { data } = await useFetch(
-  "/api/airtable_get/?basis=Table 1&recID=" + route.params.id
+  "/api/airtable_get/?basis=tblbU1zmZ2kumAXEY&recID=" + route.params.id
 );
 
 function printdate(datum) {

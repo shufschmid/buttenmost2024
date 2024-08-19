@@ -9,7 +9,7 @@ const base = new Airtable.base("app8cUEZWBvWHDfaN");
 export default defineEventHandler(async (event) => {
   let body = await readBody(event);
   console.log(body)
-  await base("Table 1").update(body) //params wird bereits in der Komponente formatiert
+  await base("tblbU1zmZ2kumAXEY").update(body) //params wird bereits in der Komponente formatiert
 });
 
 

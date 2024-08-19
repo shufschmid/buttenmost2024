@@ -123,7 +123,7 @@ const store = useButtenmostStore();
 const route = useRoute();
 
 const { data } = await useFetch(
-  "/api/airtable_get/?basis=Table 1&recID=" + route.params.id
+  "/api/airtable_get/?basis=tblbU1zmZ2kumAXEY&recID=" + route.params.id
 );
 
 function printdate(datum) {

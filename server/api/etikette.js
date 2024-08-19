@@ -14,7 +14,7 @@ const base = new Airtable.base("app8cUEZWBvWHDfaN");
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   console.log(query.id)
-  const airtableAntwort = await base("Table 1")
+  const airtableAntwort = await base("tblbU1zmZ2kumAXEY")
     .update(query.id, {
       Status: "etikette",
     })

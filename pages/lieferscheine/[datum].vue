@@ -141,7 +141,7 @@ const route = useRoute();
 let buttoncolor = ref("primary")
 
 const lieferscheine = await useFetch(
-  '/api/airtable_get/?basis=Table 1&view=b2b_lieferscheine&filter=DATESTR({Lieferdatum})="' +
+  '/api/airtable_get/?basis=tblbU1zmZ2kumAXEY&view=b2b_lieferscheine&filter=DATESTR({Lieferdatum})="' +
     route.params.datum +
     '"'
 );

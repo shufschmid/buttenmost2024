@@ -16,7 +16,7 @@ pages
     lieferscheine
         [datum].vue: druckt sämtliche Lieferscheine für Lieferung an b2b-Kunden eines Tages (todo: Anpassung an die beiden Touren "direkt" & "Kurier")
     rechnungen
-        [id].vue: generiert eine einzelne Rechnung (für alle Arten von Bestellungen). ZUgriff über Link aus Airtable, Status auf "Rechnung" setzen.
+        [id].vue: generiert eine einzelne Rechnung (für alle Arten von Bestellungen). Zugriff über Link aus Airtable, Status auf "Rechnung" setzen.
     rezept
         [id].vue: Darstellung einzelnes Rezept
     verkaufsstellen

@@ -1,15 +1,8 @@
 <template>
   <div>
     <v-container>
-      <adminbar v-if="store.authenticated">
-        <template #actions>
-          <v-btn @click="changeStatus" :color="buttoncolor">
-            Status auf "Rechnung" setzen</v-btn
-          ><v-btn @click="loadImage(data)"> QR-Code laden</v-btn>
-        </template>
-      </adminbar>
       <template v-if="store.authenticated">
-        <v-card
+        <v-card color="indigo" variant="flat"
           ><v-autocomplete
             v-model="Code"
             :items="Laeden"
@@ -101,29 +94,36 @@
               </v-container>
             </div>
             <div v-else>
-              Firma: {{ firma }}<br />
-              <hr />
-              Nächster möglicher Liefertermin: intern:
-              {{ nextPossibleShippingDay }} angezeigt:
-              {{ lieferdatum_angezeigt(nextPossibleShippingDay, tour) }}
-              <hr />
-              Verfüegbare Menge: {{ verfuegbareMengeKistli }} Kistli ({{
-                verfuegbareMenge
-              }}
-              Liter). Für die aktuelle Tour bereits bestellt:
-
-              {{ totalMengeOnShippingdayTour }}
-
-              noch verfügbar: {{ verfuegbareMengeTour }}
+              <v-banner
+                class="m-0"
+                color="pink-darken-1"
+                icon="mdi-store"
+                lines="one"
+              >
+                <v-banner-text> {{ firma }} <br /></v-banner-text>
+              </v-banner>
+              <v-banner
+                class="m-0"
+                color="pink-darken-1"
+                icon="mdi-calendar"
+                lines="one"
+              >
+                <v-banner-text class="bg-pink-darken-1">
+                  Nächster möglicher Liefertermin:
+                  {{ lieferdatum_angezeigt(nextPossibleShippingDay, tour)
+                  }}<br />
+                </v-banner-text>
+              </v-banner>
             </div>
           </v-col>
 
           <v-col cols="12" md="6">
-            <v-table v-if="!showpin">
+            <v-table v-if="!showpin" >
               <tbody>
                 <tr>
                   <td>
                     <v-text-field
+                      variant="outlined"
                       v-model="kistli"
                       Name="Konfi gross"
                       type="number"
@@ -155,6 +155,7 @@
                 <tr>
                   <td>
                     <v-text-field
+                      variant="outlined"
                       dense
                       v-model="konfi_klein"
                       label=""
@@ -177,11 +178,13 @@
                   <td>
                     <v-text-field
                       dense
+                      variant="outlined"
                       v-model="konfi_gross"
                       label=""
                       Name="Konfi gross"
                       type="number"
                       :min="0"
+                      max-width="20"
                     ></v-text-field>
                   </td>
                   <td>
@@ -195,9 +198,10 @@
                   <td>CHF</td>
                 </tr>
                 <tr>
-                  <td>
+                  <td width="120px">
                     <v-text-field
                       dense
+                      variant="outlined"
                       v-model="tee"
                       Name="Tee"
                       type="number"
@@ -228,13 +232,12 @@
                   </td>
                   <td>CHF</td>
                 </tr>
-
                 <tr>
-                  <td>
+                  <td colspan="4">
                     <v-btn
-                      color="primary"
+                      color="success"
                       elevation="2"
-                      large
+                      block
                       @click="order"
                       :disabled="!formValidity"
                       :loading="loading"
@@ -299,7 +302,7 @@ async function checkPin() {
 
 async function getMenge(Datum) {
   let recordsURL =
-    '/api/airtable_get/?basis=Table 1&view=verfuegbare_menge&filter=DATESTR({Lieferdatum})="' +
+    '/api/airtable_get/?basis=tblbU1zmZ2kumAXEY&view=verfuegbare_menge&filter=DATESTR({Lieferdatum})="' +
     Datum +
     '"';
   const recordsList = await $fetch(recordsURL);
@@ -380,10 +383,11 @@ function total() {
 
 function lieferdatum_angezeigt(nextPossibleShippingDay, tour) {
   if (tour === "Kurier") {
+    // falls Kurier am nächsten Tag ausliefert: tour === "Kurier"
     let date = new Date(nextPossibleShippingDay);
 
     // add a day
-    date.setDate(date.getDate() + 1);
+    //date.setDate(date.getDate() + 1); Kommentar entfernen, wenn Kurier am nächsten Tag
     return date.toLocaleDateString("de-DE");
   }
 }
@@ -445,10 +449,7 @@ const items = await JSON.parse(JSON.stringify(data.value));
 let Laeden = items.map((data) => ({ title: data.Laden, value: data.Code }));
 let Code = ref();
 
-
 watch(Code, (newCode) => {
-  pin.value = newCode.value
-})
-
-
+  pin.value = newCode.value;
+});
 </script>

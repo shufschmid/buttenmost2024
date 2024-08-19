@@ -8,7 +8,7 @@ const items = JSON.parse(JSON.stringify(data.value));
       <v-data-iterator
         :items="items"
         :items-per-page="20"
-        item-value="Rezepte"
+        item-value="Laden"
         :sort-desc.sync="false"
       >
         <template v-slot:default="{ items, isExpanded, toggleExpand }">

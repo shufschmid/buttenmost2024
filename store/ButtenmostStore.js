@@ -10,7 +10,6 @@ export const useButtenmostStore = defineStore("buttenmost", {
       preisDirektverkauf: 9.4,
       SaisonEnde: new Date("2024-09-12 12:00:00"),
       SaisonEndeFirmen: new Date("2024-09-12 12:00:00"),
-      shippingWeekDay: "tue",
       lieferpauschale: 22,
       kistli: 2, //Voreinstellung für Bestellformular Läden
       liter_pro_kistli: 14,
