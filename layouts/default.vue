@@ -2,9 +2,12 @@
   <v-layout class="rounded rounded-md">
     <v-app-bar class="d-print-none mx-auto">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Buttenmost aus Hochwald</v-toolbar-title>
+      <v-toolbar-title class="ml-0"><v-img src="/logo.png" width="200"></v-img></v-toolbar-title>
       <nuxt-link @click="logout"
         ><v-icon v-if="authenticated">mdi-lock-open</v-icon></nuxt-link
+      >
+      <nuxt-link to="/admin"
+        ><v-icon v-if="authenticated">mdi-receipt-text-plus</v-icon></nuxt-link
       >
 
       <nuxt-link to="/login"

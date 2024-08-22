@@ -1,21 +1,14 @@
 <template>
   <div>
     <v-form name="rechnung" ref="form">
-
-
       <v-toolbar class="d-print-none">
         <template v-slot:prepend>
           <v-btn icon="mdi-table-edit"></v-btn>
         </template>
-        <v-btn
-        :color=buttoncolor
-          @click="changeStatus"
-        >
-        Eintrag als "verschickt" markieren</v-btn
+        <v-btn :color="buttoncolor" @click="changeStatus">
+          Eintrag als "verschickt" markieren</v-btn
         >
       </v-toolbar>
-
-
 
       <v-container id="rechnungen" style="page-break-after: always">
         <v-row
@@ -58,8 +51,7 @@
               <tr>
                 <td valign="top">{{ data.Lieferdatum }}</td>
                 <td valign="top">
-                  {{ data.Menge }} Liter Buttenmost im Becher à CHF
-                  {{ (store.PreisProLiter + store.PreisBecher).toFixed(2) }}
+                  {{ data.Menge }} Liter Buttenmost
                   <span v-show="data.Konfi_gr > 0"
                     ><br />{{ data.Konfi_gr }} grosse Gläser Konfitüre à CHF
                     {{ store.konfi_gross_preis.toFixed(2) }}</span
@@ -72,16 +64,21 @@
                     ><br />{{ data.Tee }} Päckli Tee à CHF
                     {{ store.tee_preis.toFixed(2) }}</span
                   >
-                  <span><br />{{ 1 }} x Lieferpauschale</span>
+                  <span v-show="data.Typ == 'Laden'"
+                    ><br />{{ 1 }} x Lieferpauschale</span
+                  >
                 </td>
                 <td valign="top" class="text-right">
-                  CHF
-                  {{
-                    (
-                      data.Menge *
-                      (Number(store.PreisBecher) + Number(store.PreisProLiter))
-                    ).toFixed(2)
-                  }}
+                  <span v-show="data.Typ == 'Laden'">
+                    CHF
+                    {{
+                      (
+                        data.Menge *
+                        (Number(store.PreisBecher) +
+                          Number(store.PreisProLiter))
+                      ).toFixed(2)
+                    }}</span
+                  >
                   <span v-show="data.Konfi_gr > 0"
                     ><br />CHF
                     {{
@@ -97,7 +94,10 @@
                   <span v-show="data.Tee > 0"
                     ><br />CHF
                     {{ (data.Tee * store.tee_preis).toFixed(2) }}</span
-                  ><span><br />CHF {{ data.Lieferpauschale.toFixed(2) }}</span>
+                  ><br />
+                  <span v-show="data.Typ == 'Laden'"
+                    >CHF {{ data.Lieferpauschale.toFixed(2) }}</span
+                  >
                 </td>
               </tr>
               <tr>
@@ -118,7 +118,7 @@
 definePageMeta({
   middleware: "auth", // https://dev.to/rafaelmagalhaes/authentication-in-nuxt-3-375o
 });
-let buttoncolor = ref("primary")
+let buttoncolor = ref("primary");
 const store = useButtenmostStore();
 const route = useRoute();
 
@@ -135,6 +135,6 @@ async function changeStatus() {
     method: "POST",
     body: [{ id: route.params.id, fields: { Status: "verschickt" } }], //muss zwingend als array übergeben werden, auch wenn einzelner eintrag
   });
-  buttoncolor.value="green"
+  buttoncolor.value = "green";
 }
 </script>

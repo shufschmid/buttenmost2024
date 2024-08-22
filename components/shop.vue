@@ -89,7 +89,7 @@ async function order() {
       Verpackung: store.Verpackung[Verpackungsindex.value].Preis,
       Porto:Porto.value,
       Lieferpauschale:Kleinmengenzuschlag.value.value,
-      Gewicht: store.Verpackung[Verpackungsindex.value].Gewicht,
+      Gewicht: (store.Verpackung[Verpackungsindex.value].Gewicht+(Menge.value*1000)),
       Status: "bestellt",
       Typ: "Post"
     }
@@ -139,7 +139,7 @@ async function order() {
           <v-slider
             v-model="Menge"
             dense
-            :step="1"
+            step="1"
             thumb-label="always"
             hint="Regler verstellen, um Menge anzupassen"
             :max="store.MaximumMenge"

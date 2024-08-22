@@ -1,7 +1,7 @@
 <template>
-  <v-sheet class="bg-grey pa-12" rounded>
-    <v-card class="mx-auto px-6 py-8" max-width="344">
-      <v-text-field
+  <v-sheet class="pa-12" rounded>
+    <v-card class="bg-blue-grey-lighten-5 mx-auto px-6 py-8" max-width="344" rounded>
+      <v-text-field 
         v-model="password"
         type="password"
         class="input"

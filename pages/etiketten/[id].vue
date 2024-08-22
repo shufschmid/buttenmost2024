@@ -5,14 +5,9 @@
           <v-btn icon="mdi-table-edit"></v-btn>
         </template>
         <v-btn
-          @click="changeStatus"
-          :color="buttoncolor"
+          @click="loadImage(data)" variant="outlined"
         >
-          Status auf "Etikette" setzen</v-btn
-        ><v-btn
-          @click="loadImage(data)"
-        >
-          Etikette laden</v-btn
+          Etikette laden und Status auf "Etikette" setzen</v-btn
         >
       </v-toolbar>
 
@@ -48,11 +43,4 @@ async function loadImage() {
     "/api/etikette?id=" +route.params.id);
 }
 
-async function changeStatus() {
-  await $fetch("/api/airtable_update", {
-    method: "POST",
-    body: [{ id: route.params.id, fields: { Status: "Etikette" } }], //muss zwingend als array übergeben werden, auch wenn einzelner eintrag
-  });
-  buttoncolor.value="green"
-}
 </script>

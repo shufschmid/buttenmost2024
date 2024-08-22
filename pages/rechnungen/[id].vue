@@ -71,7 +71,7 @@
                     ><br />{{ data.Tee }} Päckli Tee à CHF
                     {{ store.tee_preis.toFixed(2) }}</span
                   >
-                  <span v-show="data.Typ == 'Laden'"
+                  <span v-if="data.Typ == 'Laden'"
                     ><br />{{ 1 }} x Lieferpauschale</span
                   >
                 </td>
@@ -102,7 +102,7 @@
                   <span v-show="data.Tee > 0"
                     ><br />CHF
                     {{ (data.Tee * store.tee_preis).toFixed(2) }}</span
-                  ><span><br />CHF {{ data.Lieferpauschale.toFixed(2) }}</span>
+                  ><span v-if="data.Lieferpauschale"><br />CHF {{ data.Lieferpauschale.toFixed(2) }}</span>
                 </td>
               </tr>
               <tr>
