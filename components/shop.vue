@@ -35,7 +35,7 @@ let EmailRules= [
       ]
 
 let ButtenmostPreis = computed(() => {
-  return (Menge.value * store.PreisProLiter)
+  return (Menge.value * store.preisDirektverkauf)
 })
 
 let Porto = computed(() => {

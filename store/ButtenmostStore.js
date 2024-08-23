@@ -33,9 +33,9 @@ export const useButtenmostStore = defineStore("buttenmost", {
       ],
       Kleinmengenzuschlag: {
         Grenze: 4,
-        Betrag: 15,
-        GrenzeReduziert: 8,
-        BetragReduziert: 7.5,
+        Betrag: 18,
+        GrenzeReduziert: 10,
+        BetragReduziert: 10,
       },
       Rabatt: { Grenze: 12, value: -0.1 },
       authenticated: false,
