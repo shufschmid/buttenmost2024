@@ -52,7 +52,7 @@
         icon="$success"
         title="Herzlichen Dank für Ihre Bestelung"
         :text="Bestaetigung"
-      ></v-alert>
+      >test</v-alert>
       <v-form v-model="formValidity" name="bestellung" ref="form"
         ><v-row>
           <v-col cols="12" md="6">
@@ -63,7 +63,7 @@
               identifizieren. Bei Fragen: Tel 061 751 48 21. Saisonstart:
               {{ store.SaisonStartStringFirmen }}.
             </div>
-            <div v-else-if="showpin">
+            <div v-else-if="showpin && finalCheckError==false && finalCheckSuccess==false">
               Dieser Bereich ist unseren bestehenden Firmenkunden vorbehalten.
               Bitte identifizieren Sie sich mit dem vierstelligen PIN-Code, den
               wir Ihnen mitgeteilt haben. Bei Fragen: Tel 061 751 48 21.
@@ -93,7 +93,7 @@
                 </v-row>
               </v-container>
             </div>
-            <div v-else>
+            <div v-else-if="finalCheckError==false && finalCheckSuccess==false">
               <v-banner
                 class="m-0"
                 color="pink-darken-1"
@@ -118,7 +118,7 @@
           </v-col>
 
           <v-col cols="12" md="6">
-            <v-table v-if="!showpin" >
+            <v-table v-if="!showpin">
               <tbody>
                 <tr>
                   <td>
@@ -306,7 +306,7 @@ async function getMenge(Datum) {
     Datum +
     '"';
   const recordsList = await $fetch(recordsURL);
-  if (recordsList.length > 1) {
+  if (recordsList.length > 0) {
     const einzelmengen = await recordsList.map(
       (einzelmenge) => einzelmenge.Menge
     );
@@ -382,24 +382,18 @@ function total() {
 }
 
 function lieferdatum_angezeigt(nextPossibleShippingDay, tour) {
-  if (tour === "Kurier") {
-    // falls Kurier am nächsten Tag ausliefert: tour === "Kurier"
-    let date = new Date(nextPossibleShippingDay);
-
-    // add a day
-    //date.setDate(date.getDate() + 1); Kommentar entfernen, wenn Kurier am nächsten Tag
-    return date.toLocaleDateString("de-DE");
-  }
+  let date = new Date(nextPossibleShippingDay);
+  return date.toLocaleDateString("de-DE");
 }
-
 async function order() {
   const finalCheckMenge = await getMenge(nextPossibleShippingDay.value);
+  
   if (
-    totalMengeOnShippingday.value <
-    kistli.value * store.liter_pro_kistli + finalCheckMenge
+    (kistli.value * store.liter_pro_kistli)>finalCheckMenge.total || (kistli.value * store.liter_pro_kistli)>finalCheckMenge.tour
   ) {
     finalCheckError.value = true;
     showpin.value = true;
+
     console.log(
       "---Log-Status fehlerhaft, Logik eventuell korrekt. Menge hat sich verändert, Eintrag nicht erstellt. Verfügbare Menge beim Start Bestellvorgang war: " +
         totalMengeOnShippingday.value +

@@ -5,17 +5,17 @@ export const useButtenmostStore = defineStore("buttenmost", {
     return {
       SaisonStart: new Date("2024-01-01 12:00:00"),
       SaisonStartFirmen: new Date("2024-01-01 12:00:00"),
-      PreisProLiter: 7,
-      PreisBecher: 1,
-      preisDirektverkauf: 9.4,
+      PreisProLiter: 7.5,
+      PreisBecher: 0.9,
+      preisDirektverkauf: 10,
       SaisonEnde: new Date("2024-09-12 12:00:00"),
       SaisonEndeFirmen: new Date("2024-09-12 12:00:00"),
       lieferpauschale: 22,
       kistli: 2, //Voreinstellung für Bestellformular Läden
       liter_pro_kistli: 14,
-      konfi_gross_preis: 7.2,
+      konfi_gross_preis: 7.7,
       konfi_klein_preis: 4.3,
-      tee_preis: 5,
+      tee_preis: 5.5,
       heute: new Date(),
       StandardMenge: 4,
       MinimumMenge: 2,
@@ -31,18 +31,18 @@ export const useButtenmostStore = defineStore("buttenmost", {
         { Menge: 20, Preis: 10.5, Gewicht: 720 },
         { Menge: 29, Preis: 11.9, Gewicht: 821 },
       ],
-      Kleinmengenzuschlag: {
-        Grenze: 4,
-        Betrag: 18,
-        GrenzeReduziert: 10,
-        BetragReduziert: 10,
-      },
-      Rabatt: { Grenze: 12, value: -0.1 },
+      Kleinmengenzuschlag: [
+        { Grenze: 4, value: 18 },
+        { Grenze: 10, value: 9 },
+      ],
+      Rabatt: [
+        { Grenze: 12, value: -0.075 },
+        { Grenze: 20, value: -0.15 },
+      ],
       authenticated: false,
       loading: false,
       mehrwertsteuernummer: "CHE-369.928.965",
-      mehrwertsteuersatz: 2.5,
-
+      mehrwertsteuersatz: 2.6,
     };
   },
   getters: {
@@ -125,7 +125,7 @@ export const useButtenmostStore = defineStore("buttenmost", {
       }
     },
     logUserOut() {
-      const token = useCookie('token'); // useCookie new hook in nuxt 3
+      const token = useCookie("token"); // useCookie new hook in nuxt 3
       this.authenticated = false; // set authenticated  state value to false
       token.value = null; // clear the token cookie
     },

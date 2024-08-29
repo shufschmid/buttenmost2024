@@ -43,13 +43,16 @@ let Porto = computed(() => {
 })
 
 let Kleinmengenzuschlag = computed(() => {
-  if(Menge.value<store.Kleinmengenzuschlag.Grenze){
-    return {"Bezeichnung":"Kleinmengenzuschlag","value":store.Kleinmengenzuschlag.Betrag}
+  if(Menge.value<store.Kleinmengenzuschlag[0].Grenze){
+    return {"Bezeichnung":"Kleinmengenzuschlag","value":store.Kleinmengenzuschlag[0].value}
   }
-  else if(Menge.value < store.Kleinmengenzuschlag.GrenzeReduziert){
-  return {"Bezeichnung":"Kleinmengenzuschlag","value":store.Kleinmengenzuschlag.BetragReduziert}}
-  else if(Menge.value > store.Rabatt.Grenze){
-    return {"Bezeichnung":"Rabatt","value":ButtenmostPreis.value*store.Rabatt.value
+  else if(Menge.value<store.Kleinmengenzuschlag[1].Grenze){
+    return {"Bezeichnung":"Kleinmengenzuschlag","value":store.Kleinmengenzuschlag[1].value}}
+  else if(Menge.value > store.Rabatt[1].Grenze){
+    return {"Bezeichnung":"Rabatt","value":ButtenmostPreis.value*store.Rabatt[1].value
+}}
+else if(Menge.value > store.Rabatt[0].Grenze){
+    return {"Bezeichnung":"Rabatt","value":ButtenmostPreis.value*store.Rabatt[0].value
 }}
   else return {"Bezeichnung":"Kleinmengenzuschlag","value":0}
 
@@ -119,14 +122,13 @@ async function order() {
 <template>
   <v-container class="pa-6" fluid>
     Ab {{ store.SaisonStartString }} bis Anfangs November ist unser frischer
-    Buttenmost wieder bei uns am 
-    <a href="https://goo.gl/maps/vfXWt5riNgEBkc5eA"
-      >Kirchrain 17 in Hochwald</a
-    >
-    erhältlich. Preis Direktverkauf: {{ store.preisDirektverkauf.toFixed(2) }} Franken pro
-    Liter. Ebenfalls angeboten wird unser Buttenmost an diversen Märkten sowie
+    Buttenmost wieder bei uns am
+    <a href="https://goo.gl/maps/vfXWt5riNgEBkc5eA">Kirchrain 17 in Hochwald</a>
+    erhältlich. Preis Direktverkauf:
+    {{ store.preisDirektverkauf.toFixed(2) }} Franken pro Liter. Ebenfalls
+    angeboten wird unser Buttenmost an diversen Märkten sowie
     <a href="verkaufsstellen/">in über 70 Läden in der ganzen Region.</a>
-    
+
     <br /><br />
     <h2 id="onlineshop">Online-Shop</h2>
     Wir verschicken Buttenmost ab zwei Liter per A-Post gegen Vorauskasse, nach
@@ -215,7 +217,7 @@ async function order() {
                 </td>
                 <td>CHF</td>
               </tr>
-              <tr :class="Menge > store.Rabatt.Grenze ? 'text-red' : ''">
+              <tr :class="Menge > store.Rabatt[0].Grenze ? 'text-red' : ''">
                 <td>{{ Kleinmengenzuschlag.Bezeichnung }}</td>
                 <td class="text-right">
                   {{ Kleinmengenzuschlag.value.toFixed(2) }}
