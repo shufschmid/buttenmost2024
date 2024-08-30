@@ -3,13 +3,13 @@ import { defineStore } from "pinia";
 export const useButtenmostStore = defineStore("buttenmost", {
   state: () => {
     return {
-      SaisonStart: new Date("2024-01-01 12:00:00"),
-      SaisonStartFirmen: new Date("2024-01-01 12:00:00"),
+      SaisonStart: new Date("2024-09-24 12:00:00"),
+      SaisonStartFirmen: new Date("2024-09-24 12:00:00"),
       PreisProLiter: 7.5,
       PreisBecher: 0.9,
       preisDirektverkauf: 10,
-      SaisonEnde: new Date("2024-09-12 12:00:00"),
-      SaisonEndeFirmen: new Date("2024-09-12 12:00:00"),
+      SaisonEnde: new Date("2024-11-12 12:00:00"),
+      SaisonEndeFirmen: new Date("2024-11-12 12:00:00"),
       lieferpauschale: 22,
       kistli: 2, //Voreinstellung für Bestellformular Läden
       liter_pro_kistli: 14,
