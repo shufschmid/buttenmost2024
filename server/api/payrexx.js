@@ -57,13 +57,13 @@ export default defineEventHandler(async (event) => {
   const response = await payrexx.createGateway({
     amount: body.Betrag * 100,
     failedRedirectUrl:
-      "https://buttenmost.ch/danke/?fehler=abgelehnt&kunde=" +
+      "https://buttenmost.ch/fehler/?fehler=abgelehnt&kunde=" +
       body.Email,
     cancelRedirectUrl:
-      "https://buttenmost.ch/danke/?fehler=abgebrochen&kunde=" +
+      "https://buttenmost.ch/fehler/?fehler=abgebrochen&kunde=" +
       body.Email,
     successRedirectUrl:
-      "https://buttenmost.ch/danke?success=true&kunde=" + body.Email,
+      "https://buttenmost.ch/danke?kunde=" + body.Email,
     referenceId: body.AirtableRecordID,
     //fields: "['forename':'Samuel','surname':'Hufschmidharcode','email':'samhardode@gmail.com']"  // ergibt &fields=['forename':'Samuel','surname':'Hufschmidharcode','email':'samhardode@gmail.com']
     "fields[email][value]": body.Email.replace(/ /g, ""),
