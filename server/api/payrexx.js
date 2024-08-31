@@ -1,19 +1,17 @@
 import qs from 'qs'
 import axios from 'axios'
-import hmacSHA256 from 'crypto-js/hmac-sha256';
-import Base64 from 'crypto-js/enc-base64';
+import crypto from "node:crypto";
 
 
 const baseUrl = "https://api.payrexx.com/v1.0/";
 
-console.log("wird geladen");
 
 // payrexx.js module content:
 const secret = process.env.PAYREXX_SECRET_KEY;
 
 const init = function (instance, secret) {
   function buildSignature(query = "") {
-    return Base64.stringify(hmacSHA256(query, secret));
+    return crypto.createHmac('sha256', secret).update(query).digest('base64')
   }
 
   function buildBaseUrl(path) {
