@@ -149,47 +149,7 @@ async function order() {
             :value="Menge"
             persistent-hint
           ></v-slider>
-          <!-- Vergleich zu Preismodell 2023, kann gelöscht werden <v-simple-table dense class="pt-4">
-          <tbody>
-            <tr>
-              <td>Menge:</td>
-              <td class="text-right">{{ menge }}</td>
-              <td>Liter</td>
-            </tr>
-            <tr>
-              <td>Preis:</td>
-              <td class="text-right">{{ preis.toFixed(2) }}</td>
-              <td>CHF</td>
-            </tr>
-            <tr>
-              <td>Porto/Verpackung:</td>
-              <td class="text-right">
-                {{ porto.toFixed(2) }} + {{ verpackung.toFixed(2) }} =
-                {{ (porto + verpackung).toFixed(2) }}
-              </td>
-              <td>CHF</td>
-            </tr>
-            <tr>
-              <td>Bearbeitungspauschale*:</td>
-              <td class="text-right">
-                {{ store.versandpauschale.toFixed(2) }}
-              </td>
-              <td>CHF</td>
-            </tr>
-            <tr>
-              <td>Total:</td>
-              <td class="text-right">
-                {{
-                  (porto + verpackung + preis + store.versandpauschale).toFixed(
-                    2
-                  )
-                }}
-              </td>
-              <td>CHF</td>
-            </tr>
-          </tbody>
-        </v-simple-table>
-        <hr /> -->
+          
 
           <table style="table-layout: fixed; border: 1px" width="100%">
             <tbody>

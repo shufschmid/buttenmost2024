@@ -10,8 +10,8 @@ const store = useButtenmostStore();
         <h4 class="subheading">Die Buttenmost-Saison beginnt am {{ store.SaisonStartString }}.</h4>
     </div>
   </v-parallax>
-  <shop v-if="store.isSaison"></shop>
-  <Signup v-if="!store.isSaison"></Signup>
+  <shop></shop>
+  <Signup></Signup>
 
   <Verkaufsstellen anzahl="20"></Verkaufsstellen>
 </template>
