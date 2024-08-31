@@ -1,7 +1,8 @@
 import qs from 'qs'
 import axios from 'axios'
-import hmacSHA256 from 'crypto-js/hmac-sha256';
-import Base64 from 'crypto-js/enc-base64';
+
+const Base64 = require("crypto-js/enc-base64");
+const hmacSHA256 = require("crypto-js/hmac-sha256");
 
 
 const baseUrl = "https://api.payrexx.com/v1.0/";
