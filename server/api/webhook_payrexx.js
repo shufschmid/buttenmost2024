@@ -64,7 +64,7 @@ const base = new Airtable.base("app8cUEZWBvWHDfaN");
 
 
 export default defineEventHandler(async (event) => {
-  let webhookData = getQuery(event);
+  let webhookData = await readBody(event);
   console.log(webhookData)
   if(webhookData.transaction.status == "confirmed"){
   const airtableAntwort = await base("tblbU1zmZ2kumAXEY")
