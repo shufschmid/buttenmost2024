@@ -22,8 +22,8 @@
       
       <v-list-item title="Login für Firmenkunden" to="/b2b"></v-list-item>
       <v-list-item title="Facebook" href="https://www.facebook.com/buttenmost" target="_blank"></v-list-item>
-      <v-list-item title="Instagram" href="https://instagram.com/buttenmost" target="_blank"></v-list-item>
-      
+      <v-list-item title="Instagram" href="https://www.instagram.com/buttenmost.ch/" target="_blank"></v-list-item>
+      <v-list-item title="Datenschutzerklärung" to="datenschutz"></v-list-item>
       <v-list-item
         href="https://www.patrimoineculinaire.ch/Produkt/Buttenmost/242"
       >
