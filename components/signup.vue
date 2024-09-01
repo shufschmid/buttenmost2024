@@ -21,16 +21,6 @@ useHead(() => ({
         >
           <div class="rmBase__container">
             <div class="rmBase__section">
-              <div class="rmBase__el rmBase__el--text">
-                <div class="rmBase__comp--text">
-                  Wir benachrichtigen Sie, sobald es wieder frischen Buttenmost
-                  gibt.
-                  <!-- this linebreak is important, don't remove it! this will force trailing linebreaks to be displayed -->
-                  <br />
-                </div>
-              </div>
-            </div>
-            <div class="rmBase__section">
               <div
                 class="rmBase__el rmBase__el--input rmBase__el--label-pos-none"
                 data-field="email"
