@@ -55,7 +55,7 @@ const handler = async (event) => {
         // 170 is the y (the top of the line of text)
         context2.fillText(liter, 80, 240);
         2;
-        context2.font = "bold 30pt 'PT Sans'";
+        context2.font = "bold 30px PT Sans";
         context2.textAlign = "left";
         context2.fillText("Buttenmost", 160, 50);
         context2.fillText("aus Hochwald", 160, 82);
