@@ -18,7 +18,7 @@
       <v-list-item title="Home" to="/"></v-list-item>
       <v-list-item title="Verkaufsstellen" to="/verkaufsstellen"></v-list-item>
       <v-list-item title="Rezepte" to="rezepte"></v-list-item>
-      
+      <v-list-item title="Medienberichte" to="media"></v-list-item>
       
       <v-list-item title="Login für Firmenkunden" to="/b2b"></v-list-item>
       <v-list-item title="Facebook" href="https://www.facebook.com/buttenmost" target="_blank"></v-list-item>
