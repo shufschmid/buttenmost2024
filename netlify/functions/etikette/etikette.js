@@ -1,7 +1,7 @@
 // Docs on event and context https://docs.netlify.com/functions/build/#code-your-function-2
 const axios = require("axios")
 const Airtable = require("airtable")
-const { createCanvas, loadImage } = require("canvas"); //funktioniert nur mit node 12.x oder 20.x
+const { createCanvas, loadImage } = require("@napi-rs/canvas"); //funktioniert nur mit node 12.x oder 20.x
 
 const handler = async (event) => {
 

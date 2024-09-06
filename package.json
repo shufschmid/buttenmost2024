@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@mdi/font": "^7.3.67",
+    "@napi-rs/canvas": "^0.1.55",
     "@netlify/functions": "^2.4.1",
     "@pinia/nuxt": "^0.5.1",
     "airtable": "^0.12.2",
@@ -25,7 +26,6 @@
     "canvas": "^2.11.2",
     "dateformat": "^5.0.3",
     "form-data": "^4.0.0",
-    "libz": "^0.0.1",
     "mailgun-js": "^0.22.0",
     "mailgun.js": "^10.2.1",
     "netlify-cli": "^17.10.1",
