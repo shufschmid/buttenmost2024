@@ -26,15 +26,15 @@ importers:
       canvas:
         specifier: ^2.11.2
         version: 2.11.2
-      crypto-js:
-        specifier: ^4.2.0
-        version: 4.2.0
       dateformat:
         specifier: ^5.0.3
         version: 5.0.3
       form-data:
         specifier: ^4.0.0
         version: 4.0.0
+      libz:
+        specifier: ^0.0.1
+        version: 0.0.1
       mailgun-js:
         specifier: ^0.22.0
         version: 0.22.0
@@ -2529,9 +2529,6 @@ packages:
       uWebSockets.js:
         optional: true
 
-  crypto-js@4.2.0:
-    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
-
   crypto-random-string@4.0.0:
     resolution: {integrity: sha512-x8dy3RnvYdlUcPOjkEHqozhiwzKNSq7GcPuXFbnyMOCHxX8V3OgIg/pYuabl2sbUPfIJaeAQB7PMOK8DFIdoRA==}
     engines: {node: '>=12'}
@@ -4009,6 +4006,9 @@ packages:
   levn@0.3.0:
     resolution: {integrity: sha512-0OO4y2iOHix2W6ujICbKIaEQXvFQHue65vUG3pb5EUomzPI90z9hsA1VsO/dbIIpC53J8gxM9Q4Oho0jrCM/yA==}
     engines: {node: '>= 0.8.0'}
+
+  libz@0.0.1:
+    resolution: {integrity: sha512-QoLMNZpxrKoguqgWSYLDv+Kg2/95tj02YvMzwweUgzO/CVgLJLhi4Ie8oEqXwDy5sPzSiMiu7fIndvPMrJAR+g==}
 
   light-my-request@5.13.0:
     resolution: {integrity: sha512-9IjUN9ZyCS9pTG+KqTDEQo68Sui2lHsYBrfMyVUTTZ3XhH8PMZq7xO94Kr+eP9dhi/kcKsx4N41p2IXEBil1pQ==}
@@ -9074,8 +9074,6 @@ snapshots:
 
   crossws@0.2.4: {}
 
-  crypto-js@4.2.0: {}
-
   crypto-random-string@4.0.0:
     dependencies:
       type-fest: 1.4.0
@@ -10709,6 +10707,8 @@ snapshots:
     dependencies:
       prelude-ls: 1.1.2
       type-check: 0.3.2
+
+  libz@0.0.1: {}
 
   light-my-request@5.13.0:
     dependencies:

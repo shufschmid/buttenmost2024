@@ -150,14 +150,16 @@ const handler = async (event) => {
                         //console.log(JSON.stringify(options2));
                         //console.log(response.data.item.label);
                         barcode = response.data.item.label;
-                        console.log(barcode)
+                        // console.log(barcode)
                     })
                     .catch(function (error) {
-                        //console.log(JSON.stringify(error));
+                        console.log(JSON.stringify(error));
+                        return { statusCode: error.status || 500, body: error.message || "Oops! Something went wrong." }
                     });
             })
             .catch(function (error) {
-                //console.error(JSON.stringify(error));
+                console.error(JSON.stringify(error));
+                return { statusCode: error.status || 500, body: error.message || "Oops! Something went wrong." }
             });
 
 
