@@ -3,7 +3,6 @@ import axios from "axios";
 import Airtable from "airtable";
 import * as PImage from "pureimage";
 import Stream from "stream";
-import exampleJson from '@/server/files/example.json'
 
 
 // const logoWithWeight = require("logo.json");
