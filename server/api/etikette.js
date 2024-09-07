@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
   ctx.fillStyle = "red";
   ctx.fillRect(0, 0, width, height);
 
-  var fnt = PImage.registerFont("https://www.buttenmost.ch/sourcesanspro-regular.ttf", "Source Sans Pro");
+  var fnt = PImage.registerFont("public/sourcesanspro-regular.ttf", "Source Sans Pro");
   fnt.loadSync();
   ctx.fillStyle = "#ffffff";
   ctx.font = "48pt 'Source Sans Pro'";
