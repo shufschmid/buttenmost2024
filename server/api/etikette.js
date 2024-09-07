@@ -3,6 +3,8 @@ import axios from "axios";
 import Airtable from "airtable";
 import * as PImage from "pureimage";
 import Stream from "stream";
+import exampleJson from '@/server/files/example.json'
+
 
 // const logoWithWeight = require("logo.json");
 
@@ -38,7 +40,7 @@ export default defineEventHandler(async (event) => {
   ctx.fillStyle = "red";
   ctx.fillRect(0, 0, width, height);
 
-  var fnt = PImage.registerFont("sourcesanspro-regular.ttf", "Source Sans Pro");
+  var fnt = PImage.registerFont("https://www.buttenmost.ch/sourcesanspro-regular.ttf", "Source Sans Pro");
   fnt.loadSync();
   ctx.fillStyle = "#ffffff";
   ctx.font = "48pt 'Source Sans Pro'";
