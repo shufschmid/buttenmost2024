@@ -36,14 +36,24 @@ export default defineEventHandler(async (event) => {
 
   const ctx = img1.getContext("2d");
 
-  ctx.fillStyle = "red";
+  ctx.fillStyle = "white";
   ctx.fillRect(0, 0, width, height);
 
   var fnt = PImage.registerFont("public/sourcesanspro-regular.ttf", "Source Sans Pro");
   fnt.loadSync();
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "48pt 'Source Sans Pro'";
-  ctx.fillText("ABC", 80, 80);
+  
+
+  ctx.fillStyle = "#000000";
+  ctx.font = "100pt 'Source Sans Pro'";
+  ctx.fillText(liter.toString(), 10, 80);
+  ctx.font = "32pt 'Source Sans Pro'";
+  ctx.fillText("Buttenmost aus Hochwald", 110, 30);
+  ctx.fillText("Verena Ming", 110, 60);
+  ctx.fillText("Mattenweg 17", 110, 90);
+  ctx.fillText("4146 Hochwald", 110, 120);
+  ctx.fillText("www.buttenmost.ch", 110, 150);
+  
+
 
   const pngData = [];
 
