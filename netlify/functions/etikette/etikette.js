@@ -1,7 +1,7 @@
 // Docs on event and context https://docs.netlify.com/functions/build/#code-your-function-2
 const axios = require("axios")
 const Airtable = require("airtable")
-const { createCanvas, loadImage } = require("@napi-rs/canvas"); //funktioniert nur mit node 12.x oder 20.x
+const {createCanvas, loadImage} = require("@napi-rs/canvas"); //funktioniert nur mit node 12.x oder 20.x
 
 const handler = async (event) => {
 
@@ -16,7 +16,7 @@ const handler = async (event) => {
 
         console.log(event.queryStringParameters)
         const query = event.queryStringParameters;
-        console.log(query.id)
+        console.log(query.id, 'id of url query')
         const airtableAntwort = await base("tblbU1zmZ2kumAXEY")
             .update(query.id, {
                 Status: "etikette",
@@ -30,7 +30,7 @@ const handler = async (event) => {
                 console.log(e, "Error");
             });
 
-        const liter = airtableAntwort.fields.Menge;
+        const liter = airtableAntwort.fields.Menge || '0';
         const width = 470;
         const height = 250;
 
@@ -55,12 +55,12 @@ const handler = async (event) => {
         // 170 is the y (the top of the line of text)
         context2.fillText(liter, 80, 240);
 
-        context2.font = "bold 30px Arial";
+        context2.font = "bold 30px 'PT Sans'";
         context2.textAlign = "left";
         context2.fillText("Buttenmost", 160, 50);
         context2.fillText("aus Hochwald", 160, 82);
 
-        context2.font = "22x Arial";
+        context2.font = "22px 'PT Sans'";
         context2.fillText("Verena Ming", 160, 150);
         context2.fillText("Mattenweg 17", 160, 180);
 
@@ -71,7 +71,7 @@ const handler = async (event) => {
         const image = await loadImage(
             "https://raw.githubusercontent.com/shufschmid/absender/master/assets/rosehip.png"
         ).then((image) => {
-            const { w, h, x, y } = imagePosition;
+            const {w, h, x, y} = imagePosition;
             context2.drawImage(image, x, y, w, h);
         });
 
@@ -82,7 +82,7 @@ const handler = async (event) => {
         var options = {
             method: "POST",
             url: "https://wedec.post.ch/WEDECOAuth/token",
-            headers: { "content-type": "application/x-www-form-urlencoded" },
+            headers: {"content-type": "application/x-www-form-urlencoded"},
             data: JSON.stringify({
                 grant_type: "client_credentials",
                 client_id: process.env.POST_TESTID,
@@ -99,69 +99,69 @@ const handler = async (event) => {
                 /**
                  * eingefügt, weil es Probleme gab mit zweistelligen Logo-Dateien. Nun wir die grosse Zahl nur bis 9 ausgegeben, danach ein Standard-Logo.
                  */
-                console.log(response)
+                    // console.log(response)
                 var options2 = {
-                    method: "POST",
-                    url: "https://wedec.post.ch/api/barcode/v1/generateAddressLabel",
-                    headers: {
-                        Authorization: `Bearer ${response.data.access_token}`,
-                    },
-                    data: {
-                        language: "DE",
-                        frankingLicense: "60144346",
-                        customer: {
-                            name1: "Verena Ming",
-                            street: "Mattenweg 17",
-                            zip: "4146",
-                            city: "Hochwald",
-                            country: "CH",
-                            logo: buffer.toString("base64"),
-                            logoFormat: "PNG",
-                            logoRotation: 270,
+                        method: "POST",
+                        url: "https://wedec.post.ch/api/barcode/v1/generateAddressLabel",
+                        headers: {
+                            Authorization: `Bearer ${response.data.access_token}`,
                         },
-                        labelDefinition: {
-                            labelLayout: "A6",
-                            printAddresses: "RECIPIENT_AND_CUSTOMER",
-                            imageFileType: "JPG",
-                            imageResolution: 300,
-                        },
-                        item: { //Adresszusatz führt ev zu problemen wenn leer? addressSuffix: airtableAntwort.fields.Adresszusatz,
-                            itemID: airtableAntwort.fields.id,
-                            recipient: {
-                                name1: airtableAntwort.fields.Name,
-                                firstName: airtableAntwort.fields.Vorname,
-                                street: airtableAntwort.fields.Adresse,
-                                addressSuffix: airtableAntwort.fields.Adresszusatz,
-                                zip: airtableAntwort.fields.PLZ,
-                                city: airtableAntwort.fields.Ort,
+                        data: {
+                            language: "DE",
+                            frankingLicense: "60144346",
+                            customer: {
+                                name1: "Verena Ming",
+                                street: "Mattenweg 17",
+                                zip: "4146",
+                                city: "Hochwald",
                                 country: "CH",
+                                logo: buffer.toString("base64"),
+                                logoFormat: "PNG",
+                                logoRotation: 270,
                             },
-                            attributes: {
-                                przl: ["PRI", "MAN"],
-                                weight: parseInt(airtableAntwort.fields.Gewicht),
-                                // freeText: "7. September / 8 Liter :",
+                            labelDefinition: {
+                                labelLayout: "A6",
+                                printAddresses: "RECIPIENT_AND_CUSTOMER",
+                                imageFileType: "JPG",
+                                imageResolution: 300,
+                            },
+                            item: { //Adresszusatz führt ev zu problemen wenn leer? addressSuffix: airtableAntwort.fields.Adresszusatz,
+                                itemID: airtableAntwort.fields.id,
+                                recipient: {
+                                    name1: airtableAntwort.fields.Name,
+                                    firstName: airtableAntwort.fields.Vorname,
+                                    street: airtableAntwort.fields.Adresse,
+                                    addressSuffix: airtableAntwort.fields.Adresszusatz,
+                                    zip: airtableAntwort.fields.PLZ,
+                                    city: airtableAntwort.fields.Ort,
+                                    country: "CH",
+                                },
+                                attributes: {
+                                    przl: ["PRI", "MAN"],
+                                    weight: parseInt(airtableAntwort.fields.Gewicht),
+                                    // freeText: "7. September / 8 Liter :",
+                                },
                             },
                         },
-                    },
-                };
-                await axios
+                    };
+               const barcodeLabel = await axios
                     .request(options2)
                     .then(function (response) {
                         //console.log(JSON.stringify(options2));
                         //console.log(response.data.item.label);
                         barcode = response.data.item.label;
                         // console.log(barcode)
+                        return response.data.item.label
                     })
                     .catch(function (error) {
                         console.log(JSON.stringify(error));
-                        return { statusCode: error.status || 500, body: error.message || "Oops! Something went wrong." }
+                        return {statusCode: error.status || 500, body: error.message || "Oops! Something went wrong."}
                     });
             })
             .catch(function (error) {
                 console.error(JSON.stringify(error));
-                return { statusCode: error.status || 500, body: error.message || "Oops! Something went wrong." }
+                return {statusCode: error.status || 500, body: error.message || "Oops! Something went wrong."}
             });
-
 
         //setTimeout(function(){console.log(barcode)}, 1000);
 
@@ -175,9 +175,8 @@ const handler = async (event) => {
         }
 
     } catch (error) {
-        return { statusCode: error.status || 500, body: error.message || "Oops! Something went wrong." }
+        return {statusCode: error.status || 500, body: error.message || "Oops! Something went wrong."}
     }
-
 }
 
-module.exports = { handler }
+module.exports = {handler}
