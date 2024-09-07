@@ -1,7 +1,11 @@
 // Docs on event and context https://docs.netlify.com/functions/build/#code-your-function-2
-const axios = require("axios")
+const axios= require("axios")
 const Airtable = require("airtable")
-const {createCanvas, loadImage} = require("@napi-rs/canvas"); //funktioniert nur mit node 12.x oder 20.x
+const {createCanvas, loadImage, GlobalFonts} = require("@napi-rs/canvas"); //funktioniert nur mit node 12.x oder 20.x
+const { join } = require('path')
+
+GlobalFonts.registerFromPath(join(__dirname, 'fonts', 'PTSans-Regular.ttf'), 'Regular')
+GlobalFonts.registerFromPath(join(__dirname, 'fonts', 'PTSans-Bold.ttf'), 'Bold' )
 
 const handler = async (event) => {
 
@@ -48,19 +52,19 @@ const handler = async (event) => {
         context2.fillRect(0, 0, width, height);
 
         // Set the style of the test and render it to the canvas
-        context2.font = "bold 70px Arial";
+        context2.font = "70px Bold";
         context2.textAlign = "center";
         context2.fillStyle = "#000";
         // 600 is the x value (the center of the image)
         // 170 is the y (the top of the line of text)
         context2.fillText(liter, 80, 240);
 
-        context2.font = "bold 30px 'PT Sans'";
+        context2.font = "30px Bold";
         context2.textAlign = "left";
         context2.fillText("Buttenmost", 160, 50);
         context2.fillText("aus Hochwald", 160, 82);
 
-        context2.font = "22px 'PT Sans'";
+        context2.font = "22px Regular";
         context2.fillText("Verena Ming", 160, 150);
         context2.fillText("Mattenweg 17", 160, 180);
 
@@ -164,6 +168,10 @@ const handler = async (event) => {
             });
 
         //setTimeout(function(){console.log(barcode)}, 1000);
+
+        // che k if fonts are available
+        console.log(JSON.stringify(GlobalFonts.families.filter(e => e.family === "Bold")));
+        console.log(JSON.stringify(GlobalFonts.families.filter(e => e.family === "Regular")));
 
         return {
             statusCode: 200,
