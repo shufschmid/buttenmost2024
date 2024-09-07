@@ -48,19 +48,19 @@ const handler = async (event) => {
         context2.fillRect(0, 0, width, height);
 
         // Set the style of the test and render it to the canvas
-        context2.font = "bold 70pt 'PT Sans'";
+        context2.font = "bold 70px Arial";
         context2.textAlign = "center";
         context2.fillStyle = "#000";
         // 600 is the x value (the center of the image)
         // 170 is the y (the top of the line of text)
         context2.fillText(liter, 80, 240);
-        2;
-        context2.font = "bold 30px PT Sans";
+
+        context2.font = "bold 30px Arial";
         context2.textAlign = "left";
         context2.fillText("Buttenmost", 160, 50);
         context2.fillText("aus Hochwald", 160, 82);
 
-        context2.font = "22pt 'PT Sans'";
+        context2.font = "22x Arial";
         context2.fillText("Verena Ming", 160, 150);
         context2.fillText("Mattenweg 17", 160, 180);
 
@@ -75,7 +75,7 @@ const handler = async (event) => {
             context2.drawImage(image, x, y, w, h);
         });
 
-        const buffer = await canvas.toBuffer("image/png");
+        const buffer = canvas.toBuffer("image/png");
 
         const logoWithWeight = buffer.toString("base64");
 
