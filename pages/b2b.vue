@@ -56,14 +56,14 @@
       <v-form v-model="formValidity" name="bestellung" ref="form"
         ><v-row>
           <v-col cols="12" md="6">
-            <div v-if="!store.isSaisonFirmen">
+            <!-- <div v-if="!store.isSaisonFirmen">
               Dieser Bereich ist während der Buttenmost-Saison unseren
               bestehenden Firmenkunden vorbehalten. Diese können sich mittels
               eines PIN-Codes, den wir Ihnen vor Saisonstart zustellen,
               identifizieren. Bei Fragen: Tel 061 751 48 21. Saisonstart:
               {{ store.SaisonStartStringFirmen }}.
-            </div>
-            <div v-else-if="showpin && finalCheckError==false && finalCheckSuccess==false">
+            </div> -->
+            <div v-if="showpin && finalCheckError==false && finalCheckSuccess==false">
               Dieser Bereich ist unseren bestehenden Firmenkunden vorbehalten.
               Bitte identifizieren Sie sich mit dem vierstelligen PIN-Code, den
               wir Ihnen mitgeteilt haben. Bei Fragen: Tel 061 751 48 21.
