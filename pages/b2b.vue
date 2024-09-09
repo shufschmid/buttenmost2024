@@ -52,7 +52,7 @@
         icon="$success"
         title="Herzlichen Dank für Ihre Bestelung"
         :text="Bestaetigung"
-      >test</v-alert>
+      ></v-alert>
       <v-form v-model="formValidity" name="bestellung" ref="form"
         ><v-row>
           <v-col cols="12" md="6">
@@ -327,7 +327,7 @@ async function getMenge(Datum) {
   } else if (recordsList.Menge > 0) {
     return { total: recordsList.Menge, tour: recordsList.Menge };
   } else {
-    return { total: 0, tour: 0 };
+    return { total: 200, tour: 200 };
   }
 }
 
