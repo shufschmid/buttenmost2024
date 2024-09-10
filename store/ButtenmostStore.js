@@ -17,7 +17,7 @@ export const useButtenmostStore = defineStore("buttenmost", {
       konfi_klein_preis: 4.3,
       tee_preis: 5.5,
       heute: new Date(),
-      StandardMenge: 4,
+      StandardMenge: 8,
       MinimumMenge: 2,
       MaximumMenge: 28,
       versandpauschale: 15,
