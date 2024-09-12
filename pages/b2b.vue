@@ -63,7 +63,13 @@
               identifizieren. Bei Fragen: Tel 061 751 48 21. Saisonstart:
               {{ store.SaisonStartStringFirmen }}.
             </div> -->
-            <div v-if="showpin && finalCheckError==false && finalCheckSuccess==false">
+            <div
+              v-if="
+                showpin &&
+                finalCheckError == false &&
+                finalCheckSuccess == false
+              "
+            >
               Dieser Bereich ist unseren bestehenden Firmenkunden vorbehalten.
               Bitte identifizieren Sie sich mit dem vierstelligen PIN-Code, den
               wir Ihnen mitgeteilt haben. Bei Fragen: Tel 061 751 48 21.
@@ -93,7 +99,9 @@
                 </v-row>
               </v-container>
             </div>
-            <div v-else-if="finalCheckError==false && finalCheckSuccess==false">
+            <div
+              v-else-if="finalCheckError == false && finalCheckSuccess == false"
+            >
               <v-banner
                 class="m-0"
                 color="pink-darken-1"
@@ -324,10 +332,10 @@ async function getMenge(Datum) {
 
     return { total: einzelmengen_total, tour: einzelmengen_tour_total };
     //erklärung für diese Formel hier: https://www.linkedin.com/pulse/how-sum-total-from-array-object-properties-javascript-schouwenaar
-  } else if (recordsList.Menge > 0) {
+  } else if (recordsList.Menge > 0 && recordsList.Menge > 0) {
     return { total: recordsList.Menge, tour: recordsList.Menge };
   } else {
-    return { total: 200, tour: 200 };
+    return { total: 0, tour: 0 };
   }
 }
 
@@ -387,9 +395,12 @@ function lieferdatum_angezeigt(nextPossibleShippingDay, tour) {
 }
 async function order() {
   const finalCheckMenge = await getMenge(nextPossibleShippingDay.value);
-  
+
   if (
-    (kistli.value * store.liter_pro_kistli)>finalCheckMenge.total || (kistli.value * store.liter_pro_kistli)>finalCheckMenge.tour
+    kistli.value * store.liter_pro_kistli + finalCheckMenge.total >
+      verfuegbareMengeKistli.value * store.liter_pro_kistli ||
+    kistli.value * store.liter_pro_kistli >
+      finalCheckMenge.tour * store.liter_pro_kistli
   ) {
     finalCheckError.value = true;
     showpin.value = true;
