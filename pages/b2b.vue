@@ -396,22 +396,27 @@ function lieferdatum_angezeigt(nextPossibleShippingDay, tour) {
 async function order() {
   const finalCheckMenge = await getMenge(nextPossibleShippingDay.value);
 
-  if (
-    kistli.value * store.liter_pro_kistli + finalCheckMenge.total >
-      verfuegbareMengeKistli.value * store.liter_pro_kistli ||
-    kistli.value * store.liter_pro_kistli >
-      finalCheckMenge.tour * store.liter_pro_kistli
-  ) {
-    finalCheckError.value = true;
-    showpin.value = true;
+  console.log(
+    "kistli:" + kistli.value + "finalcheckmenge" + finalCheckMenge.total+"verfuegbare kistli total:"+verfuegbareMengeKistli.value
+  );
+  // if (
+  //   kistli.value * store.liter_pro_kistli >
+  //     verfuegbareMengeKistli.value * store.liter_pro_kistli -
+  //       finalCheckMenge.total ||
+  //   kistli.value * store.liter_pro_kistli >
+  //     verfuegbareMengeKistli.value * store.liter_pro_kistli -
+  //       finalCheckMenge.tour
+  // ) {
+  //   finalCheckError.value = true;
+  //   showpin.value = true;
 
-    console.log(
-      "---Log-Status fehlerhaft, Logik eventuell korrekt. Menge hat sich verändert, Eintrag nicht erstellt. Verfügbare Menge beim Start Bestellvorgang war: " +
-        totalMengeOnShippingday.value +
-        ", Verfügbare Menge Neu: " +
-        finalCheckMenge
-    );
-  } else {
+  //   console.log(
+  //     "---Log-Status fehlerhaft, Logik eventuell korrekt. Menge hat sich verändert, Eintrag nicht erstellt. Verfügbare Menge beim Start Bestellvorgang war: " +
+  //       totalMengeOnShippingday.value +
+  //       ", Verfügbare Menge Neu: " +
+  //       finalCheckMenge.total
+  //   );
+  // } else {
     const airtable = await $fetch("/api/airtable", {
       method: "POST",
       body: {
@@ -444,7 +449,7 @@ async function order() {
       Tour: tour.value,
     });
     showpin.value = true;
-  }
+  //}
 }
 
 const { data } = await useFetch(
