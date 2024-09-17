@@ -30,6 +30,9 @@ export default defineEventHandler(async (event) => {
         Lieferpauschale: body.Lieferpauschale,
         Gewicht: body.Gewicht,
         Status: body.Status,
+        Konfi_gr: body.Konfi_gr,
+        Konfi_kl: body.Konfi_kl,
+        Tee: body.Tee,
         Tour: body.Tour ? body.Tour.trim() : ""
       },
       { typecast: true }

@@ -50,7 +50,7 @@
         v-show="finalCheckSuccess"
         color="success"
         icon="$success"
-        title="Herzlichen Dank für Ihre Bestelung"
+        title="Herzlichen Dank für Ihre Bestellung"
         :text="Bestaetigung"
       ></v-alert>
       <v-form v-model="formValidity" name="bestellung" ref="form"
