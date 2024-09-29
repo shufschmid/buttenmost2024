@@ -1,6 +1,5 @@
 <template>
   <div>
-    
     <v-form name="rechnung" ref="form">
       <!--<v-toolbar class="d-print-none">
         <template v-slot:prepend>
@@ -15,26 +14,21 @@
       </v-toolbar>-->
       <adminbar>
         <template #actions>
-  
-          <v-btn
-        :color=buttoncolor
-          @click="changeStatus"
-        >
-        Die ersten zehn Einträge als "verschickt" markieren</v-btn
-        >
-
-          </template>
-        </adminbar>
+          <v-btn :color="buttoncolor" @click="changeStatus">
+            Die ersten zehn Einträge als "verschickt" markieren</v-btn
+          >
+        </template>
+      </adminbar>
       <v-container
         id="rechnungen"
-        style="page-break-after: always"
+        class="page-break"
         v-for="Bestellung in lieferscheine.data.value"
         :key="lieferscheine.data.value.Kunde"
-        v-show="tour == Bestellung.Tour"
       >
-        <v-row 
+        <v-row
           ><v-col cols="12">
             <h1>Lieferschein</h1>
+            Lieferart: {{ Bestellung.Tour }} | Kunde:
             {{ bezeichnung(Bestellung, "Lieferung", "Name") }} </v-col
           ><v-col cols="8" align-self="center">
             Datum: {{ printdate }}<br /><br />
@@ -88,7 +82,9 @@
                     ><br />{{ Bestellung.Tee }} Päckli Tee à CHF
                     {{ store.tee_preis.toFixed(2) }}</span
                   >
-                  <span v-show="Bestellung.Lieferpauschale"><br />{{ 1 }} x Lieferpauschale</span>
+                  <span v-show="Bestellung.Lieferpauschale"
+                    ><br />{{ 1 }} x Lieferpauschale</span
+                  >
                 </td>
                 <td valign="top" class="text-right">
                   CHF
@@ -139,10 +135,10 @@ definePageMeta({
 
 const store = useButtenmostStore();
 const route = useRoute();
-let buttoncolor = ref("primary")
-const tour = route.query.tour 
+let buttoncolor = ref("primary");
+const tour = route.query.tour;
 
-console.log("t"+tour+"t")
+console.log(route.params.datum);
 const lieferscheine = await useFetch(
   '/api/airtable_get/?basis=tblbU1zmZ2kumAXEY&view=b2b_lieferscheine&filter=DATESTR({Lieferdatum})="' +
     route.params.datum +
@@ -168,10 +164,19 @@ let params = computed(() => {
 async function changeStatus() {
   await $fetch("/api/airtable_update", {
     method: "POST",
-    body: params.value
+    body: params.value,
   });
-  buttoncolor.value="green"
+  buttoncolor.value = "green";
 
-  reloadNuxtApp()
+  reloadNuxtApp();
 }
 </script>
+<style>
+.page-break {
+  page-break-after: always;
+}
+
+.page-break:last-child {
+  page-break-after: avoid;
+}
+</style>

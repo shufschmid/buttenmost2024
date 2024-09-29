@@ -35,14 +35,9 @@
         <h2>Lieferscheine</h2>
         <ul class="ml-4">
           <li v-for="Liefertag in shippingDays">
-            {{ Liefertag.Datum }}: 
-            <nuxt-link :to="'/lieferscheine/' + Liefertag.Datum +'?tour=Kurier'">Kurier
+            <nuxt-link :to="'/lieferscheine/' + Liefertag.Datum">{{ Liefertag.Datum }}
               </nuxt-link
-            > | <nuxt-link :to="'/lieferscheine/' + Liefertag.Datum +'?tour=direkt'">direkt
-              </nuxt-link
-            > | <nuxt-link :to="'/lieferscheine/' + Liefertag.Datum">Selbstabholung
-              </nuxt-link
-            > 
+            >
           </li>
         </ul></v-col
       ><v-col cols="12" md="8"

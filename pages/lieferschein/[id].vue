@@ -10,7 +10,7 @@
         >
       </v-toolbar>
 
-      <v-container id="rechnungen" style="page-break-after: always">
+      <v-container id="rechnungen">
         <v-row
           ><v-col cols="12"
             ><h1>Lieferschein</h1>
