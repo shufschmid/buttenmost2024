@@ -2,7 +2,8 @@
 // ergänzt durch vuetify-integration wie hier beschrieben: https://vuetifyjs.com/en/getting-started/installation/#using-nuxt-3
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 export default defineNuxtConfig({
-  //...
+  
+  
   devtools: { enabled: true },
   build: {
     transpile: ["vuetify"],

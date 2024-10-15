@@ -20,15 +20,7 @@
   <v-container
     ><v-row
       ><v-col cols="12">
-        <v-card
-          ><v-autocomplete
-            v-model="Code"
-            :items="Laeden"
-            outlined
-            placeholder="Start typing to Search"
-            return-object
-            label="Läden suchen"
-          ></v-autocomplete></v-card></v-col
+        </v-col
     ></v-row>
     <v-row
       ><v-col cols="12" md="4">
@@ -39,7 +31,17 @@
               </nuxt-link
             >
           </li>
-        </ul></v-col
+        </ul><br/><br/>
+        <h2>Sammelrechnungen</h2>
+        <ul class="ml-4">
+          <li v-for="Geschaeft in rechnungen()">
+            <nuxt-link :to="'/rechnungen/sammelrechnung/' + Geschaeft">{{ Geschaeft }}
+              </nuxt-link
+            >
+          </li>
+        </ul>
+        
+        </v-col
       ><v-col cols="12" md="8"
         ><h2>aktuelle Bestellungen</h2>
         <ul class="ml-4">
@@ -61,17 +63,23 @@ definePageMeta({
   middleware: "auth", // https://dev.to/rafaelmagalhaes/authentication-in-nuxt-3-375o
 });
 const { data } = await useFetch(
-  "/api/airtable_get?basis=Verkaufsstellen&view=website&verkaufsstellensort=true"
+  "/api/airtable_get?basis=tblbU1zmZ2kumAXEY&view=b2b_rechnungen"
 );
+
+function rechnungen(){
+  let arr = data.value.map((item) => {
+      return item.Kunde
+    })
+    let res = [...new Set(arr)];
+    return res
+}
 const shippingDays = await $fetch(
   "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
 );
 const Bestellungen = await $fetch(
   "/api/airtable_get?basis=Bestellungen&view=admin"
 );
-const items = await JSON.parse(JSON.stringify(data.value));
-let Laeden = items.map((data) => ({ title: data.Laden, value: data.Code }));
-let Code = ref();
+
 
 let search = ref();
 

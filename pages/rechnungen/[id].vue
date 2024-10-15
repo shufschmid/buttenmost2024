@@ -20,16 +20,16 @@
         <v-row
           ><v-col cols="12"
             ><h1>Rechnung</h1>
-            {{ bezeichnung(data, "Lieferung", "Name") }}</v-col
+            {{ bezeichnung(data, "Rechnung", "Name") }}</v-col
           ><v-col cols="8" align-self="center">
             Datum: {{ printdate(data.Lieferdatum) }}<br /><br />
 
             <div>
-              {{ bezeichnung(data, "Lieferung", "Name") }}<br />
-              {{ bezeichnung(data, "Lieferung", "Adresse") }}<br />
-              {{ bezeichnung(data, "Lieferung", "Adresszusatz")
-              }}<br v-show="bezeichnung(data, 'Lieferung', 'Adresszusatz')" />
-              {{ bezeichnung(data, "Lieferung", "PLZundOrt") }}
+              {{ bezeichnung(data, "Rechnung", "Name") }}<br />
+              {{ bezeichnung(data, "Rechnung", "Adresse") }}<br />
+              {{ bezeichnung(data, "Rechnung", "Adresszusatz")
+              }}<br v-show="bezeichnung(data, 'Rechnung', 'Adresszusatz')" />
+              {{ bezeichnung(data, "Rechnung", "PLZundOrt") }}
             </div>
           </v-col>
           <v-col cols="4"
@@ -152,13 +152,13 @@ async function loadImage(data) {
     "/api/qrcode?betrag=" +
       data.Betrag +
       "&Name=" +
-      bezeichnung(data, "Lieferung", "Name") +
+      bezeichnung(data, "Rechnung", "Name") +
       "&Strasse=" +
-      bezeichnung(data, "Lieferung", "Adresse") +
+      bezeichnung(data, "Rechnung", "Adresse") +
       "&Ort=" +
-      bezeichnung(data, "Lieferung", "PLZundOrt") +
+      bezeichnung(data, "Rechnung", "PLZundOrt") +
       "&Bemerkungen=" +
-      bezeichnung(data, "Lieferung", "Name").replace("|", "") + // dieses Sonderzeichen gibt bei einigen Banken Fehlermeldungen beim Einzahlen
+      bezeichnung(data, "Rechnung", "Name").replace("|", "") + // dieses Sonderzeichen gibt bei einigen Banken Fehlermeldungen beim Einzahlen
       " Rechnung vom " +
       printdate(data.Lieferdatum) +
       "&Rechnung_Referenz_Nummer=122"
