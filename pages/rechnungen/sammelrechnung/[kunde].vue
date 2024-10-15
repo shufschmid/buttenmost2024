@@ -156,7 +156,7 @@ const { data } = await useFetch(
     '"'
 );
 function total() {
-  return this.data
+  return data.value
     .map((item) => item.Betrag)
     .reduce((prev, curr) => prev + curr, 0);
 }
@@ -167,7 +167,7 @@ function printdate(datum) {
 async function loadImage(qrdata) {
   image.value = await $fetch(
     "/api/qrcode?betrag=" +
-      this.total() +
+      total() +
       "&Name=" +
       bezeichnung(qrdata, "Rechnung", "Name") +
       "&Strasse=" +
