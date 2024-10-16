@@ -145,6 +145,8 @@ const lieferscheine = await useFetch(
     '"'
 );
 
+
+
 const printdate = computed(() => {
   return new Date(route.params.datum).toLocaleDateString();
 });
