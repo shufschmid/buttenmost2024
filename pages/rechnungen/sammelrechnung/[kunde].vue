@@ -11,13 +11,11 @@
 
       <v-container id="rechnungen">
         <v-row
-          ><v-col cols="12"
+          ><v-col cols="8"
             ><h1>Rechnung</h1>
-            {{ bezeichnung(data[0], "Rechnung", "Name") }}</v-col
-          ><v-col cols="8" align-self="center">
-            Datum: {{ store.heute.toLocaleDateString() }}<br /><br />
+            {{ bezeichnung(data[0], "Rechnung", "Name") }}<br/><br/><br/>
 
-            <div>
+            <div class="pl-14">
               {{ bezeichnung(data[0], "Rechnung", "Name") }}<br />
               {{ bezeichnung(data[0], "Rechnung", "Adresse") }}<br />
               {{ bezeichnung(data[0], "Rechnung", "Adresszusatz")
@@ -25,8 +23,9 @@
               {{ bezeichnung(data[0], "Rechnung", "PLZundOrt") }}
             </div>
           </v-col>
-          <v-col cols="4"
-            ><img src="/logo.png" width="200px" /><br />Verena Ming<br />
+          <v-col cols="4" align-self="top"
+            >
+            Datum: {{ store.heute.toLocaleDateString() }}<br /><br /><img src="/logo.png" width="200px" /><br />Verena Ming<br />
             Mattenweg 17<br />
             4146 Hochwald<br />
             Tel. 061 751 48 21<br />
