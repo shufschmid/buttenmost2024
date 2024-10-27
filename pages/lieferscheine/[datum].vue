@@ -160,7 +160,7 @@ let params = computed(() => {
       container.fields.Status = "verschickt";
       return container;
     })
-    .slice(0, 9); //Airtable kann nur 10 Einträge aufs Mal umstellen auf "verschickt"
+    .slice(0, 10); //Airtable kann nur 10 Einträge aufs Mal umstellen auf "verschickt"
 });
 
 async function changeStatus() {
