@@ -72,7 +72,8 @@
             >
               Dieser Bereich ist unseren bestehenden Firmenkunden vorbehalten.
               Bitte identifizieren Sie sich mit dem vierstelligen PIN-Code, den
-              wir Ihnen mitgeteilt haben. Bei Fragen: Tel 061 751 48 21.
+              wir Ihnen mitgeteilt haben. Bei Fragen: Tel 061 751 48 21.<br/><br/>
+              <v-alert closable text="Achtung: die letzten Bestellungen nehmen wir bis am 7. November entgegen mit Liefertermin am 11. oder 12. November." type="info"></v-alert>
               <v-container>
                 <v-row>
                   <v-col cols="4">
