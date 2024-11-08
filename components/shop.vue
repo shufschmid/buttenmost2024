@@ -134,7 +134,12 @@ async function order() {
     Wir verschicken Buttenmost ab zwei Liter per A-Post gegen Vorauskasse, nach
     Eingabe Ihrer Bestellung können Sie mit Kreditkarte oder per Twint
     bezahlen.<br /><br />
-    <v-container class="pa-0 ma-0">
+    <v-alert
+      closable
+      text="Achtung: Wir nehmen für dieses Jahr keine Online-Bestellungen mehr entgegen. Bei uns am Kirchrain 17 bedienen wir Sie noch bis 15. November und auch die Läden werden bis dann noch mit frischem Buttenmost versorgt. "
+      type="info"
+    ></v-alert>
+    <v-container class="pa-0 ma-0" v-show="false">
       <v-row
         ><v-col cols="12" md="5"
           ><v-spacer />Wählen Sie hier die gewünschte Menge aus:<br />
@@ -149,7 +154,6 @@ async function order() {
             :value="Menge"
             persistent-hint
           ></v-slider>
-          
 
           <table style="table-layout: fixed; border: 1px" width="100%">
             <tbody>
