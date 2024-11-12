@@ -136,7 +136,7 @@ async function order() {
     bezahlen.<br /><br />
     <v-alert
       closable
-      text="Achtung: Wir nehmen für dieses Jahr keine Online-Bestellungen mehr entgegen. Bei uns am Kirchrain 17 bedienen wir Sie noch bis 15. November und auch die Läden werden bis dann noch mit frischem Buttenmost versorgt. "
+      text="Achtung: Die Buttenmost-Saison 2024 ist vorbei. Wir nehmen keine Online-Bestellungen mehr entgegen."
       type="info"
     ></v-alert>
     <v-container class="pa-0 ma-0" v-show="false">
