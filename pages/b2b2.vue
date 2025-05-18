@@ -1,116 +1,16 @@
 <template>
   <div>
     <v-container>
-      <template v-if="store.authenticated">
-        <v-card color="indigo" variant="flat"
-          ><v-autocomplete
-            v-model="Code"
-            :items="Laeden"
-            outlined
-            placeholder="Start typing to Search"
-            return-object
-            label="Läden suchen"
-          ></v-autocomplete></v-card
-      ></template>
-      <v-table v-if="store.authenticated">
-        <thead>
-          <tr>
-            <th>Datum</th>
-            <th>Menge</th>
-            <th>bereits bestellt</th>
-            <th>noch verfügbar</th>
-            <th>Menge Lieferwagen</th>
-            <th>bereits bestellt Lieferwagen</th>
-            <th>verfügbar Lieferwagen</th>
-            <th>verfügbar Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="Details in AdminInfos" :key="Details.Datum">
-            <td>{{ Details.Datum }}</td>
-            <td>{{ Details.Menge }}</td>
-            <td>{{ Details.bestellt }}</td>
-            <td>{{ Details.verfuegbar }}</td>
-            <td>{{ Details.MengeLieferwagen }}</td>
-            <td>{{ Details.bestelltLieferwagen }}</td>
-            <td>{{ Details.verfuegbarLieferwagen }}</td>
-            <td>{{ Details.verfuegbarTotal }}</td>
-          </tr>
-        </tbody>
-      </v-table>
-
-      <v-alert
-        v-show="finalCheckError"
-        color="error"
-        icon="$error"
-        title="Menge nicht verfügbar"
-        text="bitte neu einloggen und bestellen"
-      ></v-alert>
-      <v-alert
-        v-show="finalCheckSuccess"
-        color="success"
-        icon="$success"
-        title="Herzlichen Dank für Ihre Bestellung"
-        :text="Bestaetigung"
-      ></v-alert>
+      
       <v-form v-model="formValidity" name="bestellung" ref="form"
-        ><v-row>
-          <v-col cols="12" md="6">
-            <!-- <div v-if="!store.isSaisonFirmen">
-              Dieser Bereich ist während der Buttenmost-Saison unseren
-              bestehenden Firmenkunden vorbehalten. Diese können sich mittels
-              eines PIN-Codes, den wir Ihnen vor Saisonstart zustellen,
-              identifizieren. Bei Fragen: Tel 061 751 48 21. Saisonstart:
-              {{ store.SaisonStartStringFirmen }}.
-            </div> -->
-            <div
-              v-if="
-                showpin &&
-                finalCheckError == false &&
-                finalCheckSuccess == false
-              "
-            >
-              Dieser Bereich ist unseren bestehenden Firmenkunden vorbehalten.
-              Bitte identifizieren Sie sich mit dem vierstelligen PIN-Code, den
-              wir Ihnen mitgeteilt haben. Bei Fragen: Tel 061 751 48 21.<br/><br/>
-              <v-alert closable text="Achtung: die letzten Bestellungen nehmen wir bis am 7. November entgegen mit Liefertermin am 11. oder 12. November." type="info"></v-alert>
-              <v-container>
-                <v-row>
-                  <v-col cols="4">
-                    <v-text-field
-                      v-model="pin"
-                      label="PIN"
-                      Name="PIN"
-                      :rules="PINRules"
-                      required
-                    ></v-text-field>
-                  </v-col>
-
-                  <v-col cols="8">
-                    <v-btn
-                      color="success"
-                      elevation="2"
-                      block
-                      @click="checkPin"
-                      :disabled="!formValidity"
-                    >
-                      Anmelden</v-btn
-                    ></v-col
-                  >
-                </v-row>
-              </v-container>
-            </div>
-            <div
-              v-else-if="finalCheckError == false && finalCheckSuccess == false"
-            >
-              <v-banner
-                class="m-0"
-                color="pink-darken-1"
-                icon="mdi-store"
-                lines="one"
-              >
-                <v-banner-text> {{ firma }} <br /></v-banner-text>
-              </v-banner>
+        >
+            
+  <template v-show="tab == 'one'">
+    <v-card title="Step One" flat>Bestehende Wiederverkäufer beliefern wir dreimal pro Woche mit frischem Buttenmost gegen Rechnung. Bitte identifizieren Sie sich mit dem PIN-Code, den wir ihnen per Post zugestellt haben. Bei Fragen: Tel 061 751 48 21.<br/><br/> Alle anderen Grosskunden können Buttenmost in Kistli à 14 Liter gegen Vorauskasse zum Abholen hier bestellen. Bitte wählen Sie das Abholdatum sowie die Anzahl Kistli und bezahlen Sie im Anschluss per Twint oder Kreditkarte.  
+              <v-alert v-show="no" closable text="Achtung: die letzten Bestellungen nehmen wir bis am 7. November entgegen mit Liefertermin am 11. oder 12. November." type="info"></v-alert>
+              
+             
+              
               <v-banner
                 class="m-0"
                 color="pink-darken-1"
@@ -125,11 +25,9 @@
           ></v-select>
                 
               </v-banner>
-            </div>
-          </v-col>
-
-          <v-col cols="12" md="6">
-            <v-table v-if="!showpin">
+            
+          
+            <v-table>
               <tbody>
                 <tr>
                   <td>
@@ -210,25 +108,8 @@
                   </td>
                   <td>CHF</td>
                 </tr>
+              
                 <!-- <tr>
-                  <td width="120px">
-                    <v-text-field
-                      dense
-                      variant="outlined"
-                      v-model="tee"
-                      Name="Tee"
-                      type="number"
-                      :min="0"
-                    ></v-text-field>
-                  </td>
-                  <td>Säckli Tee à CHF {{ store.tee_preis.toFixed(2) }}</td>
-
-                  <td class="text-right">
-                    {{ (tee * store.tee_preis).toFixed(2) }}
-                  </td>
-                  <td>CHF</td>
-                </tr> -->
-                <tr>
                   <td>1</td>
                   <td>Lieferpauschale</td>
 
@@ -236,17 +117,21 @@
                     {{ store.lieferpauschale.toFixed(2) }}
                   </td>
                   <td>CHF</td>
-                </tr>
+                </tr> -->
                 <tr>
-                  <td>Total:</td>
+                  <td>Zwischentotal:</td>
                   <td></td>
                   <td class="text-right">
                     {{ total().toFixed(2) }}
                   </td>
                   <td>CHF</td>
                 </tr>
-                <tr>
-                  <td colspan="4">
+                </tbody></v-table>
+
+
+
+
+
                     <v-btn
                       color="success"
                       elevation="2"
@@ -257,22 +142,164 @@
                     >
                       Jetzt bestellen</v-btn
                     >
-                  </td>
-                </tr>
-              </tbody>
-            </v-table>
-          </v-col></v-row
-        >
+                    <v-btn
+                      color="success"
+                      elevation="2"
+                      block
+                      @click="tab = 'two'"
+                    >weiter</v-btn>
+                  </v-card>
+  </template>
+<template v-show="tab == 'two'">
+    <v-card title="Step Two" flat>Läden, die regelmässig von uns beliefert werden und auf Rechnung bestellen möchten, bitte Code eingeben. Für Bestellungen auf Vorauskasse und zum Abholen Code-Feld leer lassen und "weiter" klicken.
+      
+      
+      <v-container>
+                <v-row>
+                  <v-col cols="4">
+                    <v-text-field
+                      v-model="pin"
+                      label="PIN"
+                      Name="PIN"
+                      :rules="PINRules"
+                      required
+                    ></v-text-field>
+                  </v-col>
+
+                  <v-col cols="8">
+                    <v-btn
+                      color="success"
+                      elevation="2"
+                      block
+                      @click="checkPin"
+                      :disabled="!formValidity"
+                    >
+                      Anmelden</v-btn
+                    ></v-col
+                  >
+                </v-row>
+                <v-btn
+                      color="success"
+                      elevation="2"
+                      block
+                      @click="tab = 'three'"
+                    >weiter ohne Anmeldung</v-btn>
+              </v-container></v-card>
+  </template>
+  <template v-show="tab == 'three'">
+    <v-card title="Step Three" flat>
+<v-row>
+    
+                <v-col cols="6">
+                  <v-text-field
+                    dense
+                    v-model="Vorname"
+                    label="Vorname"
+                    name="Vorname"
+                    :rules="nichtLeer"
+                    required
+                  ></v-text-field></v-col
+                ><v-col cols="6">
+                  <v-text-field
+                    dense
+                    v-model="Nachname"
+                    label="Name"
+                    name="Nachname"
+                    :rules="nichtLeer"
+                  ></v-text-field>
+                </v-col> </v-row
+              ><v-row dense>
+                <v-col cols="12">
+                  <v-text-field
+                    dense
+                    v-model="Adresse"
+                    label="Adresse"
+                    name="Adresse"
+                    :rules="nichtLeer"
+                    required
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row dense>
+                <v-col cols="12">
+                  <v-text-field
+                    dense
+                    v-model="Adresszusatz"
+                    label="Adresszusatz"
+                    name="Adresszusatz"
+                  ></v-text-field>
+                </v-col> </v-row
+              ><v-row dense>
+                <v-col cols="3" md="3">
+                  <v-text-field
+                    dense
+                    v-model="PLZ"
+                    label="PLZ"
+                    Name="PLZ"
+                    :rules="PLZRules"
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="9" md="9">
+                  <v-text-field
+                    dense
+                    v-model="Ort"
+                    label="Ort"
+                    name="Ort"
+                    :rules="nichtLeer"
+                    required
+                  ></v-text-field> </v-col></v-row
+              ><v-row dense>
+                <v-col cols="12">
+                  <v-text-field
+                    dense
+                    v-model="Email"
+                    label="E-mail"
+                    name="Email"
+                    :rules="EmailRules"
+                    required
+                  ></v-text-field>
+                  <v-textarea
+                    dense
+                    v-model="Bemerkungen"
+                    name="Bemerkungen"
+                    label="Bemerkungen"
+                    auto-grow
+                    rows="1"
+                  ></v-textarea> </v-col
+              ></v-row>
+            
+            
+            </v-card>
+  </template>
+  <template v-show="tab == 'four'">
+     <v-card title="Step four" flat></v-card>
+    {{firma}} 
+  </template>
+  <v-btn
+                      color="success"
+                      elevation="2"
+                      block
+                      @click="tab = 'two'"
+                    >Bestellen</v-btn>
+
+  
+            
+              
+              
+        
       </v-form></v-container
     >
   </div>
+             
+  
+   
 </template>
-
 <script setup>
 const store = useButtenmostStore();
 const route = useRoute();
+let tab = ref("one");
 let showpin = ref(true);
-
 let PINRules = [
   (value) => !!value || "PIN fehlt",
   (value) => /\d\d\d\d/.test(value) || "PIN ungültig",
@@ -304,6 +331,7 @@ async function checkPin() {
     '/api/airtable_get/?basis=Verkaufsstellen&view=alle&filter={Code}="' +
     pin.value +
     '"';
+    tab.value="four";
   let { Geschaeft, Tour } = await $fetch(LadenURL);
 
   if (Geschaeft) {
@@ -395,7 +423,8 @@ function total() {
     store.lieferpauschale
   );
 }
-
+let Lieferdatum = ref();
+Lieferdatum.value = shippingDays[0].Datum;
 function lieferdatum_angezeigt(nextPossibleShippingDay, tour) {
   let date = new Date(nextPossibleShippingDay);
   return date.toLocaleDateString("de-DE");

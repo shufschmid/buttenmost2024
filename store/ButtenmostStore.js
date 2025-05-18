@@ -3,18 +3,18 @@ import { defineStore } from "pinia";
 export const useButtenmostStore = defineStore("buttenmost", {
   state: () => {
     return {
-      SaisonStart: new Date("2025-09-24 12:00:00"),
+      SaisonStart: new Date("2025-03-24 12:00:00"),
       SaisonStartFirmen: new Date("2025-09-24 12:00:00"),
       PreisProLiter: 7.5,
       PreisBecher: 0.9,
       preisDirektverkauf: 10,
-      SaisonEnde: new Date("2024-11-12 12:00:00"),
-      SaisonEndeFirmen: new Date("2024-11-12 12:00:00"),
+      SaisonEnde: new Date("2025-11-12 12:00:00"),
+      SaisonEndeFirmen: new Date("2025-11-12 12:00:00"),
       lieferpauschale: 22,
       kistli: 2, //Voreinstellung für Bestellformular Läden
       liter_pro_kistli: 14,
-      konfi_gross_preis: 7.7,
-      konfi_klein_preis: 4.3,
+      konfi_gross_preis: 7.7*6,
+      konfi_klein_preis: 4.3*6,
       tee_preis: 5.5,
       heute: new Date(),
       StandardMenge: 8,
@@ -30,6 +30,8 @@ export const useButtenmostStore = defineStore("buttenmost", {
         { Menge: 18, Preis: 10, Gewicht: 654 },
         { Menge: 20, Preis: 10.5, Gewicht: 720 },
         { Menge: 29, Preis: 11.9, Gewicht: 821 },
+        { Menge: 0, Preis: 0, Gewicht: 0 },
+        
       ],
       Kleinmengenzuschlag: [
         { Grenze: 4, value: 18 },
