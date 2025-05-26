@@ -1,6 +1,10 @@
 <template>
-  <v-container>
+  <v-container
+    ><v-alert v-if="bestellungErfolgreich" type="success" closable class="mb-4">
+      Bestellung erfolgreich!
+    </v-alert>
     <v-stepper
+      v-show="!bestellungErfolgreich"
       @update:model-value="onStepChange"
       :items="['Step 1', 'Step 2', 'Step 3', 'Step4']"
     >
@@ -68,7 +72,7 @@
                   ></v-text-field>
                 </td>
                 <td>
-                  Karton Konfi klein (6 Gläser) à CHF à CHF
+                  Karton Konfi klein (6 Gläser) à CHF
                   {{ store.konfi_klein_preis.toFixed(2) }}
                 </td>
 
@@ -141,85 +145,79 @@
               text="Achtung: Falscher PIN-Code. Entweder Adresse eingeben und auf Vorkasse bestellen oder Zurück klicken und PIN erneut eingeben. Bei Fragen: Tel 079..."
               type="info"
             ></v-alert>
-            <v-row>
-              <v-col cols="6">
-                <v-text-field
-                  dense
-                  v-model="Vorname"
-                  label="Vorname"
-                  name="Vorname"
-                  :rules="nichtLeer"
-                  required
-                ></v-text-field></v-col
-              ><v-col cols="6">
-                <v-text-field
-                  dense
-                  v-model="Nachname"
-                  label="Name"
-                  name="Nachname"
-                  :rules="nichtLeer"
-                ></v-text-field>
-              </v-col> </v-row
-            ><v-row dense>
-              <v-col cols="12">
-                <v-text-field
-                  dense
-                  v-model="Adresse"
-                  label="Adresse"
-                  name="Adresse"
-                  :rules="nichtLeer"
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row dense>
-              <v-col cols="12">
-                <v-text-field
-                  dense
-                  v-model="Adresszusatz"
-                  label="Adresszusatz"
-                  name="Adresszusatz"
-                ></v-text-field>
-              </v-col> </v-row
-            ><v-row dense>
-              <v-col cols="3" md="3">
-                <v-text-field
-                  dense
-                  v-model="PLZ"
-                  label="PLZ"
-                  Name="PLZ"
-                  :rules="PLZRules"
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="9" md="9">
-                <v-text-field
-                  dense
-                  v-model="Ort"
-                  label="Ort"
-                  name="Ort"
-                  :rules="nichtLeer"
-                  required
-                ></v-text-field> </v-col></v-row
-            ><v-row dense>
-              <v-col cols="12">
-                <v-text-field
-                  dense
-                  v-model="Email"
-                  label="E-mail"
-                  name="Email"
-                  :rules="EmailRules"
-                  required
-                ></v-text-field>
-                <v-textarea
-                  dense
-                  v-model="Bemerkungen"
-                  name="Bemerkungen"
-                  label="Bemerkungen"
-                  auto-grow
-                  rows="1"
-                ></v-textarea> </v-col
-            ></v-row></div
+            <v-form v-model="formValidity">
+              <v-row>
+                <v-col cols="6">
+                  <v-text-field
+                    dense
+                    v-model="Vorname"
+                    label="Vorname"
+                    name="Vorname"
+                  ></v-text-field></v-col
+                ><v-col cols="6">
+                  <v-text-field
+                    dense
+                    v-model="Nachname"
+                    label="Name/Geschäft"
+                    name="Nachname"
+                    required
+                    :rules="nichtLeer"
+                  ></v-text-field>
+                </v-col> </v-row
+              ><v-row dense>
+                <v-col cols="12">
+                  <v-text-field
+                    dense
+                    v-model="Adresse"
+                    label="Adresse"
+                    name="Adresse"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row dense>
+                <v-col cols="12">
+                  <v-text-field
+                    dense
+                    v-model="Adresszusatz"
+                    label="Adresszusatz"
+                    name="Adresszusatz"
+                  ></v-text-field>
+                </v-col> </v-row
+              ><v-row dense>
+                <v-col cols="3" md="3">
+                  <v-text-field
+                    dense
+                    v-model="PLZ"
+                    label="PLZ"
+                    Name="PLZ"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="9" md="9">
+                  <v-text-field
+                    dense
+                    v-model="Ort"
+                    label="Ort"
+                    name="Ort"
+                  ></v-text-field> </v-col></v-row
+              ><v-row dense>
+                <v-col cols="12">
+                  <v-text-field
+                    dense
+                    v-model="Email"
+                    label="E-mail"
+                    name="Email"
+                    :rules="EmailRules"
+                    required
+                  ></v-text-field>
+                  <v-textarea
+                    dense
+                    v-model="Bemerkungen"
+                    name="Bemerkungen"
+                    label="Bemerkungen"
+                    auto-grow
+                    rows="1"
+                  ></v-textarea> </v-col></v-row
+            ></v-form></div
         ></v-card>
       </template>
       <template v-slot:item.4>
@@ -235,7 +233,23 @@
           </div>
           <div v-show="!firma">
             {{ JSON.stringify(order_nonregistered, null, 2) }}
+            <v-alert
+              v-show="!formValidity && !firma"
+              closable
+              type="error"
+              text="Achtung: Angaben im Formular ungenügend"
+            ></v-alert>
           </div>
+          <v-btn
+            color="success"
+            elevation="2"
+            block
+            @click="order"
+            :disabled="!formValidity && !firma"
+            :loading="loading"
+          >
+            Jetzt bestellen</v-btn
+          >
         </v-card>
       </template>
     </v-stepper>
@@ -247,6 +261,7 @@ const shippingDays = await $fetch(
   "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
 );
 let pin = ref("");
+let bestellungErfolgreich = ref(false);
 function Zwischentotal() {
   return (
     (store.PreisProLiter + store.PreisBecher) *
@@ -259,10 +274,24 @@ function Zwischentotal() {
 let Lieferdatum = ref(shippingDays[0]);
 let kistli = ref(2); //Voreinstellung
 let konfi_gross = ref(0);
-
+let nichtLeer = [(value) => !!value || "Angabe wird benötigt"];
+let PLZRules = [
+  (value) => !!value || "Postleitzahl fehlt",
+  (value) => /\d\d\d\d/.test(value) || "Postleitzahl ungültig",
+];
+let EmailRules = [
+  (value) => !!value || "E-Mail-Adresse wird benötigt",
+  (value) =>
+    value.indexOf("@") !== 0 || "Gültige E-Mail-Adresse wird benötigt ",
+  (value) => value.includes("@") || "Gültige E-Mail-Adresse wird benötigt",
+  (value) => value.includes(".") || "Gültige E-Mail-Adresse wird benötigt",
+  (value) =>
+    value.indexOf(".") <= value.length - 2 ||
+    "Gültige E-Mail-Adresse wird benötigt",
+];
 let konfi_klein = ref(0);
 let firma = ref();
-let tour = ref();
+let vertrieb = ref();
 let rechnung = ref(false);
 let Vorname = ref("");
 let Nachname = ref("");
@@ -273,19 +302,21 @@ let Ort = ref("");
 let Email = ref("");
 let Bemerkungen = ref("");
 
+let formValidity = ref(false);
+
 let order_registered = computed(() => ({
   Geschaeft: firma.value ? firma.value : "",
   Typ: "Standard",
-  Vertrieb: tour.value ? tour.value : "Abholung",
+  vertrieb: vertrieb.value ? vertrieb.value : "abholung",
   Status: rechnung.value ? "Rechnung offen" : "bestellt",
-  Betrag: tour.value
+  Betrag: vertrieb.value
     ? (Zwischentotal() + store.lieferpauschale).toFixed(2)
     : Zwischentotal().toFixed(2),
   Menge: kistli.value * store.liter_pro_kistli,
   Lieferdatum: Lieferdatum.value.value, //formatiert in yyyy-mm-dd
   Konfi_gr: konfi_gross.value,
   Konfi_kl: konfi_klein.value,
-  Lieferpauschale: tour.value ? store.lieferpauschale : 0,
+  Lieferpauschale: vertrieb.value ? store.lieferpauschale : 0,
 }));
 
 let order_nonregistered = computed(() => ({
@@ -300,9 +331,12 @@ let order_nonregistered = computed(() => ({
   Lieferdatum: Lieferdatum.value.value,
   Notes: Bemerkungen.value,
   Typ: "Standard",
-  Vertrieb: "Abholung",
+  vertrieb: "abholung",
   Status: "bestellt",
   Betrag: Zwischentotal().toFixed(2),
+  Lieferpauschale: 0,
+  Konfi_gr: konfi_gross.value,
+  Konfi_kl: konfi_klein.value,
 }));
 
 function onStepChange(val) {
@@ -316,12 +350,85 @@ async function checkPIN() {
     '/api/airtable_get/?basis=Verkaufsstellen&view=alle&filter={Code}="' +
     pin.value +
     '"';
-  let { Geschaeft, Tour, Rechnung } = await $fetch(LadenURL);
+  let { Geschaeft, Vertriebskanal, Rechnung } = await $fetch(LadenURL);
 
   if (Geschaeft) {
     firma.value = Geschaeft;
-    tour.value = Tour;
+    vertrieb.value = Vertriebskanal;
+    console.log("vertrieb", vertrieb);
     rechnung.value = Rechnung;
   }
+}
+
+async function order() {
+  let Vorrat = await $fetch("/api/vorrat/");
+  let verkauftURL =
+    'api/verkauft/?filter=DATESTR({Lieferdatum})="' +
+    Lieferdatum.value.value +
+    '"&vertrieb=' +
+    vertrieb.value;
+  let { verkaufttotal, verkauftvertriebskanal } = await $fetch(verkauftURL);
+
+  console.log(
+    "Vorrat",
+    Vorrat,
+    "bereits verkauft an diesem Tag",
+    verkaufttotal,
+    "bereits verkauft in derselben Tour",
+    verkauftvertriebskanal,
+    "bestellte Menge:",
+    kistli.value * store.liter_pro_kistli,
+    "Vertrieb:",
+    vertrieb.value
+  );
+  if (
+    store.liter_pro_kistli * kistli.value < Vorrat - verkaufttotal &&
+    (store.liter_pro_kistli * kistli.value <
+      store.KapazitaetLieferwagen - verkauftvertriebskanal ||
+      vertrieb.value == undefined)
+  ) {
+    console.log(
+      "Genügend Buttenmost vorhanden, genügend Kapazität im Lieferwagen vorhanden, Bestellung möglich"
+    );
+
+    const airtable = await $fetch("/api/airtable", {
+      method: "POST",
+
+      body: firma.value ? order_registered.value : order_nonregistered.value,
+    });
+    console.log(
+      "Bestellung erfolgreich in Airtable eingetragen, ID: " + airtable.body
+    );
+
+    // wenn nicht auf Rechnung, dann Payrexx Gateway öffnen
+    if (order_registered.value.Status != "bestellt") {
+      bestellungErfolgreich.value = true;
+    } else {
+      const payrexx = await $fetch("/api/payrexx", {
+        method: "POST",
+        body: {
+          Email: Email.value,
+          Vorname: Vorname.value,
+          Name: Nachname.value,
+          Betrag: vertrieb.value
+            ? (Zwischentotal() + store.lieferpauschale).toFixed(2)
+            : Zwischentotal().toFixed(2),
+          Menge: kistli.value * store.liter_pro_kistli,
+          Adresse: Adresse.value,
+          PLZ: PLZ.value,
+          Ort: Ort.value,
+          Lieferdatum: Lieferdatum.value.value,
+          AirtableRecordID: airtable.body,
+        },
+      });
+      console.log("Payrexx Gateway erfolgreich eröffnet: " + payrexx.body);
+      window.location.href = payrexx.body;
+    }
+  } else {
+    console.log("Bestellung nicht möglich");
+    return;
+  }
+
+  //}
 }
 </script>

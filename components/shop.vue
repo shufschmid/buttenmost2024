@@ -146,7 +146,7 @@ async function order() {
     <h2 id="onlineshop">Online-Shop</h2>
     Wir verschicken Buttenmost ab zwei Liter per A-Post gegen Vorauskasse, nach
     Eingabe Ihrer Bestellung können Sie mit Kreditkarte oder per Twint
-    bezahlen. Sie können den Buttenmost auch vorbestellen und in Hochwald abholen.<br /><br />
+    bezahlen. Sie können den Buttenmost auch vorbestellen und in Hochwald abholen (im Kessel).<br /><br />
     <v-alert
       closable
       text="Achtung: Die Buttenmost-Saison 2024 ist vorbei. Wir nehmen keine Online-Bestellungen mehr entgegen."

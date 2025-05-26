@@ -49,6 +49,7 @@ const init = function (instance, secret) {
 
 
 export default defineEventHandler(async (event) => {
+  try {
   let body = await readBody(event);
   // where you want to consume the payrexx module:
   const payrexx = init("buttenmost", secret);
@@ -83,4 +84,11 @@ export default defineEventHandler(async (event) => {
     statusCode: 200,
     body: `${response.data.data[0].link}`,
   };
+  } catch (error) {
+    console.error("Payrexx Fehler:", error);
+    return {
+      statusCode: 500,
+      body: "Payrexx Fehler: " + error.message,
+    };
+  }
 });
