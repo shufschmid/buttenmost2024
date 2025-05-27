@@ -65,12 +65,12 @@ export default defineEventHandler(async (event) => {
       "https://buttenmost.ch/danke/?success=true&kunde=" + body.Email,
     referenceId: body.AirtableRecordID,
     //fields: "['forename':'Samuel','surname':'Hufschmidharcode','email':'samhardode@gmail.com']"  // ergibt &fields=['forename':'Samuel','surname':'Hufschmidharcode','email':'samhardode@gmail.com']
-    "fields[email][value]": body.Email.replace(/ /g, ""),
-    "fields[surname][value]": body.Name.replace(/ /g, ""),
-    "fields[forename][value]": body.Vorname.replace(/ /g, ""),
-    "fields[street][value]": body.Adresse.replace(/ /g, ""),
-    "fields[postcode][value]": body.PLZ.replace(/ /g, ""),
-    "fields[place][value]": body.Ort.replace(/ /g, ""),
+    "fields[email][value]": body.Email ? body.Email.replace(/ /g, ""):"",
+    "fields[surname][value]": body.Name ? body.Name.replace(/ /g, ""):body.Geschaeft.replace(/ /g, ""),
+    "fields[forename][value]": body.Vorname ? body.Vorname.replace(/ /g, ""):"",
+    "fields[street][value]": body.Adresse ? body.Adresse.replace(/ /g, ""):"",
+    "fields[postcode][value]": body.PLZ?body.PLZ.replace(/ /g, ""):"",
+    "fields[place][value]": body.Ort?body.Ort.replace(/ /g, ""):"",
     "fields[text][value]": String(body.Lieferdatum),
     //muss ergeben: &fields[forename][value]=Samuel&fields[surname][value]=Hufschmidharcode&fields[email][value]=samhardode@gmail.com&ApiSi
     // add more fields here
