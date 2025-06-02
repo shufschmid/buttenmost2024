@@ -99,7 +99,8 @@ async function order() {
       Lieferpauschale:Kleinmengenzuschlag.value.value,
       Gewicht: (store.Verpackung[Verpackungsindex.value].Gewicht+(Menge.value*1000)),
       Status: "bestellt",
-      Typ: "Post"
+      Typ: "Spezial",
+      vertrieb: abholen.value ? "Abholung" : "Post",
     }
   })
   console.log("Bestellung erfolgreich in Airtable eingetragen, ID: "+airtable.body)
@@ -254,7 +255,8 @@ async function order() {
                     v-model="Adresse"
                     label="Adresse"
                     name="Adresse"
-                    :rules="nichtLeer"
+                    :rules="nichtLeer"                    
+                    maxlength="36"
                     required
                   ></v-text-field>
                 </v-col>
@@ -266,6 +268,7 @@ async function order() {
                     v-model="Adresszusatz"
                     label="Adresszusatz"
                     name="Adresszusatz"
+                    maxlength="36"
                   ></v-text-field>
                 </v-col> </v-row
               ><v-row dense>

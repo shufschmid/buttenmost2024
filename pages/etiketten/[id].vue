@@ -13,7 +13,7 @@
 
       
         <img
-          v-bind:src="'data:image/png;base64,' + image"
+          :src=image
           class="qrcode"
           width="100%"
         />

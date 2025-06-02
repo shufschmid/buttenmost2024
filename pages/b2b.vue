@@ -1,472 +1,445 @@
 <template>
-  <div>
-    <v-container>
-      <template v-if="store.authenticated">
-        <v-card color="indigo" variant="flat"
-          ><v-autocomplete
-            v-model="Code"
-            :items="Laeden"
-            outlined
-            placeholder="Start typing to Search"
-            return-object
-            label="Läden suchen"
-          ></v-autocomplete></v-card
-      ></template>
-      <v-table v-if="store.authenticated">
-        <thead>
-          <tr>
-            <th>Datum</th>
-            <th>Menge</th>
-            <th>bereits bestellt</th>
-            <th>noch verfügbar</th>
-            <th>Menge Lieferwagen</th>
-            <th>bereits bestellt Lieferwagen</th>
-            <th>verfügbar Lieferwagen</th>
-            <th>verfügbar Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="Details in AdminInfos" :key="Details.Datum">
-            <td>{{ Details.Datum }}</td>
-            <td>{{ Details.Menge }}</td>
-            <td>{{ Details.bestellt }}</td>
-            <td>{{ Details.verfuegbar }}</td>
-            <td>{{ Details.MengeLieferwagen }}</td>
-            <td>{{ Details.bestelltLieferwagen }}</td>
-            <td>{{ Details.verfuegbarLieferwagen }}</td>
-            <td>{{ Details.verfuegbarTotal }}</td>
-          </tr>
-        </tbody>
-      </v-table>
-
-      <v-alert
-        v-show="finalCheckError"
-        color="error"
-        icon="$error"
-        title="Menge nicht verfügbar"
-        text="bitte neu einloggen und bestellen"
-      ></v-alert>
-      <v-alert
-        v-show="finalCheckSuccess"
-        color="success"
-        icon="$success"
-        title="Herzlichen Dank für Ihre Bestellung"
-        :text="Bestaetigung"
-      ></v-alert>
-      <v-form v-model="formValidity" name="bestellung" ref="form"
-        ><v-row>
-          <v-col cols="12" md="6">
-            <!-- <div v-if="!store.isSaisonFirmen">
-              Dieser Bereich ist während der Buttenmost-Saison unseren
-              bestehenden Firmenkunden vorbehalten. Diese können sich mittels
-              eines PIN-Codes, den wir Ihnen vor Saisonstart zustellen,
-              identifizieren. Bei Fragen: Tel 061 751 48 21. Saisonstart:
-              {{ store.SaisonStartStringFirmen }}.
-            </div> -->
-            <div
-              v-if="
-                showpin &&
-                finalCheckError == false &&
-                finalCheckSuccess == false
-              "
-            >
-              Dieser Bereich ist unseren bestehenden Firmenkunden vorbehalten.
-              Bitte identifizieren Sie sich mit dem vierstelligen PIN-Code, den
-              wir Ihnen mitgeteilt haben. Bei Fragen: Tel 061 751 48 21.<br/><br/>
-              <v-alert closable text="Achtung: die letzten Bestellungen nehmen wir bis am 7. November entgegen mit Liefertermin am 11. oder 12. November." type="info"></v-alert>
-              <v-container>
-                <v-row>
-                  <v-col cols="4">
-                    <v-text-field
-                      v-model="pin"
-                      label="PIN"
-                      Name="PIN"
-                      :rules="PINRules"
-                      required
-                    ></v-text-field>
-                  </v-col>
-
-                  <v-col cols="8">
-                    <v-btn
-                      color="success"
-                      elevation="2"
-                      block
-                      @click="checkPin"
-                      :disabled="!formValidity"
-                    >
-                      Anmelden</v-btn
-                    ></v-col
-                  >
-                </v-row>
-              </v-container>
-            </div>
-            <div
-              v-else-if="finalCheckError == false && finalCheckSuccess == false"
-            >
-              <v-banner
-                class="m-0"
-                color="pink-darken-1"
-                icon="mdi-store"
-                lines="one"
-              >
-                <v-banner-text> {{ firma }} <br /></v-banner-text>
-              </v-banner>
-              <v-banner
-                class="m-0"
-                color="pink-darken-1"
-                icon="mdi-calendar"
-                lines="one"
-              >
-              <v-select
-            label="Datum"
-            :items="shippingDays"
-            v-model="Lieferdatum"
-            return-object
-          ></v-select>
-                
-              </v-banner>
-            </div>
-          </v-col>
-
-          <v-col cols="12" md="6">
-            <v-table v-if="!showpin">
-              <tbody>
-                <tr>
-                  <td>
-                    <v-text-field
-                      variant="outlined"
-                      v-model="kistli"
-                      Name="Konfi gross"
-                      type="number"
-                      :max="verfuegbareMengeKistli"
-                      :min="0"
-                      dense
-                    ></v-text-field>
-                  </td>
-                  <td>
-                    Kistli Buttenmost ({{ store.liter_pro_kistli }} Liter) à CHF
-                    {{
-                      (
-                        (store.PreisProLiter + store.PreisBecher) *
-                        store.liter_pro_kistli
-                      ).toFixed(2)
-                    }}
-                  </td>
-                  <td class="text-right">
-                    {{
-                      (
-                        (store.PreisProLiter + store.PreisBecher) *
-                        store.liter_pro_kistli *
-                        kistli
-                      ).toFixed(2)
-                    }}
-                  </td>
-                  <td>CHF</td>
-                </tr>
-                <tr>
-                  <td>
-                    <v-text-field
-                      variant="outlined"
-                      dense
-                      v-model="konfi_klein"
-                      label=""
-                      Name="Konfi klein"
-                      type="number"
-                      :min="0"
-                      hint="Achtung, Konfi gibt es nur noch in Kartons à 6 Gläser"
-                    ></v-text-field>
-                  </td>
-                  <td>
-                    Karton Konfi klein (6 Gläser) à CHF à CHF
-                    {{ store.konfi_klein_preis.toFixed(2) }}
-                  </td>
-
-                  <td class="text-right">
-                    {{ (konfi_klein * store.konfi_klein_preis).toFixed(2) }}
-                  </td>
-                  <td>CHF</td>
-                </tr>
-                <tr>
-                  <td>
-                    <v-text-field
-                      dense
-                      variant="outlined"
-                      v-model="konfi_gross"
-                      label=""
-                      Name="Konfi gross"
-                      type="number"
-                      :min="0"
-                      max-width="5"
-                      hint="Achtung, Konfi gibt es nur noch in Kartons à 6 Gläser"
-                    ></v-text-field>
-                  </td>
-                  <td>
-                    Karton Konfi gross (6 Gläser) à CHF
-                    {{ store.konfi_gross_preis.toFixed(2) }}
-                  </td>
-
-                  <td class="text-right">
-                    {{ (konfi_gross * store.konfi_gross_preis).toFixed(2) }}
-                  </td>
-                  <td>CHF</td>
-                </tr>
-                <!-- <tr>
-                  <td width="120px">
-                    <v-text-field
-                      dense
-                      variant="outlined"
-                      v-model="tee"
-                      Name="Tee"
-                      type="number"
-                      :min="0"
-                    ></v-text-field>
-                  </td>
-                  <td>Säckli Tee à CHF {{ store.tee_preis.toFixed(2) }}</td>
-
-                  <td class="text-right">
-                    {{ (tee * store.tee_preis).toFixed(2) }}
-                  </td>
-                  <td>CHF</td>
-                </tr> -->
-                <tr>
-                  <td>1</td>
-                  <td>Lieferpauschale</td>
-
-                  <td class="text-right">
-                    {{ store.lieferpauschale.toFixed(2) }}
-                  </td>
-                  <td>CHF</td>
-                </tr>
-                <tr>
-                  <td>Total:</td>
-                  <td></td>
-                  <td class="text-right">
-                    {{ total().toFixed(2) }}
-                  </td>
-                  <td>CHF</td>
-                </tr>
-                <tr>
-                  <td colspan="4">
-                    <v-btn
-                      color="success"
-                      elevation="2"
-                      block
-                      @click="order"
-                      :disabled="!formValidity"
-                      :loading="loading"
-                    >
-                      Jetzt bestellen</v-btn
-                    >
-                  </td>
-                </tr>
-              </tbody>
-            </v-table>
-          </v-col></v-row
-        >
-      </v-form></v-container
+  <v-container
+    ><v-alert v-if="bestellungErfolgreich" type="success" closable class="mb-4">
+      Bestellung erfolgreich!
+    </v-alert>
+    <v-stepper
+      v-show="!bestellungErfolgreich"
+      @update:model-value="onStepChange"
+      :items="['Step 1', 'Step 2', 'Step 3', 'Step4']"
     >
-  </div>
-</template>
+      <template v-slot:item.1>
+        <v-card title="Bestellung für Wiederverkäufer" flat
+          ><v-banner
+            class="m-0"
+            color="pink-darken-1"
+            icon="mdi-calendar"
+            lines="one"
+          >
+            <v-select
+              label="Datum"
+              :items="shippingDays"
+              v-model="Lieferdatum"
+              return-object
+            ></v-select>
+          </v-banner>
 
+          <v-table>
+            <tbody>
+              <tr>
+                <td>
+                  <v-text-field
+                    variant="outlined"
+                    v-model="kistli"
+                    Name="Buttenmost"
+                    type="number"
+                    max="100"
+                    :min="0"
+                    dense
+                  ></v-text-field>
+                </td>
+                <td>
+                  Kistli Buttenmost ({{ store.liter_pro_kistli }} Liter) à CHF
+                  {{ preisProKistli().toFixed(2) }}
+                </td>
+                <td class="text-right">
+                  {{ gesamtPreisKistli().toFixed(2) }}
+                </td>
+                <td>CHF</td>
+              </tr>
+              <tr>
+                <td>
+                  <v-text-field
+                    variant="outlined"
+                    dense
+                    v-model="konfi_klein"
+                    label=""
+                    Name="Konfi klein"
+                    type="number"
+                    :min="0"
+                    hint="Achtung, Konfi gibt es nur noch in Kartons à 6 Gläser"
+                  ></v-text-field>
+                </td>
+                <td>
+                  Karton Konfi klein (6 Gläser) à CHF
+                  {{ store.konfi_klein_preis.toFixed(2) }}
+                </td>
+
+                <td class="text-right">
+                  {{ gesamtPreisKonfiKlein().toFixed(2) }}
+                </td>
+                <td>CHF</td>
+              </tr>
+              <tr>
+                <td>
+                  <v-text-field
+                    dense
+                    variant="outlined"
+                    v-model="konfi_gross"
+                    label=""
+                    Name="Konfi gross"
+                    type="number"
+                    :min="0"
+                    max-width="5"
+                    hint="Achtung, Konfi gibt es nur noch in Kartons à 6 Gläser"
+                  ></v-text-field>
+                </td>
+                <td>
+                  Karton Konfi gross (6 Gläser) à CHF
+                  {{ store.konfi_gross_preis.toFixed(2) }}
+                </td>
+
+                <td class="text-right">
+                  {{ gesamtPreisKonfiGross().toFixed(2) }}
+                </td>
+                <td>CHF</td>
+              </tr>
+
+              <tr>
+                <td>Zwischentotal:</td>
+                <td></td>
+                <td class="text-right">
+                  {{ Zwischentotal().toFixed(2) }}
+                </td>
+                <td>CHF</td>
+              </tr>
+            </tbody></v-table
+          >
+        </v-card>
+      </template>
+
+      <template v-slot:item.2>
+        <v-card title="Einloggen / Adresse eingeben" flat>
+          Bestehende Kunden können sich hier mit dem Pin, den wir Ihnen vor
+          Saisonstart per Post zugeschickt haben, einloggen. Alle anderen
+          klicken auf weiter.
+          <v-text-field
+            v-model="pin"
+            label="PIN"
+            Name="PIN"
+            :rules="PINRules"
+            required
+          ></v-text-field>
+        </v-card>
+      </template>
+
+      <template v-slot:item.3>
+        <v-card title="Step Three" flat
+          ><div v-show="firma">{{ firma }}</div>
+
+          <div v-show="!firma">
+            <v-alert
+                v-show="pinFalsch"
+
+              closable
+              text="Achtung: Falscher PIN-Code. Entweder Adresse eingeben und auf Vorkasse bestellen oder Zurück klicken und PIN erneut eingeben. Bei Fragen: Tel 079..."
+              type="info"
+            ></v-alert>
+            <v-form v-model="formValidity">
+              <v-row>
+                <v-col cols="6">
+                  <v-text-field
+                    dense
+                    v-model="Vorname"
+                    label="Vorname"
+                    name="Vorname"
+                  ></v-text-field></v-col
+                ><v-col cols="6">
+                  <v-text-field
+                    dense
+                    v-model="Nachname"
+                    label="Name/Geschäft"
+                    name="Nachname"
+                    required
+                    :rules="nichtLeer"
+                  ></v-text-field>
+                </v-col> </v-row
+              ><v-row dense>
+                <v-col cols="12">
+                  <v-text-field
+                    dense
+                    v-model="Adresse"
+                    label="Adresse"
+                    name="Adresse"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row dense>
+                <v-col cols="12">
+                  <v-text-field
+                    dense
+                    v-model="Adresszusatz"
+                    label="Adresszusatz"
+                    name="Adresszusatz"
+                  ></v-text-field>
+                </v-col> </v-row
+              ><v-row dense>
+                <v-col cols="3" md="3">
+                  <v-text-field
+                    dense
+                    v-model="PLZ"
+                    label="PLZ"
+                    Name="PLZ"
+                    :rules="PLZRules"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="9" md="9">
+                  <v-text-field
+                    dense
+                    v-model="Ort"
+                    label="Ort"
+                    name="Ort"
+                  ></v-text-field> </v-col></v-row
+              ><v-row dense>
+                <v-col cols="12">
+                  <v-text-field
+                    dense
+                    v-model="Email"
+                    label="E-mail"
+                    name="Email"
+                    :rules="EmailRules"
+                    required
+                  ></v-text-field>
+                  <v-textarea
+                    dense
+                    v-model="Bemerkungen"
+                    name="Bemerkungen"
+                    label="Bemerkungen"
+                    auto-grow
+                    rows="1"
+                  ></v-textarea> </v-col></v-row
+            ></v-form></div
+        ></v-card>
+      </template>
+      <template v-slot:item.4>
+        <v-card title="Step Four" flat>
+          <div v-show="rechnung">
+            direkt in Datenbank eintragen mit folgenden Daten
+          </div>
+          <div v-show="!rechnung">
+            provisorisch in Datenbank eintragen und Bezahlprozess auslösen
+          </div>
+          <v-table>
+            <tbody>
+              <tr v-for="(value, key) in getOrderData()" :key="key">
+                <td>
+                  <strong>{{ key }}</strong>
+                </td>
+                <td>{{ value }}</td>
+              </tr>
+            </tbody>
+          </v-table>
+
+          <v-alert
+            v-show="!formValidity && !firma"
+            closable
+            type="error"
+            text="Achtung: Angaben im Formular ungenügend"
+          ></v-alert>
+          <v-btn
+            color="success"
+            elevation="2"
+            block
+            @click="order"
+            :disabled="!formValidity && !firma"
+            :loading="loading"
+          >
+            Jetzt bestellen</v-btn
+          >
+        </v-card>
+      </template>
+    </v-stepper>
+  </v-container>
+</template>
 <script setup>
 const store = useButtenmostStore();
-const route = useRoute();
-let showpin = ref(true);
-
-let PINRules = [
-  (value) => !!value || "PIN fehlt",
-  (value) => /\d\d\d\d/.test(value) || "PIN ungültig",
-];
-let formValidity = ref(false);
-let pin = ref();
-let firma = ref();
-let tour = ref();
-let verfuegbareMenge = ref();
-let verfuegbareMengeTour = ref();
-let totalMengeOnShippingday = ref();
-let totalMengeOnShippingdayTour = ref();
-let nextPossibleShippingDay = ref();
-let kistli = ref(2); //Voreinstellung
-let konfi_gross = ref(0);
-let konfi_klein = ref(0);
-let tee = ref(0);
-let verfuegbareMengeKistli = ref(2);
-let finalCheckError = ref(false);
-let finalCheckSuccess = ref(false);
-let Bestaetigung = ref("");
-let AdminInfos = ref([]);
 const shippingDays = await $fetch(
   "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
 );
+let pin = ref("");
+let loading = ref(false);
+let pinFalsch = ref(false);
+let bestellungErfolgreich = ref(false);
+let Lieferdatum = ref(shippingDays[0]);
+let kistli = ref(2); //Voreinstellung
+let konfi_gross = ref(0);
+let nichtLeer = [(value) => !!value || "Angabe wird benötigt"];
+let PLZRules = [
+  (value) => !!value || "Postleitzahl fehlt",
+  (value) => /\d\d\d\d/.test(value) || "Postleitzahl ungültig",
+];
+let EmailRules = [
+  (value) => !!value || "E-Mail-Adresse wird benötigt",
+  (value) =>
+    value.indexOf("@") !== 0 || "Gültige E-Mail-Adresse wird benötigt ",
+  (value) => value.includes("@") || "Gültige E-Mail-Adresse wird benötigt",
+  (value) => value.includes(".") || "Gültige E-Mail-Adresse wird benötigt",
+  (value) =>
+    value.indexOf(".") <= value.length - 2 ||
+    "Gültige E-Mail-Adresse wird benötigt",
+];
+let konfi_klein = ref(0);
+let firma = ref();
+let vertrieb = ref();
+let rechnung = ref(false);
+let Vorname = ref("");
+let Nachname = ref("");
+let Adresse = ref("");
+let Adresszusatz = ref("");
+let PLZ = ref("");
+let Ort = ref("");
+let Email = ref("");
+let Bemerkungen = ref("");
 
-async function checkPin() {
+let formValidity = ref(false);
+
+function preisProKistli() {
+  return (Number(store.PreisProLiter) + Number(store.PreisBecher)) * Number(store.liter_pro_kistli);
+}
+
+function gesamtPreisKistli() {
+  return preisProKistli() * Number(kistli.value);
+}
+
+function gesamtPreisKonfiKlein() {
+  return Number(konfi_klein.value) * Number(store.konfi_klein_preis);
+}
+
+function gesamtPreisKonfiGross() {
+  return Number(konfi_gross.value) * Number(store.konfi_gross_preis);
+}
+
+function Zwischentotal() {
+  return (
+    gesamtPreisKistli() +
+    gesamtPreisKonfiKlein() +
+    gesamtPreisKonfiGross()
+  );
+}
+
+function getOrderData() {
+  // Basisfelder, die immer gleich sind
+  const base = {
+    Konfi_gr: konfi_gross.value,
+    Konfi_kl: konfi_klein.value,
+    Menge: kistli.value * store.liter_pro_kistli,
+    Lieferdatum: Lieferdatum.value.value,
+    Betrag: firma.value
+      ? (Zwischentotal() + store.lieferpauschale).toFixed(2)
+      : Zwischentotal().toFixed(2),
+    Lieferpauschale: firma.value && vertrieb.value ? store.lieferpauschale : 0,
+    Typ: "Standard",
+  };
+
+  if (firma.value) {
+    // registriert
+    return {
+      ...base,
+      Geschaeft: firma.value,
+      vertrieb: vertrieb.value ? vertrieb.value : "Abholung",
+      Status: rechnung.value ? "Rechnung offen" : "bestellt",
+    };
+  } else {
+    // nicht registriert
+    return {
+      ...base,
+      Email: Email.value,
+      Vorname: Vorname.value,
+      Name: Nachname.value,
+      Adresse: Adresse.value,
+      Adresszusatz: Adresszusatz.value,
+      PLZ: PLZ.value,
+      Ort: Ort.value,
+      Notes: Bemerkungen.value,
+      vertrieb: "Abholung",
+      Status: "bestellt",
+    };
+  }
+}
+
+function onStepChange(val) {
+  if (val === 3) {
+    checkPIN();
+  }
+}
+
+async function checkPIN() {
   let LadenURL =
     '/api/airtable_get/?basis=Verkaufsstellen&view=alle&filter={Code}="' +
     pin.value +
     '"';
-  let { Geschaeft, Tour } = await $fetch(LadenURL);
+  let { Geschaeft, Vertriebskanal, Rechnung } = await $fetch(LadenURL);
 
   if (Geschaeft) {
     firma.value = Geschaeft;
-    tour.value = Tour;
-    nextPossibleShippingDay.value = await findNextPossibleShippingDay();
-    showpin.value = false;
+    vertrieb.value = Vertriebskanal;
+    console.log("vertrieb", vertrieb);
+    rechnung.value = Rechnung;
+    pinFalsch.value = false;
   }
-}
-
-async function getMenge(Datum) {
-  let recordsURL =
-    '/api/airtable_get/?basis=tblbU1zmZ2kumAXEY&view=verfuegbare_menge&filter=DATESTR({Lieferdatum})="' +
-    Datum +
-    '"';
-  const recordsList = await $fetch(recordsURL);
-  if (recordsList.length > 0) {
-    const einzelmengen = await recordsList.map(
-      (einzelmenge) => einzelmenge.Menge
-    );
-    const einzelmengen_tour = await recordsList.map((einzelmenge) => {
-      if (einzelmenge.Tour == tour.value) {
-        return einzelmenge.Menge;
-      } else {
-        return 0;
-      }
-    });
-    let einzelmengen_total = einzelmengen.reduce((acc, curr) => acc + curr);
-    let einzelmengen_tour_total = einzelmengen_tour.reduce(
-      (acc, curr) => acc + curr
-    );
-
-    return { total: einzelmengen_total, tour: einzelmengen_tour_total };
-    //erklärung für diese Formel hier: https://www.linkedin.com/pulse/how-sum-total-from-array-object-properties-javascript-schouwenaar
-  } else if (recordsList.Menge > 0 && recordsList.Menge > 0) {
-    return { total: recordsList.Menge, tour: recordsList.Menge };
-  } else {
-    return { total: 0, tour: 0 };
-  }
-}
-
-async function findNextPossibleShippingDay() {
-  let returnvalue = "";
-  for (let i = 0; i < shippingDays.length; i++) {
-    var current = new Date(shippingDays[i].Datum);
-    console.log("current", current);
-    if (current > store.heute) {
-      let currentMenge = await getMenge(shippingDays[i].Datum); //liefert zurück: currentMenge.total & currentMenge.tour
-      let verfuegbar = {
-        total: shippingDays[i].Menge - currentMenge.total,
-        tour: store.KapazitaetLieferwagen - currentMenge.tour,
-      };
-      let verfuegbarMaximal =
-        verfuegbar.total > verfuegbar.tour ? verfuegbar.tour : verfuegbar.total;
-
-      AdminInfos.value.push({
-        Datum: shippingDays[i].Datum,
-        Menge: shippingDays[i].Menge,
-        bestellt: currentMenge.total,
-        verfuegbar: verfuegbar.total,
-        MengeLieferwagen: store.KapazitaetLieferwagen,
-        bestelltLieferwagen: currentMenge.tour,
-        verfuegbarLieferwagen: verfuegbar.tour,
-        verfuegbarTotal: verfuegbarMaximal,
-      });
-      if (verfuegbarMaximal > store.liter_pro_kistli) {
-        returnvalue = shippingDays[i].Datum;
-        verfuegbareMengeKistli.value = Math.floor(
-          verfuegbarMaximal / store.liter_pro_kistli
-        );
-        if (verfuegbareMengeKistli.value < 3) {
-          kistli.value = verfuegbareMengeKistli.value;
-        }
-        break;
-      }
+    else {
+        pinFalsch.value = true;
     }
-  }
-  return returnvalue;
 }
 
-function total() {
-  return (
-    kistli.value *
-      store.liter_pro_kistli *
-      (store.PreisProLiter + store.PreisBecher) +
-    konfi_gross.value * store.konfi_gross_preis +
-    konfi_klein.value * store.konfi_klein_preis +
-    tee.value * store.tee_preis +
-    store.lieferpauschale
-  );
-}
-
-function lieferdatum_angezeigt(nextPossibleShippingDay, tour) {
-  let date = new Date(nextPossibleShippingDay);
-  return date.toLocaleDateString("de-DE");
-}
 async function order() {
-  const finalCheckMenge = await getMenge(nextPossibleShippingDay.value);
+  let Vorrat = await $fetch("/api/vorrat/");
+  let verkauftURL =
+    'api/verkauft/?filter=DATESTR({Lieferdatum})="' +
+    Lieferdatum.value.value +
+    '"&vertrieb=' +
+    vertrieb.value;
+  let { verkaufttotal, verkauftvertriebskanal } = await $fetch(verkauftURL);
 
   console.log(
-    "kistli:" + kistli.value + "finalcheckmenge" + finalCheckMenge.total+"verfuegbare kistli total:"+verfuegbareMengeKistli.value
+    "Vorrat",
+    Vorrat,
+    "bereits verkauft an diesem Tag",
+    verkaufttotal,
+    "bereits verkauft in derselben Tour",
+    verkauftvertriebskanal,
+    "bestellte Menge:",
+    kistli.value * store.liter_pro_kistli,
+    "Vertrieb:",
+    vertrieb.value
   );
-  // if (
-  //   kistli.value * store.liter_pro_kistli >
-  //     verfuegbareMengeKistli.value * store.liter_pro_kistli -
-  //       finalCheckMenge.total ||
-  //   kistli.value * store.liter_pro_kistli >
-  //     verfuegbareMengeKistli.value * store.liter_pro_kistli -
-  //       finalCheckMenge.tour
-  // ) {
-  //   finalCheckError.value = true;
-  //   showpin.value = true;
+  if (
+    store.liter_pro_kistli * kistli.value < Vorrat - verkaufttotal &&
+    (store.liter_pro_kistli * kistli.value <
+      store.KapazitaetLieferwagen - verkauftvertriebskanal ||
+      vertrieb.value == undefined)
+  ) {
+    console.log(
+      "Genügend Buttenmost vorhanden, genügend Kapazität im Lieferwagen vorhanden, Bestellung möglich"
+    );
 
-  //   console.log(
-  //     "---Log-Status fehlerhaft, Logik eventuell korrekt. Menge hat sich verändert, Eintrag nicht erstellt. Verfügbare Menge beim Start Bestellvorgang war: " +
-  //       totalMengeOnShippingday.value +
-  //       ", Verfügbare Menge Neu: " +
-  //       finalCheckMenge.total
-  //   );
-  // } else {
     const airtable = await $fetch("/api/airtable", {
-      method: "POST",
-      body: {
-        Geschaeft: firma.value,
-        Typ: "Laden",
-        Status: "bestellt",
-        Betrag: total(),
-        Menge: kistli.value * store.liter_pro_kistli,
-        Lieferdatum: nextPossibleShippingDay.value, //formatiert in yyyy-mm-dd
-        Konfi_gr: konfi_gross.value,
-        Konfi_kl: konfi_klein.value,
-        Tee: tee.value,
-        Lieferpauschale: store.lieferpauschale,
-        Tour: tour.value,
-      },
-    });
+  method: "POST",
+  body: getOrderData(),
+});
     console.log(
       "Bestellung erfolgreich in Airtable eingetragen, ID: " + airtable.body
     );
-    finalCheckSuccess.value = true;
-    Bestaetigung.value = JSON.stringify({
-      Lieferdatum: nextPossibleShippingDay.value, //formatiert in yyyy-mm-dd
-      Geschaeft: firma.value,
-      Preis: total(),
-      Menge: kistli.value * store.liter_pro_kistli,
-      KonfiGross: konfi_gross.value,
-      KonfiKlein: konfi_klein.value,
-      Tee: tee.value,
-      Lieferpauschale: store.lieferpauschale,
-      Tour: tour.value,
-    });
-    showpin.value = true;
+
+    // wenn nicht auf Rechnung, dann Payrexx Gateway öffnen
+    if (rechnung.value) {
+      bestellungErfolgreich.value = true;
+    } else {
+      const payrexx = await $fetch("/api/payrexx", {
+        method: "POST",
+        body: {
+          ...getOrderData(),
+    AirtableRecordID: airtable.body
+        },
+      });
+      console.log("Payrexx Gateway erfolgreich eröffnet: " + payrexx.body);
+      window.location.href = payrexx.body;
+    }
+  } else {
+    console.log("Bestellung nicht möglich");
+    return;
+  }
+
   //}
 }
-
-const { data } = await useFetch(
-  "/api/airtable_get?basis=Verkaufsstellen&view=website&verkaufsstellensort=true"
-);
-const items = await JSON.parse(JSON.stringify(data.value));
-let Laeden = items.map((data) => ({ title: data.Laden, value: data.Code }));
-let Code = ref();
-
-watch(Code, (newCode) => {
-  pin.value = newCode.value;
-});
 </script>
