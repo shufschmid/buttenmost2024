@@ -135,15 +135,7 @@ async function order() {
       beliebige Menge in einzelnem Gefäss: nur an folgenden Daten möglich: Post-Daten  -->
 
 
-    Ab {{ store.SaisonStartString }} bis Anfangs November ist unser frischer
-    Buttenmost wieder bei uns am
-    <a href="https://goo.gl/maps/vfXWt5riNgEBkc5eA">Kirchrain 17 in Hochwald</a>
-    erhältlich. Preis Direktverkauf:
-    {{ store.preisDirektverkauf.toFixed(2) }} Franken pro Liter. Ebenfalls
-    angeboten wird unser Buttenmost an diversen Märkten sowie
-    <a href="verkaufsstellen/">in über 70 Läden in der ganzen Region.</a>
-
-    <br /><br />
+    
     <h2 id="onlineshop">Online-Shop</h2>
     Wir verschicken Buttenmost ab zwei Liter per A-Post gegen Vorauskasse, nach
     Eingabe Ihrer Bestellung können Sie mit Kreditkarte oder per Twint
