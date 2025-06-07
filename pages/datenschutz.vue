@@ -2,8 +2,8 @@
   <v-container fluid
     ><v-col>Lizenz: Creative Commons "Namensnennung 4.0 International" (Namensnennung: "Basierend auf
 DSAT.ch.")<br/><br/>
-Datenschutzerklärung Buttenmost Inhaberin Verena Ming
-Version vom 1.9.2023<br/><br/>
+Datenschutzerklärung Buttenmost Hochwald GmbH
+Version vom 1.5.2025<br/><br/>
 In dieser Datenschutzerklärung erläutern wir, wie wir Personendaten erheben und sonst bearbeiten. Das ist keine abschliessende Beschreibung; allenfalls regeln andere Datenschutzerklärungen oder allgemeine Geschäftsbedingungen, Teilnahmebedingungen und ähnliche Dokumente
 spezifische Sachverhalte. Unter Personendaten werden alle Angaben verstanden, die sich auf
 eine bestimmte oder bestimmbare Person beziehen.
@@ -13,8 +13,7 @@ Diese Datenschutzerklärung ist auf die Anforderungen der EU-Datenschutz-Grundve
 («DSGVO»), das Schweizer Datenschutzgesetz («DSG») und das revidierte Schweizer Datenschutzgesetz («revDSG») ausgelegt. Ob und inwieweit diese Gesetze anwendbar sind, hängt
 jedoch vom Einzelfall ab.<br/><br/>
 1. Verantwortlicher / Datenschutzbeauftrager / Vertreter
-Verantwortlich für die Datenbearbeitungen, die wir hier beschreiben, ist Verena Ming, Mattenweg
-17, 4146 Hochwald, info@buttenmos.ch. Wenn Sie datenschutzrechtliche Anliegen haben, können Sie uns diese an obenstehende Kontaktadresse mitteilen.
+Verantwortlich für die Datenbearbeitungen, die wir hier beschreiben, ist Samuel Hufschmid, Jacob Burckhardt-Strasse 17, 4052 Basel, info@buttenmost.ch. Wenn Sie datenschutzrechtliche Anliegen haben, können Sie uns diese an obenstehende Kontaktadresse mitteilen.
 <br/><br/>2. Erhebung und Bearbeitung von Personendaten
 Wir bearbeiten in erster Linie die Personendaten, die wir im Rahmen unserer Geschäftsbeziehung mit unseren Kunden und anderen Geschäftspartnern von diesen und weiteren daran beteiligten Personen erhalten oder die wir beim Betrieb unserer Websites, Apps und weiteren Anwendungen von deren Nutzern erheben.
 Soweit dies erlaubt ist, entnehmen wir auch öffentlich zugänglichen Quellen (z.B. Betreibungsregister, Grundbücher, Handelsregister, Presse, Internet) gewisse Daten oder erhalten solche von

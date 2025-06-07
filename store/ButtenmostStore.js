@@ -13,9 +13,10 @@ export const useButtenmostStore = defineStore("buttenmost", {
       lieferpauschale: 22,
       kistli: 2, //Voreinstellung für Bestellformular Läden
       liter_pro_kistli: 14,
-      konfi_gross_preis: 7.7*6,
-      konfi_klein_preis: 4.3*6,
-      tee_preis: 5.5,
+      konfi_gross_preis: 7.7,
+      konfi_gross_anzahl_pro_karton: 6,
+      konfi_klein_preis: 4.3,
+      konfi_klein_anzahl_pro_karton: 6,
       heute: new Date(),
       StandardMenge: 8,
       MinimumMenge: 2,
@@ -31,7 +32,6 @@ export const useButtenmostStore = defineStore("buttenmost", {
         { Menge: 20, Preis: 10.5, Gewicht: 720 },
         { Menge: 29, Preis: 11.9, Gewicht: 821 },
         { Menge: 0, Preis: 0, Gewicht: 0 },
-        
       ],
       Kleinmengenzuschlag: [
         { Grenze: 4, value: 18 },
@@ -43,8 +43,20 @@ export const useButtenmostStore = defineStore("buttenmost", {
       ],
       authenticated: false,
       loading: false,
-      mehrwertsteuernummer: "CHE-369.928.965",
+      mehrwertsteuernummer: "CHE-202.359.074 MWST",
       mehrwertsteuersatz: 2.6,
+      firmenadresse: {
+        name: "Buttenmost Hochwald GmbH",
+        strasse: "Geissackerweg 17",
+        plz: "4146",
+        ort: "Hochwald",
+        telefon: "079 399 41 46",
+        email: "info@buttenmost.ch",
+        web: "www.buttenmost.ch",
+        mehrwertsteuernummer: "CHE-202.359.074 MWST",
+        UID: "CHE-202.359.074",
+        iban: "CH53 8080 8004 2768 0936 9",
+      },
     };
   },
   getters: {

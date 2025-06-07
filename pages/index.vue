@@ -22,11 +22,10 @@ const showMore = ref(false)
     border="start"
   >
     Achtung: Für Kunden, die grössere Mengen Buttenmost für den Weiterverkauf benötigen, gibt es neu ein Online-Formular zur Vorbestellung. <span v-if="showMore"><br/><br/>
-Für Vorberstellungen nutzen Sie den 
-    <a href="/b2b">Shop für Firmenkunden</a>. Bitte bachten Sie, dass wir Buttenmost zum Wiederverkauf ausschliesslich in Kisten à 14 1-Liter-Becher und gegen Vorauskasse anbieten. <br/><br/>Wenn
-    Sie Buttenmost in Kesseln von 2 bis 28 Litern beziehen möchten, dann ist
-    dies nur noch an vier Daten möglich. Verwenden Sie in diesem Fall für die Bestellung den
-    <a href="/shop">Shop für Postkunden</a> und wählen Sie "zum 
+Für Vorberstellungen ab 10 Liter nutzen Sie den 
+    <a href="/b2b">Shop für Firmenkunden</a>. Bitte bachten Sie, dass wir Buttenmost zum Wiederverkauf ausschliesslich in Einheiten von jeweils 14 1-Liter-Bechern und gegen Vorauskasse anbieten. <br/><br/>Wenn
+    Sie in Kessel abgefüllten Buttenmost (2 bis 28 Liter) beziehen möchten, dann ist weiterhin möglich, jedoch nur noch an vier Daten. Verwenden Sie in diesem Fall für die Bestellung den
+    <a href="/shop">Shop für Postkunden</a>, wählen Sie das gewünschte Datum aus und klicken auf die Option "zum 
     Abholen". </span><a href="#" @click.prevent="showMore = !showMore" style="color:#2196f3; font-weight:600;">
       {{ showMore ? 'Weniger anzeigen' : 'Weitere Infos dazu' }}
     </a>
@@ -36,7 +35,7 @@ Für Vorberstellungen nutzen Sie den
   class="custom-info-box mx-auto my-4"
 >
 
-  Für alle anderen bleibt alles beim Alten: Ab
+  <b>Für alle anderen bleibt alles beim Alten: </b>Ab
     {{ store.SaisonStartString }} gibt's unseren Buttenmost in kleineren Mengen
     ohne Vorbestellung am Kirchrain 17 in Hochwald, an diversen
     Märkten sowie an über

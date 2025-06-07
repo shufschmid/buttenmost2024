@@ -6,11 +6,27 @@
     <v-stepper
       v-show="!bestellungErfolgreich"
       @update:model-value="onStepChange"
-      :items="['Step 1', 'Step 2', 'Step 3', 'Step4']"
+      :items="['Menge & Datum', 'Anmelden', 'Adresseingabe', 'Bestätigen']"
+      next-text="Weiter"
+      prev-text="Zurück"
     >
       <template v-slot:item.1>
         <v-card title="Bestellung für Wiederverkäufer" flat
-          ><v-banner
+          ><v-alert
+    type="info"
+    variant="tonal"
+    class="mx-auto my-4"
+    style="max-width: 100%; font-size: 1rem; font-weight: 500"
+    border="start"
+  >
+    Dieser Bereich ist für Wiederverkäufer gedacht. Hier können Sie Buttenmost in Kistli mit jeweils 14 1-Liter-Bechern sowie Konfis in Kartons à jeweils 6 Gläser zu Vorzugspreisen bestellen. <span v-if="showMore"><br/><br/>
+    Falls Sie per Post einen Identifikationscode erhalten haben, können Sie diesen auf der nächsten Seite eingeben. Ansonsten wird ein Formular zur Eingabe der Adresse angegeben. <br/><br/>
+    Bitte beachten Sie, dass Bestellungen auf Rechnung nur für registrierte Wiederverkäufer möglich ist. Ansonsten bitten wir Sie, ihre Bestellung gleich anschliessend per Kreditkarte, Postcard oder per Twint zu begleichen. Danke! </span><a href="#" @click.prevent="showMore = !showMore" style="color:#2196f3;" >
+      {{ showMore ? 'Weniger anzeigen' : 'Weitere Infos einblenden' }}
+    </a>
+     
+    </v-alert
+  ><v-banner
             class="m-0"
             color="pink-darken-1"
             icon="mdi-calendar"
@@ -39,7 +55,7 @@
                   ></v-text-field>
                 </td>
                 <td>
-                  Kistli Buttenmost ({{ store.liter_pro_kistli }} Liter) à CHF
+                  Kistli Buttenmost ({{ store.liter_pro_kistli }} Liter, CHF {{ store.PreisProLiter.toFixed(2) }} pro Liter) à CHF
                   {{ preisProKistli().toFixed(2) }}
                 </td>
                 <td class="text-right">
@@ -57,12 +73,12 @@
                     Name="Konfi klein"
                     type="number"
                     :min="0"
-                    hint="Achtung, Konfi gibt es nur noch in Kartons à 6 Gläser"
+                    hint="Achtung, Konfi neu in Kartons"
                   ></v-text-field>
                 </td>
                 <td>
-                  Karton Konfi klein (6 Gläser) à CHF
-                  {{ store.konfi_klein_preis.toFixed(2) }}
+                  Karton Konfi klein (6 Gläser, CHF {{ store.konfi_klein_preis.toFixed(2) }} pro Glas) à CHF
+                  {{ (store.konfi_gross_anzahl_pro_karton*store.konfi_klein_preis).toFixed(2) }} 
                 </td>
 
                 <td class="text-right">
@@ -81,12 +97,12 @@
                     type="number"
                     :min="0"
                     max-width="5"
-                    hint="Achtung, Konfi gibt es nur noch in Kartons à 6 Gläser"
+                    hint="Achtung, Konfis neu in Kartons"
                   ></v-text-field>
                 </td>
                 <td>
-                  Karton Konfi gross (6 Gläser) à CHF
-                  {{ store.konfi_gross_preis.toFixed(2) }}
+                  Karton Konfi gross (6 Gläser, CHF {{ store.konfi_gross_preis.toFixed(2) }} pro Glas) à CHF
+                  {{ (store.konfi_gross_anzahl_pro_karton*store.konfi_gross_preis).toFixed(2) }}
                 </td>
 
                 <td class="text-right">
@@ -110,9 +126,19 @@
 
       <template v-slot:item.2>
         <v-card title="Einloggen / Adresse eingeben" flat>
-          Bestehende Kunden können sich hier mit dem Pin, den wir Ihnen vor
+          <v-alert
+    type="info"
+    variant="tonal"
+    class="mx-auto my-4"
+    style="max-width: 100%; font-size: 1rem; font-weight: 500"
+    border="start"
+  >
+    Bestehende Kunden können sich hier mit dem Pin, den wir Ihnen vor
           Saisonstart per Post zugeschickt haben, einloggen. Alle anderen
           klicken auf weiter.
+     
+    </v-alert
+  >
           <v-text-field
             v-model="pin"
             label="PIN"
@@ -124,8 +150,10 @@
       </template>
 
       <template v-slot:item.3>
-        <v-card title="Step Three" flat
-          ><div v-show="firma">{{ firma }}</div>
+        <v-card flat
+          ><v-alert v-show="firma" type="success" class="mb-4">
+      Sie haben sich erfolgreich angemeldet. <br/><b>{{ firma }}</b>
+    </v-alert>
 
           <div v-show="!firma">
             <v-alert
@@ -212,23 +240,16 @@
         ></v-card>
       </template>
       <template v-slot:item.4>
-        <v-card title="Step Four" flat>
+        <v-card title="Bestellübersicht" flat>
           <div v-show="rechnung">
             direkt in Datenbank eintragen mit folgenden Daten
           </div>
           <div v-show="!rechnung">
             provisorisch in Datenbank eintragen und Bezahlprozess auslösen
           </div>
-          <v-table>
-            <tbody>
-              <tr v-for="(value, key) in getOrderData()" :key="key">
-                <td>
-                  <strong>{{ key }}</strong>
-                </td>
-                <td>{{ value }}</td>
-              </tr>
-            </tbody>
-          </v-table>
+
+          <BestellungTable :data="getOrderData()"/>
+          
 
           <v-alert
             v-show="!formValidity && !firma"
@@ -240,6 +261,7 @@
             color="success"
             elevation="2"
             block
+            
             @click="order"
             :disabled="!formValidity && !firma"
             :loading="loading"
@@ -256,6 +278,8 @@ const store = useButtenmostStore();
 const shippingDays = await $fetch(
   "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
 );
+const showMore = ref(false)
+
 let pin = ref("");
 let loading = ref(false);
 let pinFalsch = ref(false);
@@ -279,7 +303,7 @@ let EmailRules = [
     "Gültige E-Mail-Adresse wird benötigt",
 ];
 let konfi_klein = ref(0);
-let firma = ref();
+let firma = ref(false);
 let vertrieb = ref();
 let rechnung = ref(false);
 let Vorname = ref("");
@@ -302,11 +326,11 @@ function gesamtPreisKistli() {
 }
 
 function gesamtPreisKonfiKlein() {
-  return Number(konfi_klein.value) * Number(store.konfi_klein_preis);
+  return Number(konfi_klein.value) * Number(store.konfi_klein_preis)* store.konfi_gross_anzahl_pro_karton;
 }
 
 function gesamtPreisKonfiGross() {
-  return Number(konfi_gross.value) * Number(store.konfi_gross_preis);
+  return Number(konfi_gross.value) * Number(store.konfi_gross_preis)* store.konfi_gross_anzahl_pro_karton;
 }
 
 function Zwischentotal() {
@@ -325,8 +349,8 @@ function getOrderData() {
     Menge: kistli.value * store.liter_pro_kistli,
     Lieferdatum: Lieferdatum.value.value,
     Betrag: firma.value
-      ? (Zwischentotal() + store.lieferpauschale).toFixed(2)
-      : Zwischentotal().toFixed(2),
+      ? (Zwischentotal() + store.lieferpauschale)
+      : Zwischentotal(),
     Lieferpauschale: firma.value && vertrieb.value ? store.lieferpauschale : 0,
     Typ: "Standard",
   };
