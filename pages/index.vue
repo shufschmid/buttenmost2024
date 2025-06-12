@@ -42,7 +42,7 @@ Für Vorberstellungen ab 10 Liter nutzen Sie den
     <a href="/verkaufsstellen"
       >70 Verkaufsstellen in der Region</a> und wir verschicken ihn auch weiterhin per Post.
 </div>
-  <shop></shop><Social></Social>
+  <shop id="shop-section"></shop><Social></Social>
   <Verkaufsstellen anzahl="20"></Verkaufsstellen>
 </template>
 

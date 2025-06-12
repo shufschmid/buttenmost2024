@@ -10,11 +10,12 @@ app fixed>
     <v-navigation-drawer v-model="drawer" class="d-print-none" style="padding-top:10px">
       <NuxtLink to="/" style="display:inline-block"><v-img v-if="!mobile" src="/logo.svg" style="padding-left:10px" width="250" class="mx-auto"></v-img></NuxtLink>
       <v-list-item title="Home" to="/"></v-list-item>
+ <v-list-item title="Shop: Privatkunden" to="/#shop-section"></v-list-item>
+      <v-list-item title="Shop: Firmenkunden" to="/b2b"></v-list-item>
       <v-list-item title="Verkaufsstellen" to="/verkaufsstellen"></v-list-item>
       <v-list-item title="Rezepte" to="rezepte"></v-list-item>
       <v-list-item title="Medienberichte" to="media"></v-list-item>
       
-      <v-list-item title="Wiederverkäufer" to="/b2b"></v-list-item>
       <v-list-item title="Facebook" href="https://www.facebook.com/buttenmost" target="_blank"></v-list-item>
       <v-list-item title="Instagram" href="https://www.instagram.com/buttenmost.ch/" target="_blank"></v-list-item>
       <v-list-item title="Datenschutzerklärung" to="datenschutz"></v-list-item>

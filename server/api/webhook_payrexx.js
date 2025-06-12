@@ -61,7 +61,9 @@ export default defineEventHandler(async (event) => {
   if(webhookData.transaction.status == "confirmed"){
   let airtableAntwort = await base("tblbU1zmZ2kumAXEY")
     .update(webhookData.transaction.referenceId, {
-      Status: "bezahlt"
+      Status: "bezahlt",
+      BezahlDatum: webhookData.transaction.time,
+      BezahlMethode: webhookData.transaction.payment.brand
     })
     .then(e => {
       console.log(e);
