@@ -5,7 +5,7 @@ export const useButtenmostStore = defineStore("buttenmost", {
     return {
       SaisonStart: new Date("2025-03-24 12:00:00"),
       SaisonStartFirmen: new Date("2025-09-24 12:00:00"),
-      PreisProLiter: 7.5,
+      PreisProLiter: 7.5, //3.69 Einkaufspreis 
       PreisBecher: 0.9,
       preisDirektverkauf: 10,
       SaisonEnde: new Date("2025-11-12 12:00:00"),
@@ -34,7 +34,7 @@ export const useButtenmostStore = defineStore("buttenmost", {
         { Menge: 0, Preis: 0, Gewicht: 0 },
       ],
       Kleinmengenzuschlag: [
-        { Grenze: 4, value: 18 },
+        { Grenze: 4, value: 12 },
         { Grenze: 8, value: 9 },
       ],
       Rabatt: [

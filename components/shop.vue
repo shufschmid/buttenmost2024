@@ -147,7 +147,7 @@ async function order() {
     ></v-alert>
     <v-alert
       closable
-      text="Kleinstmengen können Sie bei uns ohne Vorbestellung und Vorauskasse abholen."
+      text="Kleinstmengen können Sie bei uns ohne Vorbestellung abholen und vor Ort bezahlen (mit Bargeld und per Twint, keine Bank- / Kreditkarten)."
       type="info" v-show="abholen && Menge < 8"
     ></v-alert>
     <v-container class="pa-0 ma-0" v-show="true">

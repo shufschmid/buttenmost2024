@@ -304,6 +304,7 @@ let EmailRules = [
 ];
 let konfi_klein = ref(0);
 let firma = ref(false);
+let firmenEmail = ref("");
 let vertrieb = ref();
 let rechnung = ref(false);
 let Vorname = ref("");
@@ -362,6 +363,7 @@ function getOrderData() {
       Geschaeft: firma.value,
       vertrieb: vertrieb.value ? vertrieb.value : "Abholung",
       Status: rechnung.value ? "Rechnung offen" : "bestellt",
+      Email: firmenEmail.value,
     };
   } else {
     // nicht registriert
@@ -392,7 +394,7 @@ async function checkPIN() {
     '/api/airtable_get/?basis=Verkaufsstellen&view=alle&filter={Code}="' +
     pin.value +
     '"';
-  let { Geschaeft, Vertriebskanal, Rechnung } = await $fetch(LadenURL);
+  let { Geschaeft, Vertriebskanal, Rechnung, Email } = await $fetch(LadenURL);
 
   if (Geschaeft) {
     firma.value = Geschaeft;
@@ -400,6 +402,7 @@ async function checkPIN() {
     console.log("vertrieb", vertrieb);
     rechnung.value = Rechnung;
     pinFalsch.value = false;
+    firmenEmail.value = Email;
   }
     else {
         pinFalsch.value = true;

@@ -124,7 +124,7 @@ ctx.drawImage(logoImg, 110, 0); // Jetzt klappt es!
     const ascii = Array.from(buf).map((b) => String.fromCharCode(b));
     b64 = btoa(ascii.join(""));
 
-    console.log(b64);
+    
     console.log("test");
   }
   var options = {
