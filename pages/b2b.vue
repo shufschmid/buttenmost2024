@@ -143,7 +143,6 @@
             v-model="pin"
             label="PIN"
             Name="PIN"
-            :rules="PINRules"
             required
           ></v-text-field>
         </v-card>
@@ -409,6 +408,23 @@ async function checkPIN() {
     }
 }
 
+
+async function sms(to, sms) {
+  const response = await $fetch("/api/sms", {
+    method: 'POST',
+    body: {
+      to: to,
+      sms: sms
+    }
+  })
+  
+  if (response.ok) {
+    console.log('SMS sent successfully:', response?.data?.messageSid);
+  } else {
+    console.error('Error sending SMS:', response?.data?.error || 'Unbekannter Fehler');
+  }
+}
+
 async function order() {
   let Vorrat = await $fetch("/api/vorrat/");
   let verkauftURL =
@@ -416,6 +432,7 @@ async function order() {
     Lieferdatum.value.value +
     '"&vertrieb=' +
     vertrieb.value;
+    console.log(verkauftURL)
   let { verkaufttotal, verkauftvertriebskanal } = await $fetch(verkauftURL);
 
   console.log(
@@ -423,21 +440,40 @@ async function order() {
     Vorrat,
     "bereits verkauft an diesem Tag",
     verkaufttotal,
-    "bereits verkauft in derselben Tour",
+    "bereits verkauft in derselben Tour:",
     verkauftvertriebskanal,
     "bestellte Menge:",
     kistli.value * store.liter_pro_kistli,
     "Vertrieb:",
     vertrieb.value
   );
-  if (
-    store.liter_pro_kistli * kistli.value < Vorrat - verkaufttotal &&
-    (store.liter_pro_kistli * kistli.value <
-      store.KapazitaetLieferwagen - verkauftvertriebskanal ||
-      vertrieb.value == undefined)
-  ) {
+const gewuenschteMenge = store.liter_pro_kistli * kistli.value;
+const genugVorrat = gewuenschteMenge < Vorrat - verkaufttotal;
+const genugKapazitaetLieferwagen = gewuenschteMenge < store.KapazitaetLieferwagen - verkauftvertriebskanal;
+const zumAbholen = vertrieb.value == undefined;
+
+  console.log("=== Admin Check ===");
+  console.log(
+    `gewünschte Menge: ${gewuenschteMenge}`
+  );
+  console.log(
+    `Genug Vorrat: ${gewuenschteMenge} < ${Vorrat} - ${verkaufttotal} = ${Vorrat - verkaufttotal} ` +
+    (genugVorrat ? "✔️" : "❌")
+  );
+  console.log(
+    `Genug Kapazität Lieferwagen: ${gewuenschteMenge} < ${store.KapazitaetLieferwagen} - ${verkauftvertriebskanal} = ${store.KapazitaetLieferwagen - verkauftvertriebskanal} ` +
+    (genugKapazitaetLieferwagen ? "✔️" : "❌")
+  );
+  console.log(
+    `Zum Abholen: ${vertrieb === undefined ? "Ja" : "Nein"} `
+  );
+  console.log("===================");
+
+if (genugVorrat && (genugKapazitaetLieferwagen || zumAbholen)) {
+  // ...existing code...
+
     console.log(
-      "Genügend Buttenmost vorhanden, genügend Kapazität im Lieferwagen vorhanden, Bestellung möglich"
+      "Genügend Buttenmost vorhanden, genügend Kapazität im Lieferwagen vorhanden (oder bestellt zum Abholen), Bestellung möglich"
     );
 
     const airtable = await $fetch("/api/airtable", {
@@ -464,6 +500,7 @@ async function order() {
     }
   } else {
     console.log("Bestellung nicht möglich");
+  sms('+41796169078', 'Bestellung abgelehnt : ' + Lieferdatum.value.value + ', ' + kistli.value * store.liter_pro_kistli + ' Liter, ' + vertrieb.value + ', von:' + firma.value );
     return;
   }
 

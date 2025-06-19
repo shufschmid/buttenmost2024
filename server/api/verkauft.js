@@ -25,9 +25,8 @@ export default defineEventHandler(async (event) => {
     resp = await base(basis).select(query).all();
     resp.forEach((element) => {
       sendBackBody.verkaufttotal += element.fields.Menge;
-      if (//kann entfernt werden, sobald in DB nur noch kleingeschrieben "kurier"
-        element.fields.vertrieb &&
-        element.fields.vertrieb.toLowerCase() === vertrieb
+      if (//Das ?. sorgt dafür, dass kein Fehler entsteht, falls einer der Werte undefined ist.
+        element.fields.vertrieb?.toLowerCase() === vertrieb?.toLowerCase()
       ) {
         sendBackBody.verkauftvertriebskanal += element.fields.Menge;
       }
