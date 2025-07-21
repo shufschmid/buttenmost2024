@@ -3,6 +3,10 @@
     ><v-alert v-if="bestellungErfolgreich" type="success" closable class="mb-4">
       Bestellung erfolgreich!
     </v-alert>
+    <v-alert v-if="bestellungWiederholen"
+            closable
+            type="error"            
+          >Achtung: Diese Menge ist am ausgewählten Lieferdatum nicht mehr verfügbar. Bitte wählen Sie ein anderes Datum oder eine andere Menge. Aktuell am gewünschten Liefertag verfügbar: {{ VorrratKistli }} Kistli.</v-alert>
     <v-stepper
       v-show="!bestellungErfolgreich"
       @update:model-value="onStepChange"
@@ -240,12 +244,7 @@
       </template>
       <template v-slot:item.4>
         <v-card title="Bestellübersicht" flat>
-          <div v-show="rechnung">
-            direkt in Datenbank eintragen mit folgenden Daten
-          </div>
-          <div v-show="!rechnung">
-            provisorisch in Datenbank eintragen und Bezahlprozess auslösen
-          </div>
+          
 
           <BestellungTable :data="getOrderData()"/>
           
@@ -283,8 +282,10 @@ let pin = ref("");
 let loading = ref(false);
 let pinFalsch = ref(false);
 let bestellungErfolgreich = ref(false);
+let bestellungWiederholen = ref(false);
 let Lieferdatum = ref(shippingDays[0]);
 let kistli = ref(2); //Voreinstellung
+let VorrratKistli = ref(0);
 let konfi_gross = ref(0);
 let nichtLeer = [(value) => !!value || "Angabe wird benötigt"];
 let PLZRules = [
@@ -427,6 +428,7 @@ async function sms(to, sms) {
 
 async function order() {
   let Vorrat = await $fetch("/api/vorrat/");
+  VorrratKistli.value = Math.floor(Vorrat / store.liter_pro_kistli);  
   let verkauftURL =
     'api/verkauft/?filter=DATESTR({Lieferdatum})="' +
     Lieferdatum.value.value +
@@ -434,7 +436,7 @@ async function order() {
     vertrieb.value;
     console.log(verkauftURL)
   let { verkaufttotal, verkauftvertriebskanal } = await $fetch(verkauftURL);
-
+VorrratKistli.value = Math.floor((Vorrat - verkaufttotal)/ store.liter_pro_kistli);
   console.log(
     "Vorrat",
     Vorrat,
@@ -448,8 +450,8 @@ async function order() {
     vertrieb.value
   );
 const gewuenschteMenge = store.liter_pro_kistli * kistli.value;
-const genugVorrat = gewuenschteMenge < Vorrat - verkaufttotal;
-const genugKapazitaetLieferwagen = gewuenschteMenge < store.KapazitaetLieferwagen - verkauftvertriebskanal;
+const genugVorrat = gewuenschteMenge <= Vorrat - verkaufttotal;
+const genugKapazitaetLieferwagen = gewuenschteMenge <= store.KapazitaetLieferwagen - verkauftvertriebskanal;
 const zumAbholen = vertrieb.value == undefined;
 
   console.log("=== Admin Check ===");
@@ -500,6 +502,7 @@ if (genugVorrat && (genugKapazitaetLieferwagen || zumAbholen)) {
     }
   } else {
     console.log("Bestellung nicht möglich");
+    bestellungWiederholen.value = true;
   sms('+41796169078', 'Bestellung abgelehnt : ' + Lieferdatum.value.value + ', ' + kistli.value * store.liter_pro_kistli + ' Liter, ' + vertrieb.value + ', von:' + firma.value );
     return;
   }

@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
   //console.log(query.id);
   const airtableAntwort = await base("tblbU1zmZ2kumAXEY")
     .update(query.id, {
-      Status: "Etikette",
+      Status: "Etikette", 
     })
     .then((e) => {
       console.log(e.fields.Vorname, "airtable updated"); //Samuel bert airtable updated
@@ -140,14 +140,11 @@ ctx.drawImage(logoImg, 110, 0); // Jetzt klappt es!
   };
 
   let barcode = "";
+  let sendungsnummer = "";
 
   await axios
     .request(options)
     .then(async function (response) {
-      /**
-       * eingefügt, weil es Probleme gab mit zweistelligen Logo-Dateien. Nun wir die grosse Zahl nur bis 9 ausgegeben, danach ein Standard-Logo.
-       */
-      //console.log(response);
       var options2 = {
         method: "POST",
         url: "https://wedec.post.ch/api/barcode/v1/generateAddressLabel",
@@ -200,6 +197,7 @@ ctx.drawImage(logoImg, 110, 0); // Jetzt klappt es!
           //console.log(JSON.stringify(options2));
           //console.log(response.data.item.label);
           barcode = response.data.item.label;
+          sendungsnummer = response.data.item.identCode;
           //console.log(barcode);
         })
         .catch(function (error) {
@@ -215,6 +213,18 @@ ctx.drawImage(logoImg, 110, 0); // Jetzt klappt es!
   barcode = barcode[0];
 }
 if (barcode) {
+  const airtableAntwort = await base("tblbU1zmZ2kumAXEY")
+    .update(query.id, {
+      Sendungsnummer: sendungsnummer, 
+    })
+    .then((e) => {
+      console.log(sendungsnummer, "Sendungsnummer hinzugefügt"); 
+      return e;
+    })
+    .catch((e) => {
+      console.log(e, "Error");
+    });
+
   // Falls Prefix vorhanden, entfernen:
   const base64Data = barcode.replace(/^data:image\/\w+;base64,/, "");
   const imgBuffer = Buffer.from(base64Data, "base64");

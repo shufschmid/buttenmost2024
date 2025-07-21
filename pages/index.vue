@@ -8,13 +8,26 @@ const showMore = ref(false)
   <v-parallax src="/titelbild.jpg" height="450">
     <div class="parallax-center-box">
       <div class="parallax-content-box">
-        <h4 class="text-h4 font-weight-thin mb-4">
+        <h4 class="text-h4 font-weight-thin mb-4" v-if="!store.isSaison">
           Die Buttenmost-Saison beginnt am {{ store.SaisonStartString }}
+        </h4>
+        <h4 class="text-h4 font-weight-thin mb-4" v-if="store.isSaison">
+          Es gibt wieder frischen Buttenmost aus Hochwald!
         </h4>
       </div>
     </div>
   </v-parallax>
-  <v-alert
+  
+     
+  <div
+  class="custom-info-box mx-auto my-4"
+>
+
+  Unser Buttenmost ist erhältlich direkt bei uns am Kirchrain 17 in Hochwald, an diversen
+    Märkten sowie an über <a href="/verkaufsstellen">70 Verkaufsstellen in der Region</a> und wir verschicken ihn schweizweit per Post.
+</div>
+
+<v-alert
     type="info"
     variant="tonal"
     class="mx-auto my-4"
@@ -29,19 +42,7 @@ Für Vorberstellungen ab 10 Liter nutzen Sie den
     Abholen". </span><a href="#" @click.prevent="showMore = !showMore" style="color:#2196f3; font-weight:600;">
       {{ showMore ? 'Weniger anzeigen' : 'Weitere Infos dazu' }}
     </a>
-     
-    </v-alert
-  ><div
-  class="custom-info-box mx-auto my-4"
->
-
-  <b>Für alle anderen bleibt alles beim Alten: </b>Ab
-    {{ store.SaisonStartString }} gibt's unseren Buttenmost in kleineren Mengen
-    ohne Vorbestellung am Kirchrain 17 in Hochwald, an diversen
-    Märkten sowie an über
-    <a href="/verkaufsstellen"
-      >70 Verkaufsstellen in der Region</a> und wir verschicken ihn auch weiterhin per Post.
-</div>
+  </v-alert>
   <shop id="shop-section"></shop><Social></Social>
   <Verkaufsstellen anzahl="20"></Verkaufsstellen>
 </template>
