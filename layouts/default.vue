@@ -13,6 +13,7 @@ app fixed>
  <v-list-item title="Shop: Privatkunden" to="/#shop-section"></v-list-item>
       <v-list-item title="Shop: Firmenkunden" to="/b2b"></v-list-item>
       <v-list-item title="Verkaufsstellen" to="/verkaufsstellen"></v-list-item>
+      <v-list-item title="Häufige Fragen" to="/faq"></v-list-item>
       <v-list-item title="Rezepte" to="rezepte"></v-list-item>
       <v-list-item title="Medienberichte" to="media"></v-list-item>
       

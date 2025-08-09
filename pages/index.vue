@@ -35,7 +35,7 @@ const showMore = ref(false)
     border="start"
   >
     Achtung: Für Kunden, die grössere Mengen Buttenmost für den Weiterverkauf benötigen, gibt es neu ein Online-Formular zur Vorbestellung. <span v-if="showMore"><br/><br/>
-Für Vorberstellungen ab 10 Liter nutzen Sie den 
+Für Vorberstellungen ab 14 Liter nutzen Sie den 
     <a href="/b2b">Shop für Firmenkunden</a>. Bitte bachten Sie, dass wir Buttenmost zum Wiederverkauf ausschliesslich in Einheiten von jeweils 14 1-Liter-Bechern und gegen Vorauskasse anbieten. <br/><br/>Wenn
     Sie in Kessel abgefüllten Buttenmost (2 bis 28 Liter) beziehen möchten, dann ist weiterhin möglich, jedoch nur noch an vier Daten. Verwenden Sie in diesem Fall für die Bestellung den
     <a href="/shop">Shop für Postkunden</a>, wählen Sie das gewünschte Datum aus und klicken auf die Option "zum 

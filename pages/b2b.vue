@@ -1,5 +1,6 @@
 <template>
   <v-container
+  
     ><v-alert v-if="bestellungErfolgreich" type="success" closable class="mb-4">
       Bestellung erfolgreich!
     </v-alert>
@@ -130,7 +131,17 @@
 
       <template v-slot:item.2>
         <v-card title="Einloggen / Adresse eingeben" flat>
-          <v-alert
+          <v-card color="indigo" variant="flat" v-if="store.authenticated"
+          ><v-autocomplete
+            v-model="Code"
+            :items="Laeden"
+            outlined
+            placeholder="Start typing to Search"
+            return-object
+            label="Läden suchen"
+          ></v-autocomplete></v-card
+      >
+      <v-alert v-else
     type="info"
     variant="tonal"
     class="mx-auto my-4"
@@ -276,6 +287,17 @@ const store = useButtenmostStore();
 const shippingDays = await $fetch(
   "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
 );
+const { data } = await useFetch(
+  "/api/airtable_get?basis=Verkaufsstellen&view=website&verkaufsstellensort=true"
+);
+const items = await JSON.parse(JSON.stringify(data.value));
+let Laeden = items.map((data) => ({ title: data.Laden, value: data.Code }));
+let Code = ref();
+
+watch(Code, (newCode) => {
+  pin.value = newCode.value;
+});
+
 const showMore = ref(false)
 
 let pin = ref("");

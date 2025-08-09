@@ -147,7 +147,7 @@ async function order() {
     ></v-alert>
     <v-alert
       closable
-      text="Kleinstmengen können Sie bei uns ohne Vorbestellung abholen und vor Ort bezahlen (mit Bargeld und per Twint, keine Bank- / Kreditkarten)."
+      text="Kleinstmengen können Sie bei uns ohne Vorbestellung im 1-Liter-Becher abholen und vor Ort bezahlen (mit Bargeld und per Twint, keine Bank- / Kreditkarten)."
       type="info" v-show="abholen && Menge < 8"
     ></v-alert>
     <v-container class="pa-0 ma-0" v-show="true">
@@ -305,7 +305,7 @@ async function order() {
             </v-form>
           </v-container><v-alert
       closable
-      text="Achtung, Sie haben die Option zum Selbstabholen gewählt. Das Porto entfällt, aber Sie müssen den Buttenmost am gewählten Datum am Kirchrain 17 in Hochwald abholen."
+      text="Achtung, Sie haben die Option zum Selbstabholen gewählt. Das Porto entfällt, aber Sie müssen den Buttenmost am gewählten Datum bis 17 Uhr am Kirchrain 17 in Hochwald abholen."
       type="info" v-show="abholen"
     ></v-alert>
 
