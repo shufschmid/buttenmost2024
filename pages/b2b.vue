@@ -167,7 +167,10 @@
         <v-card flat
           ><v-alert v-show="firma" type="success" class="mb-4">
       Sie haben sich erfolgreich angemeldet. <br/><b>{{ firma }}</b>
+                
+
     </v-alert>
+    <v-checkbox v-show="firma && vertrieb" v-model="abholen" label="Ich verzichte auf eine Lieferung und hole den Buttenmost am ausgewählten Datum in Hochwald ab"></v-checkbox>
 
           <div v-show="!firma">
             <v-alert
@@ -337,6 +340,8 @@ let PLZ = ref("");
 let Ort = ref("");
 let Email = ref("");
 let Bemerkungen = ref("");
+let abholen = ref(false)
+
 
 let formValidity = ref(false);
 
@@ -371,10 +376,10 @@ function getOrderData() {
     Konfi_kl: konfi_klein.value,
     Menge: kistli.value * store.liter_pro_kistli,
     Lieferdatum: Lieferdatum.value.value,
-    Betrag: firma.value
+    Betrag: firma.value && !abholen.value
       ? (Zwischentotal() + store.lieferpauschale)
       : Zwischentotal(),
-    Lieferpauschale: firma.value && vertrieb.value ? store.lieferpauschale : 0,
+    Lieferpauschale: firma.value && vertrieb.value && !abholen.value ? store.lieferpauschale : 0,
     Typ: "Standard",
   };
 
@@ -383,7 +388,7 @@ function getOrderData() {
     return {
       ...base,
       Geschaeft: firma.value,
-      vertrieb: vertrieb.value ? vertrieb.value : "Abholung",
+      vertrieb: vertrieb.value && !abholen.value ? vertrieb.value : "Abholung",
       Status: rechnung.value ? "Rechnung offen" : "bestellt",
       Email: firmenEmail.value,
     };

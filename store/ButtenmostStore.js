@@ -5,17 +5,17 @@ export const useButtenmostStore = defineStore("buttenmost", {
     return {
       SaisonStart: new Date("2025-07-17 12:00:00"),
       SaisonStartFirmen: new Date("2025-09-24 12:00:00"),
-      PreisProLiter: 7.5, //3.69 Einkaufspreis 
+      PreisProLiter: 8, //3.69 Einkaufspreis 
       PreisBecher: 0.9,
-      preisDirektverkauf: 10,
+      ZuschlagDirektverkauf: 2.5,
       SaisonEnde: new Date("2025-11-12 12:00:00"),
       SaisonEndeFirmen: new Date("2025-11-12 12:00:00"),
       lieferpauschale: 22,
       kistli: 2, //Voreinstellung für Bestellformular Läden
       liter_pro_kistli: 14,
-      konfi_gross_preis: 7.7,
+      konfi_gross_preis: 7.9,
       konfi_gross_anzahl_pro_karton: 6,
-      konfi_klein_preis: 4.3,
+      konfi_klein_preis: 4.7,
       konfi_klein_anzahl_pro_karton: 6,
       heute: new Date(),
       StandardMenge: 8,
@@ -34,8 +34,8 @@ export const useButtenmostStore = defineStore("buttenmost", {
         { Menge: 0, Preis: 0, Gewicht: 0 },
       ],
       Kleinmengenzuschlag: [
-        { Grenze: 4, value: 12 },
-        { Grenze: 8, value: 9 },
+        { Grenze: 4, value: 10 },
+        { Grenze: 8, value: 8 },
       ],
       Rabatt: [
         { Grenze: 12, value: -0.075 },
@@ -60,6 +60,9 @@ export const useButtenmostStore = defineStore("buttenmost", {
     };
   },
   getters: {
+    preisDirektverkauf() {
+      return this.PreisProLiter + this.ZuschlagDirektverkauf;
+    },
     isSaison() {
       return this.heute > this.SaisonStart && this.heute < this.SaisonEnde
         ? true
