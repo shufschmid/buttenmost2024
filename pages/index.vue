@@ -38,8 +38,8 @@ const showMore = ref(false)
 Für Vorberstellungen ab 14 Liter nutzen Sie den 
     <a href="/b2b">Shop für Firmenkunden</a>. Bitte bachten Sie, dass wir Buttenmost zum Wiederverkauf ausschliesslich in Einheiten von jeweils 14 1-Liter-Bechern und gegen Vorauskasse anbieten. <br/><br/>Wenn
     Sie in Kessel abgefüllten Buttenmost (2 bis 28 Liter) beziehen möchten, dann ist weiterhin möglich, jedoch nur noch an vier Daten. Verwenden Sie in diesem Fall für die Bestellung den
-    <a href="/shop">Shop für Postkunden</a>, wählen Sie das gewünschte Datum aus und klicken auf die Option "zum 
-    Abholen". </span><a href="#" @click.prevent="showMore = !showMore" style="color:#2196f3; font-weight:600;">
+    <a href="/shop">Shop für Privatkunden</a>, wählen Sie das gewünschte Datum aus und klicken auf die Option "zum 
+    Abholen". Kleinere Mengen bis max. 15 Liter können Sie weiterhin und ohne Vorbestellung bei uns am Kirchrain 17 abholen und vor Ort mit Bargeld oder Twint bezahlen.</span><a href="#" @click.prevent="showMore = !showMore" style="color:#2196f3; font-weight:600;">
       {{ showMore ? 'Weniger anzeigen' : 'Weitere Infos dazu' }}
     </a>
   </v-alert>

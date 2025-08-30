@@ -147,8 +147,8 @@ async function order() {
     ></v-alert>
     <v-alert
       closable
-      text="Kleinstmengen können Sie bei uns ohne Vorbestellung im 1-Liter-Becher abholen und vor Ort bezahlen (mit Bargeld und per Twint, keine Bank- / Kreditkarten)."
-      type="info" v-show="abholen && Menge < 8"
+      text="Für kleinere Mengen unter 15 Litern zum Abholen müssen Sie dieses Formular nicht verwenden. Sie können ohne Vorbestellung bei uns vorbeikommen und die gewünschte Menge in 1-Liter-Bechern mitnehmen und vor Ort bezahlen (mit Bargeld und per Twint, keine Bank- / Kreditkarten)."
+      type="info" v-show="abholen && Menge < 15"
     ></v-alert>
     <v-container class="pa-0 ma-0" v-show="true">
       <v-row
