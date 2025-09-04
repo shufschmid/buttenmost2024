@@ -3,19 +3,20 @@ import { defineStore } from "pinia";
 export const useButtenmostStore = defineStore("buttenmost", {
   state: () => {
     return {
-      SaisonStart: new Date("2025-09-24 12:00:00"),
+      SaisonStart: new Date("2025-09-23 12:00:00"),
       SaisonStartFirmen: new Date("2025-09-24 12:00:00"),
-      PreisProLiter: 7.5,
+      PreisProLiter: 7.9, //3.69 Einkaufspreis 
       PreisBecher: 0.9,
-      preisDirektverkauf: 10,
-      SaisonEnde: new Date("2024-11-12 12:00:00"),
-      SaisonEndeFirmen: new Date("2024-11-12 12:00:00"),
+      ZuschlagDirektverkauf: 2.5,
+      SaisonEnde: new Date("2025-11-12 12:00:00"),
+      SaisonEndeFirmen: new Date("2025-11-12 12:00:00"),
       lieferpauschale: 22,
       kistli: 2, //Voreinstellung für Bestellformular Läden
       liter_pro_kistli: 14,
-      konfi_gross_preis: 7.7,
-      konfi_klein_preis: 4.3,
-      tee_preis: 5.5,
+      konfi_gross_preis: 7.9,
+      konfi_gross_anzahl_pro_karton: 6,
+      konfi_klein_preis: 4.7,
+      konfi_klein_anzahl_pro_karton: 6,
       heute: new Date(),
       StandardMenge: 8,
       MinimumMenge: 2,
@@ -30,10 +31,11 @@ export const useButtenmostStore = defineStore("buttenmost", {
         { Menge: 18, Preis: 10, Gewicht: 654 },
         { Menge: 20, Preis: 10.5, Gewicht: 720 },
         { Menge: 29, Preis: 11.9, Gewicht: 821 },
+        { Menge: 0, Preis: 0, Gewicht: 0 },
       ],
       Kleinmengenzuschlag: [
-        { Grenze: 4, value: 18 },
-        { Grenze: 8, value: 9 },
+        { Grenze: 4, value: 10 },
+        { Grenze: 8, value: 8 },
       ],
       Rabatt: [
         { Grenze: 12, value: -0.075 },
@@ -41,11 +43,26 @@ export const useButtenmostStore = defineStore("buttenmost", {
       ],
       authenticated: false,
       loading: false,
-      mehrwertsteuernummer: "CHE-369.928.965",
+      mehrwertsteuernummer: "CHE-202.359.074 MWST",
       mehrwertsteuersatz: 2.6,
+      firmenadresse: {
+        name: "Buttenmost Hochwald GmbH",
+        strasse: "Geissackerweg 17",
+        plz: "4146",
+        ort: "Hochwald",
+        telefon: "079 399 41 46",
+        email: "info@buttenmost.ch",
+        web: "www.buttenmost.ch",
+        mehrwertsteuernummer: "CHE-202.359.074 MWST",
+        UID: "CHE-202.359.074",
+        iban: "CH53 8080 8004 2768 0936 9",
+      },
     };
   },
   getters: {
+    preisDirektverkauf() {
+      return this.PreisProLiter + this.ZuschlagDirektverkauf;
+    },
     isSaison() {
       return this.heute > this.SaisonStart && this.heute < this.SaisonEnde
         ? true

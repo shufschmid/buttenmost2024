@@ -24,10 +24,10 @@
     ></v-row>
     <v-row
       ><v-col cols="12" md="4">
-        <h2>Lieferscheine</h2>
+        <h2><v-icon icon="mdi-printer"></v-icon>Rechnungen</h2>
         <ul class="ml-4">
           <li v-for="Liefertag in shippingDays">
-            <nuxt-link :to="'/lieferscheine/' + Liefertag.Datum">{{ Liefertag.Datum }}
+            <nuxt-link :to="'/rechnungen/datum/' + Liefertag.Datum">{{ Liefertag.Datum }}
               </nuxt-link
             >
           </li>
@@ -56,7 +56,12 @@
         </ul></v-col
       ><v-col cols="12" md="4"></v-col
     ></v-row>
+    
   </v-container>
+  <v-btn
+      color="primary"
+      @click="sms('+41796169078', 'Test SMS from Nuxt 3')"
+      >Test SMS</v-btn>
 </template>
 <script setup>
 definePageMeta({
@@ -65,6 +70,24 @@ definePageMeta({
 const { data } = await useFetch(
   "/api/airtable_get?basis=tblbU1zmZ2kumAXEY&view=b2b_rechnungen"
 );
+
+async function sms(to, sms) {
+  const response = await $fetch("/api/sms", {
+    method: 'POST',
+    body: {
+      to: to,
+      sms: sms
+    }
+  })
+  
+  if (response.ok) {
+    console.log('SMS sent successfully:', response.data.messageSid);
+  } else {
+    console.error('Error sending SMS:', response.data.error);
+  }
+}
+
+
 
 function rechnungen(){
   let arr = data.value.map((item) => {

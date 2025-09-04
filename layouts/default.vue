@@ -1,26 +1,22 @@
 <template>
-  <v-layout class="rounded rounded-md">
-    <v-app-bar class="d-print-none mx-auto">
+    <v-app-bar v-if="mobile" class="d-print-none mx-auto" 
+app fixed>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title class="ml-0"><v-img src="/logo.png" width="200"></v-img></v-toolbar-title>
-      <nuxt-link @click="logout"
-        ><v-icon v-if="authenticated">mdi-lock-open</v-icon></nuxt-link
-      >
-      <nuxt-link to="/admin"
-        ><v-icon v-if="authenticated">mdi-receipt-text-plus</v-icon></nuxt-link
-      >
+      <v-toolbar-title class="ml-0 flex-grow-1  text-center"><NuxtLink to="/" style="display:inline-block"><v-img src="/logo.svg" width="150" class="mx-auto"></v-img></NuxtLink></v-toolbar-title>
+      <!-- Platzhalter für Symmetrie -->
+  <v-app-bar-nav-icon style="opacity:0; pointer-events:none;"></v-app-bar-nav-icon>
 
-      <nuxt-link to="/login"
-        ><v-icon v-if="!authenticated">mdi-lock</v-icon></nuxt-link
-      >
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer" class="d-print-none">
+    <v-navigation-drawer v-model="drawer" class="d-print-none" style="padding-top:10px">
+      <NuxtLink to="/" style="display:inline-block"><v-img v-if="!mobile" src="/logo.svg" style="padding-left:10px" width="250" class="mx-auto"></v-img></NuxtLink>
       <v-list-item title="Home" to="/"></v-list-item>
+ <v-list-item title="Shop: Privatkunden" to="/#shop-section"></v-list-item>
+      <v-list-item title="Shop: Firmenkunden" to="/b2b"></v-list-item>
       <v-list-item title="Verkaufsstellen" to="/verkaufsstellen"></v-list-item>
+      <v-list-item title="Häufige Fragen" to="/faq"></v-list-item>
       <v-list-item title="Rezepte" to="rezepte"></v-list-item>
       <v-list-item title="Medienberichte" to="media"></v-list-item>
       
-      <v-list-item title="Login für Firmenkunden" to="/b2b"></v-list-item>
       <v-list-item title="Facebook" href="https://www.facebook.com/buttenmost" target="_blank"></v-list-item>
       <v-list-item title="Instagram" href="https://www.instagram.com/buttenmost.ch/" target="_blank"></v-list-item>
       <v-list-item title="Datenschutzerklärung" to="datenschutz"></v-list-item>
@@ -29,14 +25,34 @@
       >
         <v-img src="/logo_patrimoine.svg"></v-img>
       </v-list-item>
+        <template #append>
+    <div class="d-flex justify-center mb-4">
+      
+      <nuxt-link @click="logout" class="no-link-style"
+        ><v-icon v-if="authenticated"class="half-opacity">mdi-lock-open</v-icon></nuxt-link
+      >
+      <nuxt-link to="/admin" class="no-link-style"
+        ><v-icon v-if="authenticated" class="half-opacity" >mdi-receipt-text-plus</v-icon></nuxt-link
+      >
+
+      <nuxt-link to="/login" class="no-link-style"
+        ><v-icon v-if="!authenticated" class="half-opacity">mdi-lock</v-icon></nuxt-link
+      >
+      
+    </div>
+  </template>
     </v-navigation-drawer>
+    
     <v-main style="min-height: 600px" >
       <slot />
     </v-main>
-  </v-layout>
 </template>
 
 <script setup>
+import { useDisplay } from 'vuetify';
+
+const { mobile } = useDisplay();
+
 let drawer = ref(null);
 const router = useRouter();
 
@@ -55,4 +71,17 @@ const logout = () => {
         padding: 0 !important;
     }
 }   
+.half-opacity {
+  opacity: 0.5;
+}
+.no-link-style {
+  color: inherit;
+  text-decoration: none;
+}
+.no-link-style:visited,
+.no-link-style:active,
+.no-link-style:hover {
+  color: inherit;
+  text-decoration: none;
+}
 </style>

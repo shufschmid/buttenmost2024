@@ -7,6 +7,7 @@ onMounted(() => {
 })
 
 let Menge = ref(store.StandardMenge)
+let abholen = ref(false)
 
 let Vorname = ref("")
 let Nachname = ref("")
@@ -39,11 +40,13 @@ let ButtenmostPreis = computed(() => {
 })
 
 let Porto = computed(() => {
-  return Menge.value < 10 ? 17.5 : 27
+  if(abholen.value) return 0
+  else{
+  return Menge.value < 10 ? 17.5 : 27}
 })
 
 let Kleinmengenzuschlag = computed(() => {
-  if(Menge.value<store.Kleinmengenzuschlag[0].Grenze){
+  if(Menge.value<store.Kleinmengenzuschlag[0].Grenze && abholen.value==false){
     return {"Bezeichnung":"Kleinmengenzuschlag","value":store.Kleinmengenzuschlag[0].value}
   }
   else if(Menge.value<store.Kleinmengenzuschlag[1].Grenze){
@@ -59,6 +62,8 @@ else if(Menge.value > store.Rabatt[0].Grenze){
 })
 
 let Verpackungsindex = computed(() =>{
+  if(abholen.value) return 7 //der siebte index ist = 0
+  
   let i = 0;
   while (store.Verpackung[i].Menge <= Menge.value) {
     i++;
@@ -94,7 +99,8 @@ async function order() {
       Lieferpauschale:Kleinmengenzuschlag.value.value,
       Gewicht: (store.Verpackung[Verpackungsindex.value].Gewicht+(Menge.value*1000)),
       Status: "bestellt",
-      Typ: "Post"
+      Typ: "Spezial",
+      vertrieb: abholen.value ? "Abholung" : "Post",
     }
   })
   console.log("Bestellung erfolgreich in Airtable eingetragen, ID: "+airtable.body)
@@ -121,25 +127,30 @@ async function order() {
 
 <template>
   <v-container class="pa-6" fluid>
-    Ab {{ store.SaisonStartString }} bis Anfangs November ist unser frischer
-    Buttenmost wieder bei uns am
-    <a href="https://goo.gl/maps/vfXWt5riNgEBkc5eA">Kirchrain 17 in Hochwald</a>
-    erhältlich. Preis Direktverkauf:
-    {{ store.preisDirektverkauf.toFixed(2) }} Franken pro Liter. Ebenfalls
-    angeboten wird unser Buttenmost an diversen Märkten sowie
-    <a href="verkaufsstellen/">in über 70 Läden in der ganzen Region.</a>
 
-    <br /><br />
+    <!-- erstens Unterscheidung: per Post oder zum Abholen? Post: normales Formular
+      Zum Abholen = zweite Unterscheidung: 
+      kleinere Mengen in Bechern = vorbeikommen. 
+      grössere Mengen: 14 x in 1-Liter Becher à CHF ... (oder ein mehrfaches davon): jeden DI/DO/SA
+      beliebige Menge in einzelnem Gefäss: nur an folgenden Daten möglich: Post-Daten  -->
+
+
+    
     <h2 id="onlineshop">Online-Shop</h2>
     Wir verschicken Buttenmost ab zwei Liter per A-Post gegen Vorauskasse, nach
     Eingabe Ihrer Bestellung können Sie mit Kreditkarte oder per Twint
-    bezahlen.<br /><br />
+    bezahlen. Sie können den Buttenmost auch vorbestellen und in Hochwald abholen (im Kessel).<br /><br />
     <v-alert
       closable
       text="Achtung: Die Buttenmost-Saison 2024 ist vorbei. Wir nehmen keine Online-Bestellungen mehr entgegen."
-      type="info"
+      type="info" v-show="false"
     ></v-alert>
-    <v-container class="pa-0 ma-0" v-show="false">
+    <v-alert
+      closable
+      text="Für kleinere Mengen unter 15 Litern zum Abholen müssen Sie dieses Formular nicht verwenden. Sie können ohne Vorbestellung bei uns vorbeikommen und die gewünschte Menge in 1-Liter-Bechern mitnehmen und vor Ort bezahlen (mit Bargeld und per Twint, keine Bank- / Kreditkarten)."
+      type="info" v-show="abholen && Menge < 15"
+    ></v-alert>
+    <v-container class="pa-0 ma-0" v-show="true">
       <v-row
         ><v-col cols="12" md="5"
           ><v-spacer />Wählen Sie hier die gewünschte Menge aus:<br />
@@ -196,7 +207,8 @@ async function order() {
                 <td>CHF</td>
               </tr>
             </tbody>
-          </table> </v-col
+          </table> 
+          <v-checkbox v-model="abholen" label="Ich hole den Buttenmost am ausgewählten Datum in Hochwald ab"></v-checkbox></v-col
         ><v-col cols="12" md="6">
           <!-- Buttenmost ist ein Frischprodukt. Wenn Sie jetzt bestellen,
           verschicken wir den Buttenmost am: -->
@@ -206,6 +218,7 @@ async function order() {
             v-model="Lieferdatum"
             return-object
           ></v-select>
+          
           <v-container>
             <v-form v-model="formValidity">
               <v-row>
@@ -234,7 +247,8 @@ async function order() {
                     v-model="Adresse"
                     label="Adresse"
                     name="Adresse"
-                    :rules="nichtLeer"
+                    :rules="nichtLeer"                    
+                    maxlength="36"
                     required
                   ></v-text-field>
                 </v-col>
@@ -246,6 +260,7 @@ async function order() {
                     v-model="Adresszusatz"
                     label="Adresszusatz"
                     name="Adresszusatz"
+                    maxlength="36"
                   ></v-text-field>
                 </v-col> </v-row
               ><v-row dense>
@@ -288,12 +303,17 @@ async function order() {
                   ></v-textarea> </v-col
               ></v-row>
             </v-form>
-          </v-container>
+          </v-container><v-alert
+      closable
+      text="Achtung, Sie haben die Option zum Selbstabholen gewählt. Das Porto entfällt, aber Sie müssen den Buttenmost am gewählten Datum bis 17 Uhr am Kirchrain 17 in Hochwald abholen."
+      type="info" v-show="abholen"
+    ></v-alert>
 
           <v-spacer /> </v-col></v-row
       ><v-row
         ><v-spacer />
         <v-col>
+          
           <v-btn
             color="success"
             elevation="2"

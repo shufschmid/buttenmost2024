@@ -24,16 +24,15 @@ export default defineEventHandler(async (event) => {
         Adresszusatz: body.Adresszusatz ? body.Adresszusatz.trim() : "",
         PLZ: body.PLZ ? body.PLZ.toString().trim() : "",
         Ort: body.Ort ? body.Ort.trim() : "",
-        Notes: body.Notes,
-        Verpackung: body.Verpackung,
-        Porto: body.Porto,
+        Notes: body.Notes ? body.Notes :"",
+        Verpackung: body.Verpackung ? body.Verpackung:"",
+        Porto: body.Porto ? body.Porto : 0,
         Lieferpauschale: body.Lieferpauschale,
-        Gewicht: body.Gewicht,
+        Gewicht: body.Gewicht ? body.Gewicht : "",
         Status: body.Status,
-        Konfi_gr: body.Konfi_gr,
-        Konfi_kl: body.Konfi_kl,
-        Tee: body.Tee,
-        Tour: body.Tour ? body.Tour.trim() : ""
+        Konfi_gr: body.Konfi_gr ? body.Konfi_gr : 0,
+        Konfi_kl: body.Konfi_kl ? body.Konfi_kl : 0,
+        vertrieb: body.vertrieb ? body.vertrieb.trim() : ""
       },
       { typecast: true }
     )
