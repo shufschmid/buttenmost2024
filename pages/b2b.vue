@@ -60,7 +60,7 @@
                   ></v-text-field>
                 </td>
                 <td>
-                  Kistli Buttenmost ({{ store.liter_pro_kistli }} Liter, CHF {{ store.PreisProLiter.toFixed(2) }} pro Liter) à CHF
+                  Kistli Buttenmost ({{ store.liter_pro_kistli }} Liter, CHF {{ (store.PreisProLiter + store.PreisBecher).toFixed(2) }} pro Liter) à CHF
                   {{ preisProKistli().toFixed(2) }}
                 </td>
                 <td class="text-right">
@@ -257,11 +257,10 @@
         ></v-card>
       </template>
       <template v-slot:item.4>
-        <v-card title="Bestellübersicht" flat>
+        <v-card flat max-width="800" class="mx-auto">
           
 
           <BestellungTable :data="getOrderData()"/>
-          
 
           <v-alert
             v-show="!formValidity && !firma"

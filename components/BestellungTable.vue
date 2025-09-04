@@ -1,15 +1,16 @@
 <template>
-  <v-table>
+  <h2>Bestellübersicht</h2>
+  <v-table >
     <thead>
       <tr>
-        <th class="text-left">Lieferdatum</th>
+        <th class="text-left">Liefer- oder Abholdatum</th>
         <th class="text-left">Menge/Produkt</th>
         <th class="text-right">Betrag</th>
       </tr>
     </thead>
     <tbody></tbody>
     <tr>
-      <td valign="top">{{ data.LieferdatumFormatiert }}</td>
+      <td valign="top">{{ data.Lieferdatum }}</td>
       <td valign="top">
         {{ data.Menge }} Liter Buttenmost
         <span v-show="data.Typ == 'Laden'">

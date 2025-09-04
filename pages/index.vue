@@ -23,8 +23,8 @@ const showMore = ref(false)
   class="custom-info-box mx-auto my-4"
 >
 
-  Unser Buttenmost ist erhältlich direkt bei uns am Kirchrain 17 in Hochwald, an diversen
-    Märkten sowie an über <a href="/verkaufsstellen">70 Verkaufsstellen in der Region</a> und wir verschicken ihn schweizweit per Post.
+  Unser Buttenmost ist erhältlich am Kirchrain 17 in Hochwald zum Preis von {{ store.preisDirektverkauf.toFixed(2) }} Franken pro Liter, an diversen
+    Märkten sowie an über <a href="/verkaufsstellen">70 Verkaufsstellen in der Region</a>. Zudem verschicken ihn schweizweit per Post.
 </div>
 
 <v-alert
@@ -34,7 +34,7 @@ const showMore = ref(false)
     style="max-width: 90%; font-size: 1rem; font-weight: 500"
     border="start"
   >
-    Achtung: Für Kunden, die grössere Mengen Buttenmost für den Weiterverkauf benötigen, gibt es neu ein Online-Formular zur Vorbestellung. <span v-if="showMore"><br/><br/>
+    Hinweis für Kunden, die grössere Mengen Buttenmost für den Weiterverkauf benötigen: Neu gibt es ein Online-Formular zur Vorbestellung. <span v-if="showMore"><br/><br/>
 Für Vorberstellungen ab 14 Liter nutzen Sie den 
     <a href="/b2b">Shop für Firmenkunden</a>. Bitte bachten Sie, dass wir Buttenmost zum Wiederverkauf ausschliesslich in Einheiten von jeweils 14 1-Liter-Bechern und gegen Vorauskasse anbieten. <br/><br/>Wenn
     Sie in Kessel abgefüllten Buttenmost (2 bis 28 Liter) beziehen möchten, dann ist weiterhin möglich, jedoch nur noch an vier Daten. Verwenden Sie in diesem Fall für die Bestellung den
