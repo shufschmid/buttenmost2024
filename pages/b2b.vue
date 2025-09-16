@@ -375,7 +375,7 @@ function getOrderData() {
     Konfi_kl: konfi_klein.value,
     Menge: kistli.value * store.liter_pro_kistli,
     Lieferdatum: Lieferdatum.value.value,
-    Betrag: firma.value && !abholen.value
+    Betrag: firma.value && vertrieb.value && !abholen.value
       ? (Zwischentotal() + store.lieferpauschale)
       : Zwischentotal(),
     Lieferpauschale: firma.value && vertrieb.value && !abholen.value ? store.lieferpauschale : 0,

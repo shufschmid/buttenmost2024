@@ -17,10 +17,10 @@
           im Becher à CHF {{ (store.PreisProLiter + store.PreisBecher).toFixed(2) }}
         </span>
         <span v-show="data.Konfi_gr > 0">
-          <br />{{ data.Konfi_gr }} Karton Konfi gross (6 Gläser) {{ store.konfi_gross_preis.toFixed(2) }}
+          <br />{{ data.Konfi_gr }} Karton Konfi gross ({{ store.konfi_gross_anzahl_pro_karton }} Gläser) à CHF {{ (store.konfi_gross_anzahl_pro_karton * store.konfi_gross_preis).toFixed(2) }}
         </span>
         <span v-show="data.Konfi_kl > 0">
-          <br />{{ data.Konfi_kl }} Karton Konfi klein (6 Gläser) à CHF {{ store.konfi_klein_preis.toFixed(2) }}
+          <br />{{ data.Konfi_kl }} Karton Konfi klein ({{ store.konfi_klein_anzahl_pro_karton }} Gläser) à CHF {{ (store.konfi_klein_anzahl_pro_karton * store.konfi_klein_preis).toFixed(2) }}
         </span>
         <span v-if="data.Lieferpauschale > 0">
           <br />{{ 1 }} x Lieferpauschale
@@ -34,10 +34,10 @@
           ).toFixed(2)
         }}
         <span v-show="data.Konfi_gr > 0">
-          <br />CHF {{ (data.Konfi_gr * store.konfi_gross_preis).toFixed(2) }}
+          <br />CHF {{ (data.Konfi_gr * store.konfi_gross_anzahl_pro_karton * store.konfi_gross_preis).toFixed(2) }}
         </span>
         <span v-show="data.Konfi_kl > 0">
-          <br />CHF {{ (data.Konfi_kl * store.konfi_klein_preis).toFixed(2) }}
+          <br />CHF {{ (data.Konfi_kl * store.konfi_klein_anzahl_pro_karton * store.konfi_klein_preis).toFixed(2) }}
         </span>
         <span v-if="data.Lieferpauschale > 0">
           <br />CHF {{ data.Lieferpauschale.toFixed(2) }}
