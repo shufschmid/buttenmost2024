@@ -19,7 +19,7 @@
   </v-toolbar>
   <v-container
     ><v-row
-      ><v-col cols="12">
+      ><v-col cols="12">Vorrat für {{shippingDays[0].title}}: {{ ausgabe }}
         </v-col
     ></v-row>
     <v-row
@@ -64,29 +64,39 @@
       >Test SMS</v-btn>
 </template>
 <script setup>
+onMounted(async () => {
+  await vorratconsole()
+})
 definePageMeta({
   middleware: "auth", // https://dev.to/rafaelmagalhaes/authentication-in-nuxt-3-375o
 });
 const { data } = await useFetch(
   "/api/airtable_get?basis=tblbU1zmZ2kumAXEY&view=b2b_rechnungen"
 );
+async function vorratconsole() {
+  let Vorrat = await $fetch("/api/vorrat/");
+  VorrratKistli.value = Math.floor(Vorrat / store.liter_pro_kistli);
 
-async function sms(to, sms) {
-  const response = await $fetch("/api/sms", {
-    method: 'POST',
-    body: {
-      to: to,
-      sms: sms
-    }
-  })
+  let Lieferdatum = ref(shippingDays[0]);
   
-  if (response.ok) {
-    console.log('SMS sent successfully:', response.data.messageSid);
-  } else {
-    console.error('Error sending SMS:', response.data.error);
-  }
-}
+  let verkauftURL =
+    'api/verkauft/?filter=DATESTR({Lieferdatum})="' +
+    Lieferdatum.value.value +
+    '"&vertrieb=' +
+    vertrieb.value;
+    
+  let { verkaufttotal, verkauftvertriebskanal } = await $fetch(verkauftURL);
+VorrratKistli.value = Math.floor((Vorrat - verkaufttotal)/ store.liter_pro_kistli);
+  console.log(
+    "Vorrat",
+    Vorrat,
+    "bereits verkauft an diesem Tag",
+    verkaufttotal
+  );
+  let verfügbar = Vorrat - verkaufttotal;
+  ausgabe.value = +Vorrat+" | bereits verkauft an diesem Tag: "+verkaufttotal+" | verfügbar: "+verfügbar;
 
+}
 
 
 function rechnungen(){
@@ -105,6 +115,8 @@ const Bestellungen = await $fetch(
 
 
 let search = ref();
-
+let VorrratKistli = ref(0);
+let vertrieb = ref();
+let ausgabe = ref("test");
 const store = useButtenmostStore();
 </script>
