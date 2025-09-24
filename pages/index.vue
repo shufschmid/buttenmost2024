@@ -11,7 +11,7 @@ const showMore = ref(false)
         <h4 class="text-h4 font-weight-thin mb-4" v-if="!store.isSaison">
           Die Buttenmost-Saison beginnt am {{ store.SaisonStartString }}
         </h4>
-        <h4 class="text-h4 font-weight-thin mb-4" v-if="store.isSaison">
+        <h4 class="text-h4 font-weight-thin mb-4" v-else>
           Es gibt wieder frischen Buttenmost aus Hochwald!
         </h4>
       </div>
