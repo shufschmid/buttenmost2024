@@ -19,7 +19,21 @@
   </v-toolbar>
   <v-container
     ><v-row
-      ><v-col cols="12">Vorrat für {{shippingDays[0].title}}: {{ ausgabe }}
+      ><v-col cols="12">
+        <v-alert
+    type="info"
+    variant="tonal"
+    class="mx-auto my-4"
+    style="max-width: 100%; font-size: 1rem; font-weight: 500"
+    border="start"
+  >
+     Vorrat für {{shippingDays[0].title}}: {{ ausgabe }}
+    </v-alert
+  >
+        
+        
+        
+       
         </v-col
     ></v-row>
     <v-row
