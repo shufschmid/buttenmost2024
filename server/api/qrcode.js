@@ -12,9 +12,9 @@ export default defineEventHandler(async (event) => {
       getQuery(event);
 
     let myConfiguration = {
-      Account: "CH5730808008481180711",
-      CreditorName: "Buttenmost, Inhaberin Verena Ming",
-      CreditorAddress1: "Mattenweg 17",
+      Account: "CH5380808004276809369",
+      CreditorName: "Buttenmost Hochwald GmbH",
+      CreditorAddress1: "Geissackerweg 17",
       CreditorAddress2: "4146 Hochwald",
       CreditorCountryCode: "CH",
       DebtorName: Name,
