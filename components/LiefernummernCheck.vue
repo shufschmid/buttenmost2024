@@ -5,27 +5,24 @@
       <thead>
         <tr>
           <th class="text-left">Lieferdatum</th>
-          <th class="text-left">Erste Sendungsnummer</th>
-          <th class="text-left">Letzte Sendungsnummer</th>
-          <th class="text-left">Lücken / Fehler</th>
+          <th class="text-left">Erster Kessel</th>
+          <th class="text-left">Letzter Kessel</th>
+          <th class="text-left">Vorhandene Sendungsnummern</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="item in sendungsnummernData" :key="item.datum">
           <td>{{ item.datum }}</td>
-          <td>{{ item.allNumbers.length > 0 ? item.allNumbers[0].toString() : '' }}</td>
-          <td>{{ item.allNumbers.length > 0 ? item.allNumbers[item.allNumbers.length - 1].toString() : '' }}</td>
+          <td>{{ item.allNumbers[0] }}</td>
+          <td>{{ item.allNumbers[item.allNumbers.length - 1] }}</td>
           <td>
-              <div v-for="(num, index) in item.allNumbers" :key="num.toString()">
-                <!-- Prüft auf Lücken nach dem ersten Element -->
-                <div v-if="index > 0 && num > (item.allNumbers[index - 1] + 1n)" class="text-red font-weight-bold">
-                  Lücke vor: {{ num.toString() }}
-                </div>
-                <!-- Prüft auf Duplikate oder falsche Sortierung -->
-                <div v-else-if="index > 0 && num <= item.allNumbers[index - 1]" class="text-orange font-weight-bold">
-                  Fehler/Duplikat bei: {{ num.toString() }}
-                </div>
-              </div>
+              <!-- Zeigt die erste Nummer immer an, und dann nur die, die keine direkte Folge sind -->
+              <span v-for="(num, index) in item.allNumbers" :key="num">
+                <span v-if="(num % 10000) > ((item.allNumbers[index - 1]) % 10000)" class="text-red font-weight-bold">
+                  Lücke: {{ num %10000}}
+                </span>
+                
+            </span>
           </td>
         </tr>
       </tbody>
@@ -80,27 +77,16 @@ const bestellungenByDate = computed(() => {
 const sendungsnummernData = computed(() => {
   return props.liefertage.map(tag => {
     const tagDatumString = getLocalDateString(tag.Datum);
+    // Schneller Zugriff auf die vorsortierten Bestellungen des Tages
     const bestellungenAmTag = bestellungenByDate.value.get(tagDatumString) || [];
 
-    // 1. Extrahiere alle gültigen Sendungsnummern als BigInt
+    // 1. Extrahiere alle gültigen Sendungsnummern des Tages
     const alleNummern = bestellungenAmTag
-      .map(b => {
-        try {
-          // Versuche, die Nummer in ein BigInt umzuwandeln
-          return BigInt(b.Sendungsnummer);
-        } catch (e) {
-          // Wenn es fehlschlägt (z.B. leerer String), gib null zurück
-          return null;
-        }
-      })
-      .filter(n => n !== null); // Filtere alle ungültigen Einträge heraus
+      .map(b => (b.Sendungsnummer))
+      .filter(sn => sn)
+      .sort((a, b) => a - b);                   // Numerisch sortieren
 
-    // 2. Sortiere die BigInt-Nummern
-    alleNummern.sort((a, b) => {
-      if (a < b) return -1;
-      if (a > b) return 1;
-      return 0;
-    });
+    // 2. Sortiere die Nummern für die Anzeige
 
     // 3. Gib das Datenobjekt für die Tabellenzeile zurück
     return {
