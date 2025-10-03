@@ -232,7 +232,7 @@ if (barcode) {
     status: 200,
     headers: {
       "Content-Type": "image/jpeg", // oder image/png, je nach API-Antwort
-      "Content-Disposition": `inline; filename=${query.id}.jpg`
+      "Content-Disposition": `inline; filename=${sendungsnummer}.jpg`
     }
   });
 }

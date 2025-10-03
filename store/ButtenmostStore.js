@@ -24,6 +24,7 @@ export const useButtenmostStore = defineStore("buttenmost", {
       versandpauschale: 15,
       KapazitaetLieferwagen: 392,
       Verpackung: [
+        { Menge: 3, Preis: 4.5, Gewicht: 190 },
         { Menge: 5, Preis: 4.5, Gewicht: 190 },
         { Menge: 10, Preis: 7, Gewicht: 404 },
         { Menge: 12, Preis: 8.9, Gewicht: 562 },

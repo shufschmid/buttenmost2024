@@ -23,8 +23,16 @@ const showMore = ref(false)
   class="custom-info-box mx-auto my-4"
 >
 
-  Unser Buttenmost ist erhältlich am Kirchrain 17 in Hochwald zum Preis von {{ store.preisDirektverkauf.toFixed(2) }} Franken pro Liter, an diversen
-    Märkten sowie an über <a href="/verkaufsstellen">70 Verkaufsstellen in der Region</a>. Zudem verschicken ihn schweizweit per Post.
+  Unser Buttenmost ist ab sofort und bis Mitte November erhältlich am Kirchrain 17 in Hochwald zum Preis von {{ store.preisDirektverkauf.toFixed(2) }} Franken pro Liter, an diversen
+    Märkten sowie an über <a href="/verkaufsstellen">70 Verkaufsstellen in der Region</a>. Zudem verschicken ihn schweizweit per Post. 
+    <div class="oeffnungszeiten-box my-4 pa-3">
+      <div class="font-weight-bold mb-2">Öffnungszeiten Direktverkauf Hochwald</div>
+      <div><strong>Montag – Samstag</strong></div>
+      <div>08:00 – 12:00 Uhr & 13:00 – 17:00 Uhr</div>
+          Kleine Mengen bis 20 Liter können Sie ohne telefonische Ankündigung bei uns abholen.<br/><br/>
+
+    </div>
+    
 </div>
 
 <v-alert
@@ -81,5 +89,19 @@ Für Vorberstellungen ab 14 Liter nutzen Sie den
   color: #153a6b;
   padding: 0 rem 0 rem;
   text-align: left;
+}
+.custom-info-box {
+  max-width: 90%;
+  font-size: 1 rem;
+  background: rgba(255,255,255,0.85);
+  color: #153a6b;
+  padding: 0 rem 0 rem;
+  text-align: left;
+}
+.oeffnungszeiten-box {
+  border: 1px solid #e0e0e0;
+  border-left: 5px solid #153a6b;
+  background-color: #f7f9fa;
+  border-radius: 4px;
 }
 </style>

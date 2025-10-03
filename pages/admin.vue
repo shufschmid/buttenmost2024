@@ -21,23 +21,26 @@
     ><v-row
       ><v-col cols="12">
         <v-alert
-    type="info"
-    variant="tonal"
-    class="mx-auto my-4"
-    style="max-width: 100%; font-size: 1rem; font-weight: 500"
-    border="start"
+type="info"
+variant="tonal"
+class="mx-auto my-4"
+style="max-width: 100%; font-size: 1rem; font-weight: 500"
+border="start"
   >
      Vorrat für {{shippingDays[0].title}}: {{ ausgabe }}
-    </v-alert
+</v-alert
   >
         
-        
-        
+        <VerteilungsTabelle :bestellungen="BestellungenPost" :liefertage="shippingDaysPost" />
+
+            <LiefernummernCheck :bestellungen="BestellungenPost" :liefertage="shippingDaysPost" />
+
        
         </v-col
     ></v-row>
     <v-row
       ><v-col cols="12" md="4">
+            
         <h2><v-icon icon="mdi-printer"></v-icon>Rechnungen</h2>
         <ul class="ml-4">
           <li v-for="Liefertag in shippingDays">
@@ -70,6 +73,43 @@
         </ul></v-col
       ><v-col cols="12" md="4"></v-col
     ></v-row>
+<v-row>
+  <v-col cols="12">blas
+  </v-col>
+</v-row>
+<v-row
+  ><v-col cols="12" md="4">
+    <h2><v-icon icon="mdi-printer"></v-icon>Rechnungen</h2>
+    <ul class="ml-4">
+      <li v-for="Liefertag in shippingDays">
+        <nuxt-link :to="'/rechnungen/datum/' + Liefertag.Datum">{{
+          Liefertag.Datum
+        }}</nuxt-link>
+      </li>
+    </ul>
+    <br /><br />
+    <h2>Sammelrechnungen</h2>
+    <ul class="ml-4">
+      <li v-for="Geschaeft in rechnungen()">
+        <nuxt-link :to="'/rechnungen/sammelrechnung/' + Geschaeft">{{
+          Geschaeft
+        }}</nuxt-link>
+      </li>
+    </ul>
+  </v-col>
+  <v-col cols="12" md="8">
+    <h2>aktuelle Bestellungen</h2>
+    <ul class="ml-4">
+      <li v-for="Bestellung in Bestellungen">
+        {{ Bestellung.Lieferdatum }} | {{ Bestellung.Kunde }} |
+        <nuxt-link :to="'/rechnungen/' + Bestellung.Id">Rechnung</nuxt-link> |{" "}
+        <nuxt-link :to="'/lieferschein/' + Bestellung.Id">Lieferschein</nuxt-link>
+        | <nuxt-link :to="'/etiketten/' + Bestellung.Id">Etikette</nuxt-link>
+      </li>
+    </ul>
+  </v-col>
+  <v-col cols="12" md="4"></v-col>
+</v-row>
     
   </v-container>
   <v-btn
@@ -123,8 +163,14 @@ function rechnungen(){
 const shippingDays = await $fetch(
   "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
 );
+const shippingDaysPost = await $fetch(
+  "/api/airtable_get?basis=Lieferdaten&view=post_alle&sort=true"
+);
 const Bestellungen = await $fetch(
   "/api/airtable_get?basis=Bestellungen&view=admin"
+);
+const BestellungenPost = await $fetch(
+  "/api/airtable_get?basis=Bestellungen&view=post"
 );
 
 
