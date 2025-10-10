@@ -3,23 +3,29 @@
     <v-form name="rechnung" ref="form">
 <adminbar :is-rechnung="true">
   <template #actions>
+    <v-switch color="primary" v-model="isLieferschein" label="Lieferschein" density="compact" class="mr-4"></v-switch><v-switch color="primary" v-model="isBetragErhalten" label="Betrag erhalten" density="compact" class="mr-4"></v-switch>
+    <v-text-field v-model="customdate" label="Datum" density="compact" width="10"></v-text-field>
+    <v-btn
+      @click="loadImage(data)"
+    >
+    
+
+      QR-Code laden</v-btn
+    >
     <v-btn
       @click="changeStatus"
       :color="buttoncolor"
     >
       Status auf "Rechnung" setzen</v-btn
-    ><v-btn
-      @click="loadImage(data)"
-    >
-      QR-Code laden</v-btn
     >
   </template>
 </adminbar>
 
+
       <v-container id="rechnungen">
         <v-row
           ><v-col cols="12"
-            ><h1>Rechnung</h1>
+            ><h1>{{isLieferschein ? "Lieferschein" : "Rechnung"}}</h1>
             {{ bezeichnung(data, "Rechnung", "Name") }}</v-col
           ><v-col cols="8" align-self="center">
             Datum: {{ printdate(data.Lieferdatum) }}<br /><br />
@@ -36,11 +42,11 @@
             ><Firmenadresse /></v-col
           ><v-col cols="12">
             <BestellungTable :data="data" />
-            >
+            
           </v-col>
         <v-col cols="12" v-show="!image">
-  <div class="betrag-erhalten">
-    Betrag erhalten am {{ printdate(data.Erstellt) }} ____________________________
+  <div class="betrag-erhalten" v-show="isBetragErhalten">
+    Betrag erhalten am {{ customdate ? customdate : printdate(data.Erstellt)}} : ____________________________
   </div>
 </v-col>
           
@@ -68,7 +74,9 @@ let buttoncolor = ref("primary")
 
 let image = ref();
 
-
+let isLieferschein = ref(false);
+let isBetragErhalten = ref(true);
+let customdate = ref("test");
 function printdate(datum) {
   return new Date(datum).toLocaleDateString();
 }

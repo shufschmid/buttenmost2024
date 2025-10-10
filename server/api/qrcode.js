@@ -4,7 +4,7 @@ import querystring from "querystring";
 export default defineEventHandler(async (event) => {
   try {
     // Main configuration
-    let myEndpointUrl = "http://qrbillservice.livingtech.ch";
+    let myEndpointUrl = "https://v2.qrbillservice.livingtech.ch";
     let myEndpointPath = "/api/qrinvoice/create/";
     let myApiKey = process.env.QR_CODE_API_KEY;
     let qrcode = "";
