@@ -76,7 +76,7 @@ let image = ref();
 
 let isLieferschein = ref(false);
 let isBetragErhalten = ref(true);
-let customdate = ref("test");
+let customdate = ref("");
 function printdate(datum) {
   return new Date(datum).toLocaleDateString();
 }
