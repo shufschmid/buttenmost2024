@@ -73,10 +73,6 @@ border="start"
         </ul></v-col
       ><v-col cols="12" md="4"></v-col
     ></v-row>
-<v-row>
-  <v-col cols="12">blas
-  </v-col>
-</v-row>
 <v-row
   ><v-col cols="12" md="4">
     <h2><v-icon icon="mdi-printer"></v-icon>Rechnungen</h2>
@@ -90,24 +86,14 @@ border="start"
     <br /><br />
     <h2>Sammelrechnungen</h2>
     <ul class="ml-4">
-      <li v-for="Geschaeft in rechnungen()">
-        <nuxt-link :to="'/rechnungen/sammelrechnung/' + Geschaeft">{{
-          Geschaeft
+      <li v-for="Laden in Sammelrechnungen">
+        <nuxt-link :to="'/rechnungen/sammelrechnung/' + Laden.Geschaeft">{{
+          Laden.Geschaeft
         }}</nuxt-link>
       </li>
     </ul>
   </v-col>
-  <v-col cols="12" md="8">
-    <h2>aktuelle Bestellungen</h2>
-    <ul class="ml-4">
-      <li v-for="Bestellung in Bestellungen">
-        {{ Bestellung.Lieferdatum }} | {{ Bestellung.Kunde }} |
-        <nuxt-link :to="'/rechnungen/' + Bestellung.Id">Rechnung</nuxt-link> |{" "}
-        <nuxt-link :to="'/lieferschein/' + Bestellung.Id">Lieferschein</nuxt-link>
-        | <nuxt-link :to="'/etiketten/' + Bestellung.Id">Etikette</nuxt-link>
-      </li>
-    </ul>
-  </v-col>
+  
   <v-col cols="12" md="4"></v-col>
 </v-row>
     
@@ -172,7 +158,9 @@ const Bestellungen = await $fetch(
 const BestellungenPost = await $fetch(
   "/api/airtable_get?basis=Bestellungen&view=post"
 );
-
+const Sammelrechnungen = await $fetch(
+  "/api/airtable_get?basis=Verkaufsstellen&view=Sammelrechnungen"
+);
 
 let search = ref();
 let VorrratKistli = ref(0);

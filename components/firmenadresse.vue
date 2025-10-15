@@ -37,4 +37,8 @@ const logoSrc = props.sw ? '/logo.svg' : '/logo.svg'
   color: inherit;
   text-decoration: none;
 }
+.firmenadresse {
+  font-size: 0.875rem; /* Entspricht 14px bei einer Basisschriftgröße von 16px */
+  line-height: 1.4;
+}
 </style>

@@ -11,9 +11,9 @@
 
       <v-container id="rechnungen">
         <v-row
-          ><v-col cols="8"
+          > <v-col cols="7"
             ><h1>Rechnung</h1>
-            {{ bezeichnung(data[0], "Rechnung", "Name") }}<br/><br/><br/>
+            {{ route.params.kunde}} <br/><br/><br/>
 
             <div class="pl-14">
               {{ bezeichnung(data[0], "Rechnung", "Name") }}<br />
@@ -23,15 +23,10 @@
               {{ bezeichnung(data[0], "Rechnung", "PLZundOrt") }}
             </div>
           </v-col>
-          <v-col cols="4" align-self="top"
-            >
-            Datum: {{ store.heute.toLocaleDateString() }}<br /><br /><img src="/logo.png" width="200px" /><br />Verena Ming<br />
-            Mattenweg 17<br />
-            4146 Hochwald<br />
-            Tel. 061 751 48 21<br />
-            info@buttenmost.ch<br />
-            MWST-Nr. {{ store.mehrwertsteuernummer }}</v-col
-          ><v-col cols="12">
+          <v-col cols="5"
+            ><Firmenadresse /></v-col
+          >
+          <v-col cols="12">
             <v-table>
               <thead>
                 <tr>
@@ -57,20 +52,17 @@
                       {{ (store.PreisProLiter + store.PreisBecher).toFixed(2) }}
                     </span>
                     <span v-show="einzelbestellung.Konfi_gr > 0"
-                      ><br />{{ einzelbestellung.Konfi_gr }} grosse Gläser
+                      ><br />{{ einzelbestellung.Konfi_gr * store.konfi_gross_anzahl_pro_karton }} grosse Gläser
                       Konfitüre à CHF
                       {{ store.konfi_gross_preis.toFixed(2) }}</span
                     >
                     <span v-show="einzelbestellung.Konfi_kl > 0"
-                      ><br />{{ einzelbestellung.Konfi_kl }} kleine Gläser
+                      ><br />{{ einzelbestellung.Konfi_kl * store.konfi_klein_anzahl_pro_karton }} kleine Gläser
                       Konfitüre à CHF
                       {{ store.konfi_klein_preis.toFixed(2) }}</span
                     >
-                    <span v-show="einzelbestellung.Tee > 0"
-                      ><br />{{ einzelbestellung.Tee }} Päckli Tee à CHF
-                      {{ store.tee_preis.toFixed(2) }}</span
-                    >
-                    <span v-if="einzelbestellung.Typ == 'Laden'"
+                    
+                    <span v-if="einzelbestellung.Vertrieb != 'Abholung'"
                       ><br />{{ 1 }} x Lieferpauschale</span
                     >
                   </td>
@@ -87,7 +79,7 @@
                       ><br />CHF
                       {{
                         (
-                          einzelbestellung.Konfi_gr * store.konfi_gross_preis
+                          einzelbestellung.Konfi_gr * store.konfi_gross_anzahl_pro_karton * store.konfi_gross_preis
                         ).toFixed(2)
                       }}</span
                     >
@@ -95,16 +87,11 @@
                       ><br />CHF
                       {{
                         (
-                          einzelbestellung.Konfi_kl * store.konfi_klein_preis
+                          einzelbestellung.Konfi_kl * store.konfi_klein_anzahl_pro_karton * store.konfi_klein_preis
                         ).toFixed(2)
                       }}</span
                     >
-                    <span v-show="einzelbestellung.Tee > 0"
-                      ><br />CHF
-                      {{
-                        (einzelbestellung.Tee * store.tee_preis).toFixed(2)
-                      }}</span
-                    ><span v-if="einzelbestellung.Lieferpauschale"
+                    <span v-if="einzelbestellung.Lieferpauschale"
                       ><br />CHF
                       {{ einzelbestellung.Lieferpauschale.toFixed(2) }}</span
                     >
@@ -114,20 +101,14 @@
                   </td>
                 </tr>
                 <tr>
-                  <td><b>Gesamttotal</b></td>
-                  <td></td>
-                  <td></td>
+                  <td colspan="3"><b>Gesamttotal</b><br/>Inkl. {{ store.mehrwertsteuersatz }} % MWST. Zahlbar innert 10 Tagen. </td>
                   <td class="text-right">
-                    <b>{{ total().toFixed(2) }}</b>
+                    <b>{{ total().toFixed(2) }}</b><br/>&#160;
                   </td>
                 </tr>
               </tbody></v-table
             >
           </v-col>
-          <v-col cols="12"
-            >Inkl. {{ store.mehrwertsteuersatz }} % MWST. Zahlbar innert 10
-            Tagen. <br /><br
-          /></v-col>
         </v-row>
         <img
           v-bind:src="'data:image/png;base64,' + image"
@@ -136,7 +117,7 @@
         />
       </v-container>
     </v-form>
-  </div>
+  </div> 
 </template>
 <script setup>
 definePageMeta({

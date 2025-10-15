@@ -3,7 +3,7 @@ const store = useButtenmostStore();
 let Lieferdatum = ref()
 
 onMounted(() => {
-  Lieferdatum.value = shippingDays[0] // <div>
+  Lieferdatum.value = Array.isArray(shippingDays) ? shippingDays[0] : shippingDays;
 })
 
 let Menge = ref(store.StandardMenge)
@@ -75,9 +75,11 @@ let Betrag = computed(() => {
   return(Porto.value + ButtenmostPreis.value + Kleinmengenzuschlag.value.value + store.Verpackung[Verpackungsindex.value].Preis)
 })
 
-const shippingDays = await $fetch(
-  "/api/airtable_get?basis=Lieferdaten&view=post&sort=true")
-;
+const fetchedShippingDays = await $fetch(
+  "/api/airtable_get?basis=Lieferdaten&view=post&sort=true"
+);
+const shippingDays = Array.isArray(fetchedShippingDays) ? fetchedShippingDays : [fetchedShippingDays];
+
 
 async function order() {
   const airtable = await $fetch('/api/airtable', {
