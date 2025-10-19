@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
   try {
     const message = await client.messages.create({
       body: body.sms,
-      from: "+1 804 568 9251",
+      from: "+17019350544",
       to: body.to
     });
 

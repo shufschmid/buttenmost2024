@@ -8,7 +8,8 @@
             closable
             type="error"            
           >Achtung: Diese Menge ist am ausgewählten Lieferdatum nicht mehr verfügbar. Bitte wählen Sie ein anderes Datum oder eine andere Menge. Aktuell am gewünschten Liefertag verfügbar: {{ VorrratKistli }} Kistli.</v-alert>
-    <v-stepper
+
+          <v-stepper
       v-show="!bestellungErfolgreich"
       @update:model-value="onStepChange"
       :items="['Menge & Datum', 'Anmelden', 'Adresseingabe', 'Bestätigen']"
@@ -22,7 +23,7 @@
     variant="tonal"
     class="mx-auto my-4"
     style="max-width: 100%; font-size: 1rem; font-weight: 500"
-    border="start"
+    border="start" v-if="!Warnhinweis"
   >
     Dieser Bereich ist für Wiederverkäufer gedacht. Hier können Sie Buttenmost in Kistli mit jeweils 14 1-Liter-Bechern sowie Konfis in Kartons à jeweils 6 Gläser zu Vorzugspreisen bestellen. <span v-if="showMore"><br/><br/>
     Falls Sie per Post einen Identifikationscode erhalten haben, können Sie diesen auf der nächsten Seite eingeben. Ansonsten wird ein Formular zur Eingabe der Adresse angegeben. <br/><br/>
@@ -31,7 +32,13 @@
     </a>
      
     </v-alert
-  ><v-banner
+  >
+    <v-alert v-if="Warnhinweis"
+            closable
+            type="warning"            
+          >Achtung: Bitte beachten Sie das Lieferdatum, leider können wir aktuell keine Bestellung zu für ein früheres Liefer- oder Abholdatum anbieten. {{ HinweisHomepage }}</v-alert>
+         
+  <v-banner
             class="m-0"
             color="pink-darken-1"
             icon="mdi-calendar"
@@ -43,7 +50,9 @@
               v-model="Lieferdatum"
               return-object
             ></v-select>
-          </v-banner>
+           
+
+                </v-banner>
 
           <v-table>
             <tbody>
@@ -289,6 +298,14 @@ const store = useButtenmostStore();
 const shippingDays = await $fetch(
   "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
 );
+let Warnhinweis = await $fetch(
+  "/api/airtable_get?basis=Lieferdaten&view=Warnhinweis"
+);
+if (Array.isArray(Warnhinweis) && Warnhinweis.length === 0) {
+  Warnhinweis = false;
+}
+
+const HinweisHomepage = Array.isArray(Warnhinweis) ? Warnhinweis[0]?.HinweisHomepage : Warnhinweis?.HinweisHomepage;
 const { data } = await useFetch(
   "/api/airtable_get?basis=Verkaufsstellen&view=website&verkaufsstellensort=true"
 );
