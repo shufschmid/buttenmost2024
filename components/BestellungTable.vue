@@ -22,8 +22,18 @@
         <span v-show="data.Konfi_kl > 0">
           <br />{{ data.Konfi_kl }} Karton Konfi klein ({{ store.konfi_klein_anzahl_pro_karton }} Gläser) à CHF {{ (store.konfi_klein_anzahl_pro_karton * store.konfi_klein_preis).toFixed(2) }}
         </span>
+        
+        <span v-if="data.Verpackung > 0">
+          <br />Verpackung
+        </span>
+        <span v-if="data.Porto > 0">
+          <br />Porto
+        </span>
         <span v-if="data.Lieferpauschale > 0">
           <br />{{ 1 }} x Lieferpauschale
+        </span>
+        <span v-else-if="data.Lieferpauschale << 0">
+          <br />Mengenrabatt
         </span>
       </td>
       <td valign="top" class="text-right">
@@ -39,9 +49,17 @@
         <span v-show="data.Konfi_kl > 0">
           <br />CHF {{ (data.Konfi_kl * store.konfi_klein_anzahl_pro_karton * store.konfi_klein_preis).toFixed(2) }}
         </span>
-        <span v-if="data.Lieferpauschale > 0">
+        
+        <span v-if="data.Verpackung > 0">
+          <br />CHF {{ data.Verpackung.toFixed(2) }}
+        </span>
+        <span v-if="data.Porto != 0">
+          <br />CHF {{ data.Porto.toFixed(2) }}
+        </span>
+        <span v-if="data.Lieferpauschale != 0">
           <br />CHF {{ data.Lieferpauschale.toFixed(2) }}
         </span>
+        
       </td>
     </tr>
     <tr>

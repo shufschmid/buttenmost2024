@@ -9,7 +9,7 @@ const showMore = ref(false)
     <div class="parallax-center-box">
       <div class="parallax-content-box">
         <h4 class="text-h4 font-weight-thin mb-4" v-if="!store.isSaison">
-          Die Buttenmost-Saison beginnt am {{ store.SaisonStartString }}
+          Die Buttenmost-Saison ist vorbei.
         </h4>
         <h4 class="text-h4 font-weight-thin mb-4" v-else>
           Es gibt wieder frischen Buttenmost aus Hochwald!
@@ -20,7 +20,7 @@ const showMore = ref(false)
   
      
   <div
-  class="custom-info-box mx-auto my-4"
+  class="custom-info-box mx-auto my-4" v-if="store.isSaison"
 >
 
   Unser Buttenmost ist ab sofort und bis Mitte November erhältlich am Kirchrain 17 in Hochwald zum Preis von {{ store.preisDirektverkauf.toFixed(2) }} Franken pro Liter, an diversen
@@ -40,7 +40,7 @@ const showMore = ref(false)
     variant="tonal"
     class="mx-auto my-4"
     style="max-width: 90%; font-size: 1rem; font-weight: 500"
-    border="start"
+    border="start" v-if="store.isSaison"
   >
     Hinweis für Kunden, die grössere Mengen Buttenmost für den Weiterverkauf benötigen: Neu gibt es ein Online-Formular zur Vorbestellung. <span v-if="showMore"><br/><br/>
 Für Vorberstellungen ab 14 Liter nutzen Sie den 
@@ -51,8 +51,8 @@ Für Vorberstellungen ab 14 Liter nutzen Sie den
       {{ showMore ? 'Weniger anzeigen' : 'Weitere Infos dazu' }}
     </a>
   </v-alert>
-  <shop id="shop-section"></shop><Social></Social>
-  <Verkaufsstellen anzahl="20"></Verkaufsstellen>
+  <shop id="shop-section" v-if="store.isSaison"></shop><Social></Social>
+  <Verkaufsstellen anzahl="20" v-if="store.isSaison"></Verkaufsstellen>
 </template>
 
 <style scoped>

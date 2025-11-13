@@ -26,9 +26,9 @@
         <v-row
           ><v-col cols="12"
             ><h1>{{isLieferschein ? "Lieferschein" : "Rechnung"}}</h1>
-            {{ bezeichnung(data, "Rechnung", "Name") }}</v-col
+            Datum: {{ printdate(data.Lieferdatum) }} | {{ bezeichnung(data, "Rechnung", "Name") }}</v-col
           ><v-col cols="8" align-self="center">
-            Datum: {{ printdate(data.Lieferdatum) }}<br /><br />
+            
 
             <div>
               {{ bezeichnung(data, "Rechnung", "Name") }}<br />

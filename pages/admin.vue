@@ -26,7 +26,7 @@ variant="tonal"
 class="mx-auto my-4"
 style="max-width: 100%; font-size: 1rem; font-weight: 500"
 border="start"
-  >
+  v-if="shippingDays[0]">
      Vorrat für {{shippingDays[0].title}}: {{ ausgabe }}
 </v-alert
   >
