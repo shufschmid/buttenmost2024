@@ -10,7 +10,6 @@ export default defineNuxtConfig({
   },
   routeRules: {
     '/': {prerender:true},
-    '/rezepte': {prerender:true},
     '/rezepte/**': {prerender:true},
   },
   modules: [

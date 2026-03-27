@@ -29,7 +29,7 @@ export const useButtenmostStore = defineStore("buttenmost", {
         { Menge: 10, Preis: 7, Gewicht: 404 },
         { Menge: 12, Preis: 8.9, Gewicht: 562 },
         { Menge: 15, Preis: 9.7, Gewicht: 617 },
-        { Menge: 18, Preis: 10, Gewicht: 654 },
+        { Menge: 17, Preis: 10, Gewicht: 654 },
         { Menge: 20, Preis: 10.5, Gewicht: 720 },
         { Menge: 29, Preis: 11.9, Gewicht: 821 },
         { Menge: 0, Preis: 0, Gewicht: 0 },
