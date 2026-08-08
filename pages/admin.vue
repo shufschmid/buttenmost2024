@@ -8,7 +8,7 @@
       >Payrexx</v-btn
     >
     <v-btn
-      href="https://airtable.com/app8cUEZWBvWHDfaN/tblbU1zmZ2kumAXEY/viwEmeSz33ziajVUp?blocks=hide"
+      href="https://airtable.com/appGF3k6k6MO8AMkz/tblbU1zmZ2kumAXEY/viwEmeSz33ziajVUp?blocks=hide"
       variant="outlined"
       class="ml-2"
       >Airtable: Bestellungen</v-btn
@@ -30,7 +30,11 @@ border="start"
      Vorrat für {{shippingDays[0].title}}: {{ ausgabe }}
 </v-alert
   >
-        
+        <h2>Lieferlisten drucken</h2>
+        <nuxt-link v-if="shippingDays[0]" :to="'/tour/datum/' + shippingDays[0].Datum"
+          >Lieferdatum: {{ shippingDays[0].Datum }}</nuxt-link
+        ><br/><br/>
+
         <VerteilungsTabelle :bestellungen="BestellungenPost" :liefertage="shippingDaysPost" />
 
             <LiefernummernCheck :bestellungen="BestellungenPost" :liefertage="shippingDaysPost" />

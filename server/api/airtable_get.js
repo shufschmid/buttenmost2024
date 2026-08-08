@@ -4,12 +4,12 @@ Airtable.configure({
   endpointUrl: "https://api.airtable.com",
   apiKey: process.env.AIRTABLE_TOKEN,
 });
-const base = new Airtable.base("app8cUEZWBvWHDfaN");
+const base = new Airtable.base("appGF3k6k6MO8AMkz");
 
 export default defineEventHandler(async (event) => {
   //console.log(event.req.method) --> so könnte man alle netlify funktionen, die auf airtable zugreifen, vereinheitlich (UPDATE,POST)
   try {
-    let { view, basis, filter, sort, specialfields, recID, verkaufsstellensort } = getQuery(event);
+    let { view, basis, filter, sort, specialfields, recID, verkaufsstellensort, sortfield, sortdirection, maxRecords } = getQuery(event);
 
     if (!filter) {
       filter = "";
@@ -43,6 +43,14 @@ export default defineEventHandler(async (event) => {
         sort: [{ field: "Ort", direction: "asc" }],
       };
     }
+
+    if (sortfield) {
+      query.sort = [{ field: sortfield, direction: sortdirection === "desc" ? "desc" : "asc" }];
+    }
+    if (maxRecords) {
+      query.maxRecords = Number(maxRecords);
+    }
+
     let resp = [];
     let sendBackBody = [];
     if (recID) {

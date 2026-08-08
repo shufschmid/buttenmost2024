@@ -8,8 +8,11 @@ const showMore = ref(false)
   <v-parallax src="/titelbild.jpg" height="450">
     <div class="parallax-center-box">
       <div class="parallax-content-box">
-        <h4 class="text-h4 font-weight-thin mb-4" v-if="!store.isSaison">
+        <h4 class="text-h4 font-weight-thin mb-4" v-if="store.isSaisonOver">
           Die Buttenmost-Saison ist vorbei.
+        </h4>
+        <h4 class="text-h4 font-weight-thin mb-4" v-else-if="!store.isSaison">
+          Die Buttenmost-Saison startet am {{ store.SaisonStartString }}.
         </h4>
         <h4 class="text-h4 font-weight-thin mb-4" v-else>
           Es gibt wieder frischen Buttenmost aus Hochwald!
@@ -24,7 +27,7 @@ const showMore = ref(false)
 >
 
   Unser Buttenmost ist ab sofort und bis Mitte November erhältlich am Kirchrain 17 in Hochwald zum Preis von {{ store.preisDirektverkauf.toFixed(2) }} Franken pro Liter, an diversen
-    Märkten sowie an über <a href="/verkaufsstellen">70 Verkaufsstellen in der Region</a>. Zudem verschicken ihn schweizweit per Post. 
+    Märkten sowie an über <a href="/verkaufsstellen">70 Verkaufsstellen in der Region</a>. Zudem verschicken wir ihn schweizweit per Post. 
     <div class="oeffnungszeiten-box my-4 pa-3">
       <div class="font-weight-bold mb-2">Öffnungszeiten Direktverkauf Hochwald</div>
       <div><strong>Montag – Samstag</strong></div>
@@ -42,13 +45,14 @@ const showMore = ref(false)
     style="max-width: 90%; font-size: 1rem; font-weight: 500"
     border="start" v-if="store.isSaison"
   >
-    Hinweis für Kunden, die grössere Mengen Buttenmost für den Weiterverkauf benötigen: Neu gibt es ein Online-Formular zur Vorbestellung. <span v-if="showMore"><br/><br/>
+    Hinweis: Kleine Mengen Buttenmost (bis max. 15 Liter, abgefüllt in 1-Liter-Bechern, können Sie ohne Voranmeldung bei uns beziehen. Kunden, die grössere Mengen Buttenmost für den Weiterverkauf benötigen: Bitte benutzen Sie den <a href="/b2b">Shop für Firmenkunden</a>. <br/><br/><span v-if="showMore">
 Für Vorberstellungen ab 14 Liter nutzen Sie den 
     <a href="/b2b">Shop für Firmenkunden</a>. Bitte bachten Sie, dass wir Buttenmost zum Wiederverkauf ausschliesslich in Einheiten von jeweils 14 1-Liter-Bechern und gegen Vorauskasse anbieten. <br/><br/>Wenn
-    Sie in Kessel abgefüllten Buttenmost (2 bis 28 Liter) beziehen möchten, dann ist weiterhin möglich, jedoch nur noch an vier Daten. Verwenden Sie in diesem Fall für die Bestellung den
+    Sie in Kessel abgefüllten Buttenmost (2 bis 28 Liter) beziehen möchten, verwenden bitten wir Sie um eine Vorbestellung. Nutzen Sie dazu den 
     <a href="/shop">Shop für Privatkunden</a>, wählen Sie das gewünschte Datum aus und klicken auf die Option "zum 
-    Abholen". Kleinere Mengen bis max. 15 Liter können Sie weiterhin und ohne Vorbestellung bei uns am Kirchrain 17 abholen und vor Ort mit Bargeld oder Twint bezahlen.</span><a href="#" @click.prevent="showMore = !showMore" style="color:#2196f3; font-weight:600;">
-      {{ showMore ? 'Weniger anzeigen' : 'Weitere Infos dazu' }}
+    Abholen". <br/><br/>    
+    Kleinere Mengen bis max. 15 Liter - abgefüllt in 1-Liter-Bechern - können Sie weiterhin und ohne Vorbestellung bei uns am Kirchrain 17 abholen und vor Ort mit Bargeld oder Twint bezahlen. </span><a href="#" @click.prevent="showMore = !showMore" style="color:#2196f3; font-weight:600;">
+      {{ showMore ? 'Weniger anzeigen' : 'Weitere Infos hier' }}
     </a>
   </v-alert>
   <shop id="shop-section" v-if="store.isSaison"></shop><Social></Social>

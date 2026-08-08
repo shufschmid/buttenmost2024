@@ -3,34 +3,34 @@ import { defineStore } from "pinia";
 export const useButtenmostStore = defineStore("buttenmost", {
   state: () => {
     return {
-      SaisonStart: new Date("2025-09-23 12:00:00"),
-      SaisonStartFirmen: new Date("2025-09-24 12:00:00"),
-      PreisProLiter: 7.9, //3.69 Einkaufspreis 
+      SaisonStart: new Date("2026-05-21 12:00:00"),
+      SaisonStartFirmen: new Date("2026-09-22 12:00:00"),
+      PreisProLiter: 8.2, //3.69 Einkaufspreis 
       PreisBecher: 0.9,
       ZuschlagDirektverkauf: 2.5,
-      SaisonEnde: new Date("2025-11-12 12:00:00"),
-      SaisonEndeFirmen: new Date("2025-11-12 12:00:00"),
+      SaisonEnde: new Date("2026-11-06 12:00:00"),
+      SaisonEndeFirmen: new Date("2026-11-05 12:00:00"),
       lieferpauschale: 22,
       kistli: 2, //Voreinstellung für Bestellformular Läden
       liter_pro_kistli: 14,
-      konfi_gross_preis: 7.9,
+      konfi_gross_preis: 8.2,
       konfi_gross_anzahl_pro_karton: 6,
-      konfi_klein_preis: 4.7,
+      konfi_klein_preis: 5,
       konfi_klein_anzahl_pro_karton: 6,
       heute: new Date(),
       StandardMenge: 8,
       MinimumMenge: 2,
       MaximumMenge: 28,
       versandpauschale: 15,
-      KapazitaetLieferwagen: 392,
+      KapazitaetLieferwagen: 1000,
       Verpackung: [
         { Menge: 3, Preis: 4.5, Gewicht: 190 },
         { Menge: 5, Preis: 4.5, Gewicht: 190 },
-        { Menge: 10, Preis: 7, Gewicht: 404 },
-        { Menge: 12, Preis: 8.9, Gewicht: 562 },
-        { Menge: 15, Preis: 9.7, Gewicht: 617 },
+        { Menge: 9, Preis: 7, Gewicht: 404 },
+        { Menge: 11, Preis: 8.9, Gewicht: 562 },
+        { Menge: 14, Preis: 9.7, Gewicht: 617 },
         { Menge: 17, Preis: 10, Gewicht: 654 },
-        { Menge: 20, Preis: 10.5, Gewicht: 720 },
+        { Menge: 19, Preis: 10.5, Gewicht: 720 },
         { Menge: 29, Preis: 11.9, Gewicht: 821 },
         { Menge: 0, Preis: 0, Gewicht: 0 },
       ],
@@ -69,6 +69,11 @@ export const useButtenmostStore = defineStore("buttenmost", {
         ? true
         : false;
     },
+    isSaisonOver() {
+      return this.heute > this.SaisonEnde
+        ? true
+        : false;
+    },
     isSaisonFirmen() {
       return this.heute > this.SaisonStartFirmen &&
         this.heute < this.SaisonEndeFirmen
@@ -83,23 +88,7 @@ export const useButtenmostStore = defineStore("buttenmost", {
       const options = { year: "numeric", month: "long", day: "numeric" };
       return this.SaisonStartFirmen.toLocaleDateString("de-DE", options);
     },
-    // MoeglicheLieferdaten() {
-    //   var result = [];
-    //   var days = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
-    //   var day = days[this.shippingWeekDay];
-    //   var current = new Date(this.SaisonStart);
-    //   current.setDate(current.getDate() + ((day - current.getDay() + 7) % 7));
-    //   while (current < this.SaisonEnde) {
-    //     if (current > this.heute) {
-    //       result.push({
-    //         title: new Date(+current).toLocaleDateString("de-DE"),
-    //         value: new Date(+current).toISOString().substring(0, 10), //weil Airtable nur XXXX-MM-DD akzeptiert
-    //       });
-    //     }
-    //     current.setDate(current.getDate() + 7);
-    //   }
-    //   return result;
-    // },
+    
     MoeglicheLieferdatenFirmen() {
       var result = [];
       var current = new Date(this.SaisonStartFirmen);

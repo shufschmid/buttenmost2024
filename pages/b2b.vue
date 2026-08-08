@@ -47,7 +47,7 @@
   ><v-alert v-if="Warnhinweis"
             closable
             type="info"            
-          >Wichtige Information: Letzter Bestelltermin für Lieferungen 2025 ist der 6. November.</v-alert>
+          >Wichtige Information: Letzter Bestelltermin für Lieferungen 2026 ist der 3. November.</v-alert>
     <v-alert v-if="Warnhinweis"
             closable
             type="warning"            

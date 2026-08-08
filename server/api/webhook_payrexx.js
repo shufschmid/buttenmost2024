@@ -51,7 +51,7 @@ Airtable.configure({
   endpointUrl: "https://api.airtable.com",
   apiKey: process.env.AIRTABLE_TOKEN,
 });
-const base = new Airtable.base("app8cUEZWBvWHDfaN");
+const base = new Airtable.base("appGF3k6k6MO8AMkz");
 
 
 
