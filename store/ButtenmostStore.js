@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 export const useButtenmostStore = defineStore("buttenmost", {
   state: () => {
     return {
-      SaisonStart: new Date("2026-05-21 12:00:00"),
+      SaisonStart: new Date("2026-009-21 12:00:00"),
       SaisonStartFirmen: new Date("2026-09-22 12:00:00"),
       PreisProLiter: 8.2, //3.69 Einkaufspreis 
       PreisBecher: 0.9,
