@@ -55,7 +55,7 @@ Für Vorberstellungen ab 14 Liter nutzen Sie den
       {{ showMore ? 'Weniger anzeigen' : 'Weitere Infos hier' }}
     </a>
   </v-alert>
-  <shop id="shop-section" v-if="store.isSaison"></shop><Social></Social>
+  <shop id="shop-section" v-if="store.preSaison || store.isSaison"></shop><Social></Social>
   <Verkaufsstellen anzahl="20" v-if="store.isSaison"></Verkaufsstellen>
 </template>
 

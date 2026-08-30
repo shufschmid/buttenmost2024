@@ -24,7 +24,7 @@
     variant="tonal"
     class="mx-auto my-4"
     style="max-width: 100%; font-size: 1rem; font-weight: 500"
-    border="start" v-if="!store.isSaison"
+    border="start" v-if="!store.isSaison && !store.preSaison"
   >
     Die Buttenmost-Saison ist vorbei. Möchten Sie im nächsten Jahr unseren Buttenmost in ihrem Laden oder an einem Markt anbieten? Dann kontaktieren Sie uns: info@buttenmost.ch. 
      
@@ -35,7 +35,7 @@
     variant="tonal"
     class="mx-auto my-4"
     style="max-width: 100%; font-size: 1rem; font-weight: 500"
-    border="start" v-if="!Warnhinweis && store.isSaison"
+    border="start" v-if="store.isSaison || store.preSaison"
   >
     Dieser Bereich ist für Wiederverkäufer gedacht. Hier können Sie Buttenmost in Kistli mit jeweils 14 1-Liter-Bechern sowie Konfis in Kartons à jeweils 6 Gläser zu Vorzugspreisen bestellen. <span v-if="showMore"><br/><br/>
     Falls Sie per Post einen Identifikationscode erhalten haben, können Sie diesen auf der nächsten Seite eingeben. Ansonsten wird ein Formular zur Eingabe der Adresse angegeben. <br/><br/>

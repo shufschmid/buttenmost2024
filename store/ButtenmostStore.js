@@ -18,6 +18,7 @@ export const useButtenmostStore = defineStore("buttenmost", {
       konfi_klein_preis: 5,
       konfi_klein_anzahl_pro_karton: 6,
       heute: new Date(),
+      preSaison: true,
       StandardMenge: 8,
       MinimumMenge: 2,
       MaximumMenge: 28,
@@ -69,6 +70,7 @@ export const useButtenmostStore = defineStore("buttenmost", {
         ? true
         : false;
     },
+    
     isSaisonOver() {
       return this.heute > this.SaisonEnde
         ? true
