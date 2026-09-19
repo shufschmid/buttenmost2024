@@ -3,7 +3,7 @@
   <v-table >
     <thead>
       <tr>
-        <th class="text-left">Liefer- oder Abholdatum</th>
+        <th class="text-left">{{ data.vertrieb === "Abholung" ? "Abholdatum" : "Lieferdatum" }}</th>
         <th class="text-left">Menge/Produkt</th>
         <th class="text-right">Betrag</th>
       </tr>
@@ -29,20 +29,38 @@
         <span v-if="data.Porto > 0">
           <br />Porto
         </span>
-        <span v-if="data.Lieferpauschale > 0">
-          <br />{{ 1 }} x Lieferpauschale
+        <span v-if="data.Lieferpauschale > 0 && data.vertrieb !== 'Abholung'">
+          <br />Lieferpauschale
         </span>
-        <span v-else-if="data.Lieferpauschale << 0">
+        <span v-else-if="data.Lieferpauschale > 0">
+          <br />Kleinmengenzuschlag
+        </span>
+        <span v-else-if="data.Lieferpauschale < 0">
           <br />Mengenrabatt
         </span>
       </td>
       <td class="text-right">
-        CHF {{
-          (
-            data.Menge *
-            (Number(store.PreisBecher) + Number(store.PreisProLiter))
-          ).toFixed(2)
-        }}
+        <span v-if="data.Typ == 'Laden'">
+          CHF {{
+            (
+              data.Menge *
+              (Number(store.PreisBecher) + Number(store.PreisProLiter))
+            ).toFixed(2)
+          }}
+        </span>
+        <span v-else>
+          CHF {{
+            (
+              (data.Betrag || 0) -
+              (data.Verpackung || 0) -
+              (data.Porto || 0) -
+              (data.Lieferpauschale || 0) -
+              (data.Konfi_kl || 0) * store.konfi_klein_anzahl_pro_karton * store.konfi_klein_preis -
+              (data.Konfi_gr || 0) * store.konfi_gross_anzahl_pro_karton * store.konfi_gross_preis
+            ).toFixed(2)
+          }}
+        </span>
+        
         <span v-show="data.Konfi_gr > 0">
           <br />CHF {{ (data.Konfi_gr * store.konfi_gross_anzahl_pro_karton * store.konfi_gross_preis).toFixed(2) }}
         </span>

@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 export const useButtenmostStore = defineStore("buttenmost", {
   state: () => {
     return {
-      SaisonStart: new Date("2026-009-21 12:00:00"),
+      SaisonStart: new Date("2026-09-21 12:00:00"),
       SaisonStartFirmen: new Date("2026-09-22 12:00:00"),
       PreisProLiter: 8.2, //3.69 Einkaufspreis 
       PreisBecher: 0.9,
@@ -25,14 +25,14 @@ export const useButtenmostStore = defineStore("buttenmost", {
       versandpauschale: 15,
       KapazitaetLieferwagen: 1000,
       Verpackung: [
-        { Menge: 3, Preis: 4.5, Gewicht: 190 },
-        { Menge: 5, Preis: 4.5, Gewicht: 190 },
-        { Menge: 9, Preis: 7, Gewicht: 404 },
-        { Menge: 11, Preis: 8.9, Gewicht: 562 },
-        { Menge: 14, Preis: 9.7, Gewicht: 617 },
-        { Menge: 17, Preis: 10, Gewicht: 654 },
-        { Menge: 19, Preis: 10.5, Gewicht: 720 },
-        { Menge: 29, Preis: 11.9, Gewicht: 821 },
+        { Menge: 3, Preis: 4.5, Gewicht: 190, Kesselgrösse: "3'000 ml" },
+        { Menge: 5, Preis: 4.5, Gewicht: 190, Kesselgrösse: "5'000 ml" },
+        { Menge: 9, Preis: 7, Gewicht: 404, Kesselgrösse: "10'000 ml" },
+        { Menge: 11, Preis: 8.9, Gewicht: 562, Kesselgrösse: "12'000 ml" },
+        { Menge: 14, Preis: 9.7, Gewicht: 617, Kesselgrösse: "15'000 ml" },
+        { Menge: 17, Preis: 10, Gewicht: 654, Kesselgrösse: "18'000 ml" },
+        { Menge: 19, Preis: 10.5, Gewicht: 720, Kesselgrösse: "20'000 ml" },
+        { Menge: 29, Preis: 11.9, Gewicht: 821, Kesselgrösse: "30'000 ml" },
         { Menge: 0, Preis: 0, Gewicht: 0 },
       ],
       Kleinmengenzuschlag: [

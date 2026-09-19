@@ -1,22 +1,21 @@
 <template>
   <div>
     <v-form name="rechnung" ref="form">
-<adminbar :is-rechnung="true">
+<adminbar :is-rechnung="true" height="50">
   <template #actions>
-    <v-switch color="primary" v-model="isLieferschein" label="Lieferschein" density="compact" class="mr-4"></v-switch><v-switch color="primary" v-model="isBetragErhalten" label="Betrag erhalten" density="compact" class="mr-4"></v-switch>
-    <v-text-field v-model="customdate" label="Datum" density="compact" width="10"></v-text-field>
+    <v-switch color="primary" v-model="isLieferschein" label="Lieferschein" density="compact" hide-details class="mr-4 flex-grow-0"></v-switch>
+    <v-switch color="primary" v-model="isBetragErhalten" label="Betrag erhalten" density="compact" hide-details class="mr-4 flex-grow-0"></v-switch>
+    <v-text-field v-model="customdate" label="📅 Betrag erhalten" density="compact" hide-details width="10" class="mr-2"></v-text-field><v-text-field v-model="customdaterechnung" label="📅 Rechnung" density="compact" hide-details width="10" class="mr-4"></v-text-field>
     <v-btn
       @click="loadImage(data)"
     >
-    
-
-      QR-Code laden</v-btn
+    QR-Code laden</v-btn
     >
     <v-btn
       @click="changeStatus"
       :color="buttoncolor"
     >
-      Status auf "Rechnung" setzen</v-btn
+      Status: "Rechnung"</v-btn
     >
   </template>
 </adminbar>
@@ -26,7 +25,7 @@
         <v-row
           ><v-col cols="12"
             ><h1>{{isLieferschein ? "Lieferschein" : "Rechnung"}}</h1>
-            Datum: {{ printdate(data.Lieferdatum) }} | {{ bezeichnung(data, "Rechnung", "Name") }}</v-col
+            Datum: {{ customdaterechnung ? customdaterechnung : printdate(data.Lieferdatum)}} | {{ bezeichnung(data, "Rechnung", "Name") }}</v-col
           ><v-col cols="8" align-self="center">
             
 
@@ -77,6 +76,7 @@ let image = ref();
 let isLieferschein = ref(false);
 let isBetragErhalten = ref(true);
 let customdate = ref("");
+let customdaterechnung = ref("");
 function printdate(datum) {
   return new Date(datum).toLocaleDateString();
 }

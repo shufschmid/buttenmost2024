@@ -39,15 +39,11 @@ const props = defineProps({
 
 const store = useButtenmostStore();
 
-// Kategorien aus dem Store holen und Header generieren
-const headers = computed(() => {
-  let lowerBound = 1;
-  return store.Verpackung.filter(v => v.Menge > 0).map(v => {
-    const header = `${v.Menge-1}-Liter`;
-    lowerBound = v.Menge + 1;
-    return header;
-  });
-});
+// Spaltentitel = Kesselgrösse der jeweiligen Verpackungskategorie;
+// gleicher Filter und gleiche Reihenfolge wie in matrix, damit Spalten und Zählungen zusammenpassen
+const headers = computed(() =>
+  store.Verpackung.filter(v => v.Menge > 0).map(v => v.Kesselgrösse)
+);
 
 // Matrix mit den Zählungen berechnen
 const matrix = computed(() => {
