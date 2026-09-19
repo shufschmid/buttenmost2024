@@ -259,7 +259,8 @@ const Sammelrechnungen = await $fetch(
   "/api/airtable_get?basis=Verkaufsstellen&view=Sammelrechnungen"
 );
 
-// --- Kunden nachfassen: Fahrer-/Kurier-Kunden ohne Saisonbestellung bzw. mit
+// --- Kunden nachfassen: Stammkunden (Checkbox in Airtable) mit Vertriebskanal Fahrer/Kurier,
+// ohne Saisonbestellung bzw. mit
 // letzter Lieferung vor mehr als NACHFASS_TAGE Tagen
 const NACHFASS_TAGE = 10;
 // airtable_get entpackt ein Einzelergebnis zum Objekt, ein leeres Ergebnis bleibt []
@@ -269,7 +270,7 @@ const saisonStart = store.SaisonStartFirmen.toISOString().substring(0, 10);
 const nachfassKunden = toArray(
   await $fetch(
     "/api/airtable_get?basis=Verkaufsstellen&view=alle&filter=" +
-      encodeURIComponent('OR({Vertriebskanal}="Fahrer",{Vertriebskanal}="Kurier")')
+      encodeURIComponent('AND({Stammkunde}=TRUE(),OR({Vertriebskanal}="Fahrer",{Vertriebskanal}="Kurier"))')
   )
 ).filter((k) => k.Geschaeft);
 
