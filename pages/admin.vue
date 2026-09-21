@@ -56,7 +56,7 @@
           <v-divider></v-divider>
           <v-list density="compact" nav>
             <v-list-item
-              v-for="Liefertag in shippingDays.slice(0, 3)"
+              v-for="Liefertag in futureShippingDays.slice(0, 3)"
               :key="Liefertag.Datum"
               :to="'/tour/datum/' + Liefertag.Datum"
               prepend-icon="mdi-clipboard-list-outline"
@@ -248,6 +248,9 @@ function rechnungen(){
 }
 const shippingDays = await $fetch(
   "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
+);
+const futureShippingDays = await $fetch(
+  "/api/airtable_get?basis=Lieferdaten&view=lieferdaten_zukunft&sort=true"
 );
 const shippingDaysPost = await $fetch(
   "/api/airtable_get?basis=Lieferdaten&view=post_alle&sort=true"

@@ -29,20 +29,20 @@
 
                   <th class="text-left">Buttenmost</th>
                   
-                  <th class="text-right">leere Kistli zurück</th>
+                  <th v-if="!istAbholung" class="text-right">leere Kistli zurück</th>
 
                   <th class="text-right">Konfi gross</th>
                   
                   <th class="text-right">Konfi klein</th>
                   
-                  <th class="text-right">Info Fahrer</th>
+                  <th class="text-right">{{ vertrieb === "Abholung" ? "Bemerkungen Kunde" : "Info Fahrer" }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="lieferung in lieferungen.data.value" :key="lieferung.Id">
                   <td valign="top">{{ lieferung.Kunde }}</td>
                   <td valign="top">{{ Math.round(lieferung.Menge/store.liter_pro_kistli) }} Kistli</td>
-                  <td valign="top">
+                  <td v-if="!istAbholung" valign="top">
                     <template v-if="lieferung.sofortzurueck?.[0] === true"
                       >Kistli sofort zurücknehmen</template
                     >
@@ -61,7 +61,7 @@
                     ></td
                   >
                   <td valign="top">
-                    {{ lieferung.Bemerkungen }}
+                    {{ vertrieb === "Abholung" ? lieferung.Notes : lieferung.Bemerkungen }}
                   </td>
                 </tr>
               </tbody>
@@ -69,7 +69,7 @@
                 <tr>
                   <td valign="top"><b>Total</b></td>
                   <td valign="top"><b>{{ totale.kistli }} Kistli</b></td>
-                  <td valign="top"></td>
+                  <td v-if="!istAbholung" valign="top"></td>
                   <td valign="top"
                     ><b v-if="totale.konfiGross"
                       >{{ totale.konfiGross }} Schachteln</b
@@ -110,6 +110,8 @@ const formattedDatum = computed(() =>
     month: "long",
   })
 );
+
+const istAbholung = computed(() => vertrieb.value === "Abholung");
 
 const vertriebLabel = computed(() => {
   if (vertrieb.value === "Fahrer") return "Verteilung direkt per Lieferwagen";
