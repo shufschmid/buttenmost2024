@@ -11,6 +11,7 @@ Aufbau:
 pages
     etiketten
         [id].vue: generiert PNG-Bild mit POST-API und bietet Möglichkeit, Status auf "Etikette" zu setzen, übergabe der Record ID von Airtable, Zugriff über Link in Airtable (Tabellenblatt "nächster Postversand")
+        brother/[id].vue: wie [id].vue, holt die Etikette aber als Brother-Raster-.bin (QL-1110NWB, Endlosrolle 102 mm) über /api/etikette_brother, zeigt eine Vorschau, bietet den Download der .bin und einen Testmodus (SPECIMEN, ohne Airtable-Schreibzugriff). Zugriff über /etiketten/brother/<recordId>
     lieferschein
         [id].vue: generiert einen einzelnen Lieferschein (für alle Arten von Bestellungen), nutzt util "Bezeichnung" für generelle Adressausgabe ("Lieferung"), Status auf "verschickt" setzbar
     lieferscheine
@@ -44,6 +45,8 @@ Server-Funktionen
         überprüft die Eingaben im Login-Formular und gibt true/false zurück
     etikette.js:
         Übergabe der Record-ID, erstellt ein Bild mit grosser Mengenangabe & Firmenlogo und übermittelt diese an POST-API, gibt base64-Bild zurück (als Text)
+    etikette_brother.js:
+        Kopie von etikette.js für den Brother QL-1110NWB (etikette.js bleibt unverändert). Holt die Etikette als PNG (A6, 300 dpi) und wandelt sie mit server/utils/brotherRaster.js in einen Raster-Befehlsstrom (.bin, 1164 x 1748 Punkte, Endlosrolle 102 mm) um. Antwort: JSON mit Vorschau-PNG und .bin (base64); mit ?raw=1 direkt die .bin als Download. Parameter: ?preview=1 (SPECIMEN-Etikette, kein Airtable-Schreibzugriff), ?threshold=1..254 (Schwellwert Schwarz/Weiss). Setzt Status "Etikette" und Sendungsnummer erst nach erfolgreichem Post-Aufruf in einem Update.
     order.js:
         sollte ersetzt werden durch airtable.js (war für Privatbestellungen)
     payrexx.js:
@@ -68,3 +71,12 @@ components
         bindet das Rapidmail-Anmeldeformular für Newsletter ein (ausserhalb Saison)
     verkaufsstellen.vue:
         gibt eine durchsuchbare Auflistung von Verkaufsstellen aus, Parameter-Übergabe steuert Pagination (für Startseite, Komplettauflistung)
+
+Etikette auf Brother QL-1110NWB drucken (ohne Treiber)
+    1. Endlosrolle 102 mm (DK-22243) einlegen.
+    2. Seite /etiketten/brother/<recordId> öffnen, "Etikette laden" (oder "Testetikette" zum Ausprobieren), dann ".bin für Drucker speichern".
+    3. Drucker ausschalten. Wi-Fi-Taste und Ein/Aus-Taste gleichzeitig einige Sekunden halten -> Massenspeicher-Modus (Status-LED grün).
+    4. USB-Kabel anschliessen, der Drucker erscheint als Wechseldatenträger (2.5 MB).
+    5. .bin ins Hauptverzeichnis kopieren (keine Ordner, max. 2 MB), WPS-Taste drücken -> Etikette wird gedruckt und geschnitten.
+    6. Zum Beenden Drucker ausschalten (Dateien werden dabei gelöscht). WLAN/LAN/Bluetooth sind im Massenspeicher-Modus nicht verfügbar.
+    Technik: Brother Raster Command Reference QL-1100/1110NWB (1296 Pins, 162 Bytes/Zeile, Druckbereich 1164 Pins bei 102 mm). Das Post-A6 kommt quer (1748 x 1240 px), wird um 90 Grad gedreht und um 38 px weissen Rand je Seite auf 1164 x 1748 beschnitten, nie skaliert (Barcode muss 68-69 mm bleiben). Dieselbe .bin könnte auch per Netzwerk-Port 9100 an den Drucker gesendet werden (nicht umgesetzt).
