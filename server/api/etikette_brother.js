@@ -1,4 +1,4 @@
-// Kopie von etikette.js fuer den Brother QL-1110NWB (Endlosrolle 102 mm).
+// Kopie von etikette.js fuer den Brother QL-1110NWB (Versandetikette DK-11247, 103 x 164 mm).
 // Holt die Post-Adressetikette als PNG und liefert sie als Raster-Befehlsstrom
 // (.bin), der im Massenspeicher-Modus des Druckers ohne Treiber gedruckt wird.
 //
@@ -6,13 +6,15 @@
 //   id         Airtable Record-ID (Pflicht)
 //   preview=1  SPECIMEN-Etikette von der Post, KEIN Schreibzugriff auf Airtable
 //   raw=1      Antwort ist direkt die .bin (Download) statt JSON
+//   media      einzel103x164 (Standard, DK-11247) | einzel102x152 | endlos102 | endlos103
+//   check=0    Medienpruefung im Drucker ausschalten (nur Diagnose)
 //   threshold  Schwellwert Schwarz/Weiss 1..254 (Standard 128, nur zum Testen)
 import qs from "qs";
 import axios from "axios";
 import Airtable from "airtable";
 import * as PImage from "pureimage";
 import { Readable } from "stream";
-import { pngToBrotherRaster, encodeToBuffer } from "../utils/brotherRaster.js";
+import { pngToBrotherRaster, encodeToBuffer, MEDIA, DEFAULT_MEDIA } from "../utils/brotherRaster.js";
 
 Airtable.configure({
   endpointUrl: "https://api.airtable.com",
@@ -37,6 +39,14 @@ export default defineEventHandler(async (event) => {
   const raw = isTrue(query.raw);
   let threshold = parseInt(query.threshold);
   if (!(threshold >= 1 && threshold <= 254)) threshold = 128;
+  const media = query.media || DEFAULT_MEDIA;
+  if (!MEDIA[media]) {
+    return Response.json(
+      { error: `Unbekanntes Medium "${media}"`, erlaubt: Object.keys(MEDIA) },
+      { status: 400 }
+    );
+  }
+  const validateMedia = !(query.check === "0" || query.check === "false");
 
   // 1. Airtable lesen (Schreibzugriffe erst nach erfolgreichem Post-Aufruf, nie im Preview)
   let record;
@@ -167,7 +177,7 @@ export default defineEventHandler(async (event) => {
   const pngBuffer = Buffer.from(label.replace(/^data:image\/\w+;base64,/, ""), "base64");
   let raster;
   try {
-    raster = await pngToBrotherRaster(pngBuffer, { threshold });
+    raster = await pngToBrotherRaster(pngBuffer, { threshold, media, validateMedia });
   } catch (e) {
     console.log("etikette_brother Raster-Fehler", e?.message ?? e);
     return Response.json(
@@ -176,9 +186,9 @@ export default defineEventHandler(async (event) => {
     );
   }
   console.log(
-    `etikette_brother ${id} preview=${specimen} src=${raster.srcWidth}x${raster.srcHeight} ` +
-      `rotated=${raster.rotated} out=${raster.width}x${raster.height} bytes=${raster.bin.length} ` +
-      `croppedDark=${raster.croppedDark}`
+    `etikette_brother ${id} preview=${specimen} media=${media} check=${validateMedia} ` +
+      `src=${raster.srcWidth}x${raster.srcHeight} rotated=${raster.rotated} ` +
+      `out=${raster.width}x${raster.height} bytes=${raster.bin.length} croppedDark=${raster.croppedDark}`
   );
 
   // 5. Airtable: Status + Sendungsnummer in einem Update (nicht im Preview)
@@ -214,6 +224,9 @@ export default defineEventHandler(async (event) => {
       sendungsnummer,
       specimen,
       filename,
+      media,
+      mediaLabel: raster.mediaLabel,
+      validateMedia,
       width: raster.width,
       height: raster.height,
       srcWidth: raster.srcWidth,

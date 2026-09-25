@@ -11,7 +11,7 @@ Aufbau:
 pages
     etiketten
         [id].vue: generiert PNG-Bild mit POST-API und bietet Möglichkeit, Status auf "Etikette" zu setzen, übergabe der Record ID von Airtable, Zugriff über Link in Airtable (Tabellenblatt "nächster Postversand")
-        brother/[id].vue: wie [id].vue, holt die Etikette aber als Brother-Raster-.bin (QL-1110NWB, Endlosrolle 102 mm) über /api/etikette_brother, zeigt eine Vorschau, bietet den Download der .bin und einen Testmodus (SPECIMEN, ohne Airtable-Schreibzugriff). Zugriff über /etiketten/brother/<recordId>
+        brother/[id].vue: wie [id].vue, holt die Etikette aber als Brother-Raster-.bin (QL-1110NWB, Standard DK-11247, Rolle waehlbar) über /api/etikette_brother, zeigt eine Vorschau, bietet den Download der .bin und einen Testmodus (SPECIMEN, ohne Airtable-Schreibzugriff). Zugriff über /etiketten/brother/<recordId>
     lieferschein
         [id].vue: generiert einen einzelnen Lieferschein (für alle Arten von Bestellungen), nutzt util "Bezeichnung" für generelle Adressausgabe ("Lieferung"), Status auf "verschickt" setzbar
     lieferscheine
@@ -46,7 +46,7 @@ Server-Funktionen
     etikette.js:
         Übergabe der Record-ID, erstellt ein Bild mit grosser Mengenangabe & Firmenlogo und übermittelt diese an POST-API, gibt base64-Bild zurück (als Text)
     etikette_brother.js:
-        Kopie von etikette.js für den Brother QL-1110NWB (etikette.js bleibt unverändert). Holt die Etikette als PNG (A6, 300 dpi) und wandelt sie mit server/utils/brotherRaster.js in einen Raster-Befehlsstrom (.bin, 1164 x 1748 Punkte, Endlosrolle 102 mm) um. Antwort: JSON mit Vorschau-PNG und .bin (base64); mit ?raw=1 direkt die .bin als Download. Parameter: ?preview=1 (SPECIMEN-Etikette, kein Airtable-Schreibzugriff), ?threshold=1..254 (Schwellwert Schwarz/Weiss). Setzt Status "Etikette" und Sendungsnummer erst nach erfolgreichem Post-Aufruf in einem Update.
+        Kopie von etikette.js für den Brother QL-1110NWB (etikette.js bleibt unverändert). Holt die Etikette als PNG (A6, 300 dpi) und wandelt sie mit server/utils/brotherRaster.js in einen Raster-Befehlsstrom (.bin) um; Standard: Versandetikette DK-11247 (103 x 164 mm, Druckbereich 1200 x 1822 Punkte, A6 wird um 90 Grad gedreht und um 20 px je Seite beschnitten). Antwort: JSON mit Vorschau-PNG und .bin (base64); mit ?raw=1 direkt die .bin als Download. Parameter: ?preview=1 (SPECIMEN-Etikette, kein Airtable-Schreibzugriff), ?media=einzel103x164|einzel102x152|endlos102|endlos103 (eingelegte Rolle, Standard einzel103x164 = DK-11247), ?check=0 (Medienpruefung im Drucker aus, nur Diagnose), ?threshold=1..254 (Schwellwert Schwarz/Weiss). Setzt Status "Etikette" und Sendungsnummer erst nach erfolgreichem Post-Aufruf in einem Update.
     order.js:
         sollte ersetzt werden durch airtable.js (war für Privatbestellungen)
     payrexx.js:
@@ -73,7 +73,7 @@ components
         gibt eine durchsuchbare Auflistung von Verkaufsstellen aus, Parameter-Übergabe steuert Pagination (für Startseite, Komplettauflistung)
 
 Etikette auf Brother QL-1110NWB drucken (ohne Treiber)
-    1. Endlosrolle 102 mm (DK-22243) einlegen.
+    1. Rolle einlegen und auf der Seite dieselbe Rolle auswaehlen (Endlos 102 mm DK-22243, Versandetikette 103 x 164 mm DK-11247, Einzeletikette 102 x 152 mm DK-11241, Endlos 103 mm DK-22246). Der Drucker prueft das Medium; passt es nicht, blinkt die Status-LED rot (einmal pro 2 s = falsches Medium/Datenfehler, zweimal = Massenspeicher-Fehler).
     2. Seite /etiketten/brother/<recordId> öffnen, "Etikette laden" (oder "Testetikette" zum Ausprobieren), dann ".bin für Drucker speichern".
     3. Drucker ausschalten. Wi-Fi-Taste und Ein/Aus-Taste gleichzeitig einige Sekunden halten -> Massenspeicher-Modus (Status-LED grün).
     4. USB-Kabel anschliessen, der Drucker erscheint als Wechseldatenträger (2.5 MB).
