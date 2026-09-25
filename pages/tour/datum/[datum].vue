@@ -21,7 +21,30 @@
             
 
         <img src="/logo.svg" alt="Buttenmost Logo" style="max-width: 200px; margin-bottom: 0rem;" /><br />
-          </v-col><v-col cols="12">
+          </v-col>
+          <v-col v-if="istAbholung" cols="12">
+            <v-alert type="warning" variant="tonal" border="start" class="abhol-hinweis">
+              <div class="text-h6 mb-2">Reihenfolge Paletten in der Kolonne</div>
+              <ol class="ml-4">
+                <li>
+                  <b>Wägeli mit Buttenmost zur Abholung (diese Liste)</b> zuerst
+                  bereitmachen und in die Kolonne stellen.
+                </li>
+                <li>
+                  Danach zuerst das <b>Palett nach Basel</b> (Verteilung über Zentrale per
+                  Velokurier).
+                </li>
+                <li>
+                  Zuvorderst das <b>Palett für BL</b> (Direkt per Lieferwagen).
+                </li>
+              </ol>
+              <div class="text-h6 mt-3">
+                Datumsauszeichner einstellen auf:
+                <span class="stempeldatum">{{ stempeldatum }}</span>
+              </div>
+            </v-alert>
+          </v-col>
+          <v-col cols="12">
             <v-table>
               <thead>
                 <tr>
@@ -126,6 +149,22 @@ const lieferungen = await useFetch(() =>
     )
 );
 
+// Liefertag aus der Tabelle "Lieferdaten" (Spalte Stempeldatum = Wert fuer den Datumsauszeichner)
+const liefertag = await useFetch(
+  "/api/airtable_get/?basis=Lieferdaten&view=alle&filter=" +
+    encodeURIComponent(`DATESTR({Datum})="${route.params.datum}"`)
+);
+
+const stempeldatum = computed(() => {
+  let tag = liefertag.data.value;
+  if (Array.isArray(tag)) tag = tag[0];
+  const wert = tag?.Stempeldatum;
+  if (!wert) return "in Airtable nicht hinterlegt";
+  const d = new Date(wert);
+  if (isNaN(d)) return wert;
+  return d.toLocaleDateString("de-CH", { day: "2-digit", month: "2-digit", year: "numeric" });
+});
+
 const totale = computed(() => {
   const data = lieferungen.data.value || [];
   return {
@@ -172,5 +211,21 @@ function printdate(datum) {
 <style scoped>
 th, td {
   border: 1px solid #e0e0e0;
+}
+.abhol-hinweis {
+  border: 2px solid #b26a00;
+}
+.stempeldatum {
+  font-size: 1.6em;
+  font-weight: bold;
+  white-space: nowrap;
+}
+@media print {
+  .abhol-hinweis {
+    color: #000 !important;
+    background: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }
 </style>
