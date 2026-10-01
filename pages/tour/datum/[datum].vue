@@ -10,6 +10,14 @@
           <v-btn value="Fahrer">Direkt per Lieferwagen</v-btn>
           <v-btn value="Abholung">Abholung</v-btn>
         </v-btn-toggle>
+        <v-btn
+          v-if="istAbholung"
+          :to="'/etiketten/abholung/' + route.params.datum"
+          variant="outlined"
+          prepend-icon="mdi-label-outline"
+        >
+          Abholetiketten (Brother)
+        </v-btn>
       </v-toolbar>
 
       <v-container id="tour">

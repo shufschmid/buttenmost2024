@@ -208,6 +208,29 @@
       </v-col>
     </v-row>
 
+    <!-- Abholetiketten (ohne Post-API) fuer den Brother QL-1110NWB -->
+    <v-row>
+      <v-col cols="12" md="4">
+        <v-card class="h-100">
+          <v-card-title>
+            <v-icon icon="mdi-store-outline" class="mr-2"></v-icon>Abholetiketten (Brother)
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-card-subtitle class="pt-3">ohne Post, nach Lieferdatum</v-card-subtitle>
+          <v-list density="compact" nav>
+            <v-list-item
+              v-for="Liefertag in abholTage"
+              :key="Liefertag.Datum"
+              :to="'/etiketten/abholung/' + Liefertag.Datum"
+              prepend-icon="mdi-label-outline"
+              :title="Liefertag.title || Liefertag.Datum"
+              :subtitle="Liefertag.Datum"
+            ></v-list-item>
+          </v-list>
+        </v-card>
+      </v-col>
+    </v-row>
+
     <!-- Werkzeuge -->
     <v-row class="d-print-none">
       <v-col cols="12">
@@ -283,6 +306,14 @@ const futureShippingDays = await $fetch(
 const shippingDaysPost = await $fetch(
   "/api/airtable_get?basis=Lieferdaten&view=post_alle&sort=true"
 );
+// Abholungen gibt es an Standard- und an Post-Liefertagen: beide Listen zusammen, ab heute, sortiert
+const abholTage = (() => {
+  const heute = new Date().toISOString().substring(0, 10);
+  const alle = [...(Array.isArray(futureShippingDays) ? futureShippingDays : []), ...(Array.isArray(shippingDaysPost) ? shippingDaysPost : [])];
+  const proDatum = new Map();
+  for (const t of alle) if (t?.Datum && t.Datum >= heute && !proDatum.has(t.Datum)) proDatum.set(t.Datum, t);
+  return [...proDatum.values()].sort((a, b) => a.Datum.localeCompare(b.Datum)).slice(0, 6);
+})();
 const BestellungenPost = await $fetch(
   "/api/airtable_get?basis=Bestellungen&view=post"
 );

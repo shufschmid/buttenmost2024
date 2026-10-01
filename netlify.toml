@@ -1,5 +1,5 @@
 [build]
     functions = "netlify/functions"
 [functions]
-    included_files = ["public/sourcesanspro-regular.ttf"]
+    included_files = ["public/sourcesanspro-regular.ttf", "public/sourcesanspro-bold.ttf", "public/logo_neu.png"]
 

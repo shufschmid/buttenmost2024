@@ -164,6 +164,15 @@ export function mergePages(fragments) {
  * Rueckgabe: bin = komplette Datei fuer eine Etikette, page = Seitenfragment fuer mergePages().
  */
 export async function pngToBrotherRaster(pngBuffer, opts = {}) {
+  const src = await PImage.decodePNGFromStream(Readable.from(pngBuffer));
+  return bitmapToBrotherRaster(src, opts);
+}
+
+/**
+ * Wie pngToBrotherRaster, aber direkt aus einer pureimage-Bitmap (RGBA), z. B. einer
+ * selbst gezeichneten Etikette. Spart den Umweg ueber PNG-Kodierung und -Dekodierung.
+ */
+export async function bitmapToBrotherRaster(src, opts = {}) {
   const mediaKey = opts.media ?? DEFAULT_MEDIA;
   const m = MEDIA[mediaKey];
   if (!m) throw new Error(`Unbekanntes Medium "${mediaKey}"`);
@@ -172,7 +181,6 @@ export async function pngToBrotherRaster(pngBuffer, opts = {}) {
   const validate = opts.validateMedia ?? true;
   const compress = opts.compress ?? true;
 
-  const src = await PImage.decodePNGFromStream(Readable.from(pngBuffer));
   let sw = src.width;
   let sh = src.height;
   let sd = src.data; // RGBA, 8 Bit je Kanal
