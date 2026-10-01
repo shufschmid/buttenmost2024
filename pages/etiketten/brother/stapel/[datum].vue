@@ -48,6 +48,10 @@
       />
     </div>
 
+    <p class="mx-4 text-caption">
+      Vorausgewählt sind nur Bestellungen mit Status „bezahlt“ ({{ anzahlBezahlt }} von {{ rows.length }}).
+      Andere Bestellungen sind grau und müssen einzeln angewählt werden.
+    </p>
     <v-alert v-if="ladeFehler" type="error" class="ma-4">
       Bestellungen konnten nicht geladen werden: {{ ladeFehler }}
     </v-alert>
@@ -105,7 +109,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(r, i) in rows" :key="r.id" :class="{ 'bg-red-lighten-5': r.ergebnis === 'Fehler' }">
+        <tr
+          v-for="(r, i) in rows"
+          :key="r.id"
+          :class="{ 'bg-red-lighten-5': r.ergebnis === 'Fehler', 'text-disabled': r.Status !== 'bezahlt' }"
+        >
           <td><v-checkbox-btn v-model="r.selected" :disabled="running" /></td>
           <td>{{ i + 1 }}</td>
           <td>{{ r.Vorname }} {{ r.Name }}</td>
@@ -152,8 +160,8 @@ watch(
   (list) => {
     rows.value = (Array.isArray(list) ? list : []).map((b) => ({
       ...b,
-      // Vorauswahl: alles, was noch keine Etikette hat
-      selected: b.Status === "bestellt" || b.Status === "bezahlt",
+      // Etiketten nur fuer bezahlte Bestellungen (andere bleiben sichtbar, aber abgewaehlt)
+      selected: b.Status === "bezahlt",
       ergebnis: "",
       fehler: "",
       stapel: null,
@@ -183,11 +191,13 @@ let jobInit = null;
 let pageIndicatorOffset = 19;
 
 const anzahlAusgewaehlt = computed(() => rows.value.filter((r) => r.selected).length);
-const alleAusgewaehlt = computed(
-  () => rows.value.length > 0 && rows.value.every((r) => r.selected)
-);
+const anzahlBezahlt = computed(() => rows.value.filter((r) => r.Status === "bezahlt").length);
+const alleAusgewaehlt = computed(() => {
+  const bezahlt = rows.value.filter((r) => r.Status === "bezahlt");
+  return bezahlt.length > 0 && bezahlt.every((r) => r.selected);
+});
 function alleSetzen(v) {
-  rows.value.forEach((r) => (r.selected = !!v));
+  rows.value.forEach((r) => (r.selected = !!v && r.Status === "bezahlt"));
 }
 
 function b64ToBytes(b64) {

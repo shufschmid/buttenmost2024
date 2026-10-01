@@ -12,7 +12,7 @@ pages
     etiketten
         [id].vue: generiert PNG-Bild mit POST-API und bietet Möglichkeit, Status auf "Etikette" zu setzen, übergabe der Record ID von Airtable, Zugriff über Link in Airtable (Tabellenblatt "nächster Postversand")
         brother/[id].vue: wie [id].vue, holt die Etikette aber als Brother-Raster-.bin (QL-1110NWB, Standard DK-11247, Rolle waehlbar) über /api/etikette_brother, zeigt eine Vorschau, bietet den Download der .bin und einen Testmodus (SPECIMEN, ohne Airtable-Schreibzugriff). Zugriff über /etiketten/brother/<recordId>
-        brother/stapel/index.vue + brother/stapel/[datum].vue: Stapeldruck. Listet alle Post-Bestellungen eines Lieferdatums (Vorauswahl: Status bestellt/bezahlt), ruft pro Bestellung /api/etikette_brother auf (setzt Status "Etikette" + Sendungsnummer) und baut aus den Seitenfragmenten Dateien mit je 25 Etiketten (ca. 1.25 MB, max. 30 wegen 2-MB-Limit des Druckers). Testmodus = SPECIMEN ohne Airtable-Aenderung. Zugriff über /etiketten/brother/stapel
+        brother/stapel/index.vue + brother/stapel/[datum].vue: Stapeldruck. Listet alle Post-Bestellungen eines Lieferdatums (Vorauswahl: nur Status bezahlt, andere grau und einzeln anwaehlbar), ruft pro Bestellung /api/etikette_brother auf (setzt Status "Etikette" + Sendungsnummer) und baut aus den Seitenfragmenten Dateien mit je 25 Etiketten (ca. 1.25 MB, max. 30 wegen 2-MB-Limit des Druckers). Testmodus = SPECIMEN ohne Airtable-Aenderung. Zugriff über /etiketten/brother/stapel
     lieferschein
         [id].vue: generiert einen einzelnen Lieferschein (für alle Arten von Bestellungen), nutzt util "Bezeichnung" für generelle Adressausgabe ("Lieferung"), Status auf "verschickt" setzbar
     lieferscheine
