@@ -37,7 +37,9 @@ export default defineEventHandler(async (event) => {
         view: "Bestellungen",
         filterByFormula: `AND({vertrieb}="Post",DATESTR({Lieferdatum})="${datum}")`,
         fields: FIELDS,
+        // kleinste Menge zuoberst, bei gleicher Menge nach Name
         sort: [
+          { field: "Menge", direction: "asc" },
           { field: "Name", direction: "asc" },
           { field: "Vorname", direction: "asc" },
         ],
