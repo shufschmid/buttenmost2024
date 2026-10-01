@@ -8,13 +8,21 @@
 //   raw=1      Antwort ist direkt die .bin (Download) statt JSON
 //   media      einzel103x164 (Standard, DK-11247) | einzel102x152 | endlos102 | endlos103
 //   check=0    Medienpruefung im Drucker ausschalten (nur Diagnose)
+//   compress=0 TIFF-Kompression der Rasterzeilen ausschalten (Standard: an, ca. 6x kleiner)
 //   threshold  Schwellwert Schwarz/Weiss 1..254 (Standard 128, nur zum Testen)
 import qs from "qs";
 import axios from "axios";
 import Airtable from "airtable";
 import * as PImage from "pureimage";
 import { Readable } from "stream";
-import { pngToBrotherRaster, encodeToBuffer, MEDIA, DEFAULT_MEDIA } from "../utils/brotherRaster.js";
+import {
+  pngToBrotherRaster,
+  encodeToBuffer,
+  MEDIA,
+  DEFAULT_MEDIA,
+  JOB_INIT,
+  PAGE_INDICATOR_OFFSET,
+} from "../utils/brotherRaster.js";
 
 Airtable.configure({
   endpointUrl: "https://api.airtable.com",
@@ -47,6 +55,7 @@ export default defineEventHandler(async (event) => {
     );
   }
   const validateMedia = !(query.check === "0" || query.check === "false");
+  const compress = !(query.compress === "0" || query.compress === "false");
 
   // 1. Airtable lesen (Schreibzugriffe erst nach erfolgreichem Post-Aufruf, nie im Preview)
   let record;
@@ -177,7 +186,7 @@ export default defineEventHandler(async (event) => {
   const pngBuffer = Buffer.from(label.replace(/^data:image\/\w+;base64,/, ""), "base64");
   let raster;
   try {
-    raster = await pngToBrotherRaster(pngBuffer, { threshold, media, validateMedia });
+    raster = await pngToBrotherRaster(pngBuffer, { threshold, media, validateMedia, compress });
   } catch (e) {
     console.log("etikette_brother Raster-Fehler", e?.message ?? e);
     return Response.json(
@@ -188,7 +197,7 @@ export default defineEventHandler(async (event) => {
   console.log(
     `etikette_brother ${id} preview=${specimen} media=${media} check=${validateMedia} ` +
       `src=${raster.srcWidth}x${raster.srcHeight} rotated=${raster.rotated} ` +
-      `out=${raster.width}x${raster.height} bytes=${raster.bin.length} croppedDark=${raster.croppedDark}`
+      `out=${raster.width}x${raster.height} bytes=${raster.bin.length} croppedDark=${raster.croppedDark} compressed=${raster.compressed}`
   );
 
   // 5. Airtable: Status + Sendungsnummer in einem Update (nicht im Preview)
@@ -227,6 +236,7 @@ export default defineEventHandler(async (event) => {
       media,
       mediaLabel: raster.mediaLabel,
       validateMedia,
+      compressed: raster.compressed,
       width: raster.width,
       height: raster.height,
       srcWidth: raster.srcWidth,
@@ -237,6 +247,11 @@ export default defineEventHandler(async (event) => {
       warning,
       previewImage: "data:image/png;base64," + raster.previewPng.toString("base64"),
       bin: raster.bin.toString("base64"),
+      // Fuer Stapeldateien mit mehreren Etiketten: Seitenfragment + Job-Anfang,
+      // Zusammenbau wie mergePages() in server/utils/brotherRaster.js
+      page: raster.page.toString("base64"),
+      jobInit: JOB_INIT.toString("base64"),
+      pageIndicatorOffset: PAGE_INDICATOR_OFFSET,
     },
     { headers: { "Cache-Control": "no-store" } }
   );

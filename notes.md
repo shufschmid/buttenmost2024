@@ -12,6 +12,7 @@ pages
     etiketten
         [id].vue: generiert PNG-Bild mit POST-API und bietet Möglichkeit, Status auf "Etikette" zu setzen, übergabe der Record ID von Airtable, Zugriff über Link in Airtable (Tabellenblatt "nächster Postversand")
         brother/[id].vue: wie [id].vue, holt die Etikette aber als Brother-Raster-.bin (QL-1110NWB, Standard DK-11247, Rolle waehlbar) über /api/etikette_brother, zeigt eine Vorschau, bietet den Download der .bin und einen Testmodus (SPECIMEN, ohne Airtable-Schreibzugriff). Zugriff über /etiketten/brother/<recordId>
+        brother/stapel/index.vue + brother/stapel/[datum].vue: Stapeldruck. Listet alle Post-Bestellungen eines Lieferdatums (Vorauswahl: Status bestellt/bezahlt), ruft pro Bestellung /api/etikette_brother auf (setzt Status "Etikette" + Sendungsnummer) und baut aus den Seitenfragmenten Dateien mit je 25 Etiketten (ca. 1.25 MB, max. 30 wegen 2-MB-Limit des Druckers). Testmodus = SPECIMEN ohne Airtable-Aenderung. Zugriff über /etiketten/brother/stapel
     lieferschein
         [id].vue: generiert einen einzelnen Lieferschein (für alle Arten von Bestellungen), nutzt util "Bezeichnung" für generelle Adressausgabe ("Lieferung"), Status auf "verschickt" setzbar
     lieferscheine
@@ -46,7 +47,9 @@ Server-Funktionen
     etikette.js:
         Übergabe der Record-ID, erstellt ein Bild mit grosser Mengenangabe & Firmenlogo und übermittelt diese an POST-API, gibt base64-Bild zurück (als Text)
     etikette_brother.js:
-        Kopie von etikette.js für den Brother QL-1110NWB (etikette.js bleibt unverändert). Holt die Etikette als PNG (A6, 300 dpi) und wandelt sie mit server/utils/brotherRaster.js in einen Raster-Befehlsstrom (.bin) um; Standard: Versandetikette DK-11247 (103 x 164 mm, Druckbereich 1200 x 1822 Punkte, A6 wird um 90 Grad gedreht und um 20 px je Seite beschnitten). Antwort: JSON mit Vorschau-PNG und .bin (base64); mit ?raw=1 direkt die .bin als Download. Parameter: ?preview=1 (SPECIMEN-Etikette, kein Airtable-Schreibzugriff), ?media=einzel103x164|einzel102x152|endlos102|endlos103 (eingelegte Rolle, Standard einzel103x164 = DK-11247), ?check=0 (Medienpruefung im Drucker aus, nur Diagnose), ?threshold=1..254 (Schwellwert Schwarz/Weiss). Setzt Status "Etikette" und Sendungsnummer erst nach erfolgreichem Post-Aufruf in einem Update.
+        Kopie von etikette.js für den Brother QL-1110NWB (etikette.js bleibt unverändert). Holt die Etikette als PNG (A6, 300 dpi) und wandelt sie mit server/utils/brotherRaster.js in einen Raster-Befehlsstrom (.bin) um; Standard: Versandetikette DK-11247 (103 x 164 mm, Druckbereich 1200 x 1822 Punkte, A6 wird um 90 Grad gedreht und um 20 px je Seite beschnitten). Antwort: JSON mit Vorschau-PNG und .bin (base64); mit ?raw=1 direkt die .bin als Download. Parameter: ?preview=1 (SPECIMEN-Etikette, kein Airtable-Schreibzugriff), ?media=einzel103x164|einzel102x152|endlos102|endlos103 (eingelegte Rolle, Standard einzel103x164 = DK-11247), ?check=0 (Medienpruefung im Drucker aus, nur Diagnose), ?threshold=1..254 (Schwellwert Schwarz/Weiss), ?compress=0 (TIFF-Kompression aus; Standard an, ca. 50 KB statt 300 KB je Etikette). Setzt Status "Etikette" und Sendungsnummer erst nach erfolgreichem Post-Aufruf in einem Update. Liefert im JSON zusaetzlich page/jobInit/pageIndicatorOffset fuer Stapeldateien mit mehreren Etiketten (Zusammenbau wie mergePages() in server/utils/brotherRaster.js).
+    bestellungen_post.js:
+        Post-Bestellungen eines Lieferdatums (?datum=JJJJ-MM-TT) MIT Airtable-Record-ID, da airtable_get nur Felder liefert. Fuer die Stapelseite.
     order.js:
         sollte ersetzt werden durch airtable.js (war für Privatbestellungen)
     payrexx.js:
@@ -79,4 +82,5 @@ Etikette auf Brother QL-1110NWB drucken (ohne Treiber)
     4. USB-Kabel anschliessen, der Drucker erscheint als Wechseldatenträger (2.5 MB).
     5. .bin ins Hauptverzeichnis kopieren (keine Ordner, max. 2 MB), WPS-Taste drücken -> Etikette wird gedruckt und geschnitten.
     6. Zum Beenden Drucker ausschalten (Dateien werden dabei gelöscht). WLAN/LAN/Bluetooth sind im Massenspeicher-Modus nicht verfügbar.
+    Stapel: /etiketten/brother/stapel/<datum>, pro Datei max. 30 Etiketten (Massenspeicher 2.5 MB, Dateien > 2 MB funktionieren nicht). Immer nur EINE Datei kopieren, WPS druecken, warten bis LED gruen, Datei loeschen (oder Drucker aus/ein), naechste Datei. Mehrere Dateien gleichzeitig = zufaellige Reihenfolge.
     Technik: Brother Raster Command Reference QL-1100/1110NWB (1296 Pins, 162 Bytes/Zeile, Druckbereich 1164 Pins bei 102 mm). Das Post-A6 kommt quer (1748 x 1240 px), wird um 90 Grad gedreht und um 38 px weissen Rand je Seite auf 1164 x 1748 beschnitten, nie skaliert (Barcode muss 68-69 mm bleiben). Dieselbe .bin könnte auch per Netzwerk-Port 9100 an den Drucker gesendet werden (nicht umgesetzt).
