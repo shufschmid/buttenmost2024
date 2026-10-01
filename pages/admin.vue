@@ -176,8 +176,36 @@
         </v-card>
       </v-col>
 
-      <!-- frei: hier kommt später eine weitere Karte hin -->
-      <v-col cols="12" md="4"></v-col>
+      <!-- Post-Etiketten fuer den Brother QL-1110NWB (Stapeldruck) -->
+      <v-col cols="12" md="4">
+        <v-card class="h-100">
+          <v-card-title>
+            <v-icon icon="mdi-label-multiple-outline" class="mr-2"></v-icon
+            >Post-Etiketten (Brother)
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-card-subtitle class="pt-3">Stapeldruck nach Lieferdatum</v-card-subtitle>
+          <v-list density="compact" nav>
+            <v-list-item
+              v-for="Liefertag in shippingDaysPost"
+              :key="Liefertag.Datum"
+              :to="'/etiketten/brother/stapel/' + Liefertag.Datum"
+              prepend-icon="mdi-label-outline"
+              :title="Liefertag.title || Liefertag.Datum"
+              :subtitle="Liefertag.Datum"
+            ></v-list-item>
+          </v-list>
+          <v-divider></v-divider>
+          <v-list density="compact" nav>
+            <v-list-item
+              to="/etiketten/brother/stapel"
+              prepend-icon="mdi-help-circle-outline"
+              title="Anleitung: Drucker im Massenspeicher-Modus"
+              subtitle="und anderes Datum wählen"
+            ></v-list-item>
+          </v-list>
+        </v-card>
+      </v-col>
     </v-row>
 
     <!-- Werkzeuge -->
