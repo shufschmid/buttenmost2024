@@ -71,7 +71,12 @@
               </thead>
               <tbody>
                 <tr v-for="lieferung in lieferungen.data.value" :key="lieferung.Id">
-                  <td valign="top">{{ lieferung.Kunde }}</td>
+                  <td valign="top">
+                    {{ lieferung.Kunde }}
+                    <div v-if="lieferung.Id" class="d-print-none">
+                      <a :href="'/rechnungen/' + lieferung.Id" target="_blank">🧾Rechnung/Lieferschein</a>
+                    </div>
+                  </td>
                   <td valign="top">{{ Math.round(lieferung.Menge/store.liter_pro_kistli) }} Kistli</td>
                   <td v-if="!istAbholung" valign="top">
                     <template v-if="lieferung.sofortzurueck?.[0] === true"
@@ -92,7 +97,11 @@
                     ></td
                   >
                   <td valign="top">
-                    {{ vertrieb === "Abholung" ? lieferung.Notes : lieferung.Bemerkungen }}
+                    <template v-if="istAbholung">
+                      {{ lieferung.Notes }}<br v-if="lieferung.Notes && lieferung.Status" />
+                      <template v-if="lieferung.Status">Status: {{ lieferung.Status }}</template>
+                    </template>
+                    <template v-else>{{ lieferung.Bemerkungen }}</template>
                   </td>
                 </tr>
               </tbody>
