@@ -13,7 +13,7 @@
         <v-row
           > <v-col cols="7"
             ><h1>Rechnung</h1>
-            {{ route.params.kunde}} <br/><br/><br/>
+            <span class="text-no-wrap" :style="einzeilig(datumszeile)">{{ datumszeile }}</span><br/><br/><br/>
 
             <div class="pl-14">
               {{ bezeichnung(data[0], "Rechnung", "Name") }}<br />
@@ -129,6 +129,12 @@ const route = useRoute();
 let buttoncolor = ref("primary");
 
 let image = ref();
+// Rechnungsdatum = Tag des Drucks; wird beim QR-Code laden nochmals aktualisiert
+const rechnungsdatum = ref(new Date().toLocaleDateString("de-CH"));
+// Kunde heisst "Firma | Ort", in der Kopfzeile nur die Firma
+const datumszeile = computed(
+  () => "Datum: " + rechnungsdatum.value + " | " + route.params.kunde.split(" | ")[0]
+);
 
 const { data } = await useFetch(
   '/api/airtable_get/?basis=tblbU1zmZ2kumAXEY&view=b2b_rechnungen&filter={Kunde}="' +
@@ -145,6 +151,7 @@ function printdate(datum) {
 }
 
 async function loadImage(qrdata) {
+  rechnungsdatum.value = new Date().toLocaleDateString("de-CH");
   image.value = await $fetch(
     "/api/qrcode?betrag=" +
       total() +
@@ -157,7 +164,7 @@ async function loadImage(qrdata) {
       "&Bemerkungen=" +
       bezeichnung(qrdata, "Rechnung", "Name").replace("|", "") + // dieses Sonderzeichen gibt bei einigen Banken Fehlermeldungen beim Einzahlen
       " Rechnung vom " +
-      store.heute.toLocaleDateString() +
+      rechnungsdatum.value +
       "&Rechnung_Referenz_Nummer=122"
   );
 }

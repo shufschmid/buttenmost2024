@@ -23,13 +23,11 @@
 
       <v-container id="rechnungen">
         <v-row
-          ><v-col cols="12"
+          ><v-col cols="7"
             ><h1>{{isLieferschein ? "Lieferschein" : "Rechnung"}}</h1>
-            Datum: {{ customdaterechnung ? customdaterechnung : printdate(data.Lieferdatum)}} | {{ bezeichnung(data, "Rechnung", "Name") }}</v-col
-          ><v-col cols="8" align-self="center">
-            
+            <span class="text-no-wrap" :style="einzeilig(datumszeile)">{{ datumszeile }}</span><br/><br/><br/>
 
-            <div>
+            <div class="pl-14">
               {{ bezeichnung(data, "Rechnung", "Name") }}<br />
               {{ bezeichnung(data, "Rechnung", "Adresse") }}<br />
               {{ bezeichnung(data, "Rechnung", "Adresszusatz")
@@ -37,7 +35,7 @@
               {{ bezeichnung(data, "Rechnung", "PLZundOrt") }}
             </div>
           </v-col>
-          <v-col cols="4"
+          <v-col cols="5"
             ><Firmenadresse /></v-col
           ><v-col cols="12">
             <BestellungTable :data="data" />
@@ -80,6 +78,13 @@ let customdaterechnung = ref("");
 function printdate(datum) {
   return new Date(datum).toLocaleDateString();
 }
+const datumszeile = computed(
+  () =>
+    "Datum: " +
+    (customdaterechnung.value ? customdaterechnung.value : printdate(props.data.Lieferdatum)) +
+    " | " +
+    bezeichnung(props.data, "Rechnung", "Name")
+);
 
 async function loadImage(data) {
   image.value = await $fetch(
