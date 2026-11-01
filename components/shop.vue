@@ -1,8 +1,13 @@
 <script setup lang="js">
 const store = useButtenmostStore();
 let Lieferdatum = ref()
+// true, wenn die Airtable-View "post" keinen Termin liefert (z.B. zu enger Filter):
+// dann Hinweis statt leerem Dropdown und kein Bestellknopf
+const keineTermine = ref(false)
+let loading = ref(false)
 
 onMounted(() => {
+  keineTermine.value = shippingDays.length === 0
   Lieferdatum.value = Array.isArray(shippingDays) ? shippingDays[0] : shippingDays;
 })
 
@@ -82,6 +87,9 @@ const shippingDays = Array.isArray(fetchedShippingDays) ? fetchedShippingDays : 
 
 
 async function order() {
+  if (!Lieferdatum.value?.value) return; // kein Termin gewaehlt/verfuegbar
+  loading.value = true
+  try {
   const airtable = await $fetch('/api/airtable', {
     method: 'POST',
     body: {
@@ -124,6 +132,10 @@ async function order() {
   })
   console.log("Payrexx Gateway erfolgreich eröffnet: "+payrexx.body)
   window.location.href = payrexx.body;
+  } catch (e) {
+    console.log("Bestellung fehlgeschlagen", e)
+    loading.value = false
+  }
 }
 </script>
 
@@ -142,17 +154,20 @@ async function order() {
     Wir verschicken Buttenmost ab zwei Liter per A-Post gegen Vorauskasse, nach
     Eingabe Ihrer Bestellung können Sie mit Kreditkarte oder per Twint
     bezahlen. Sie können den Buttenmost auch vorbestellen und in Hochwald abholen (im Kessel).<br /><br />
+    <Hinweise ort="Shop Privatkunden" />
     <v-alert
-      closable
-      text="Achtung: Die Buttenmost-Saison 2024 ist vorbei. Wir nehmen keine Online-Bestellungen mehr entgegen."
-      type="info" v-show="false"
-    ></v-alert>
+      type="warning"
+      variant="tonal"
+      border="start"
+      class="my-4"
+      v-if="keineTermine"
+    >Zurzeit sind keine Versand- oder Abholtermine verfügbar. Online-Bestellungen sind im Moment nicht möglich.</v-alert>
     <v-alert
       closable
       text="Für kleinere Mengen unter 15 Litern zum Abholen müssen Sie dieses Formular nicht verwenden. Sie können ohne Vorbestellung bei uns vorbeikommen und die gewünschte Menge in 1-Liter-Bechern mitnehmen und vor Ort bezahlen (mit Bargeld und per Twint, keine Bank- / Kreditkarten)."
       type="info" v-show="abholen && Menge < 15"
     ></v-alert>
-    <v-container class="pa-0 ma-0" v-show="true">
+    <v-container class="pa-0 ma-0" v-show="!keineTermine">
       <v-row
         ><v-col cols="12" md="5"
           ><v-spacer />Wählen Sie hier die gewünschte Menge aus:<br />
@@ -321,7 +336,7 @@ async function order() {
             elevation="2"
             size="x-large"
             @click="order"
-            :disabled="!formValidity"
+            :disabled="!formValidity || !Lieferdatum"
             :loading="loading"
           >
             Jetzt bestellen</v-btn

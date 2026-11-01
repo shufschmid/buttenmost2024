@@ -297,19 +297,21 @@ function rechnungen(){
     let res = [...new Set(arr)];
     return res
 }
-const shippingDays = await $fetch(
-  "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
+// airtable_get entpackt ein Einzelergebnis zum Objekt, ein leeres Ergebnis bleibt []
+const toArray = (x) => (Array.isArray(x) ? x : x ? [x] : []);
+const shippingDays = toArray(
+  await $fetch("/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true")
 );
-const futureShippingDays = await $fetch(
-  "/api/airtable_get?basis=Lieferdaten&view=lieferdaten_zukunft&sort=true"
+const futureShippingDays = toArray(
+  await $fetch("/api/airtable_get?basis=Lieferdaten&view=lieferdaten_zukunft&sort=true")
 );
-const shippingDaysPost = await $fetch(
-  "/api/airtable_get?basis=Lieferdaten&view=post_alle&sort=true"
+const shippingDaysPost = toArray(
+  await $fetch("/api/airtable_get?basis=Lieferdaten&view=post_alle&sort=true")
 );
 // Abholungen gibt es an Standard- und an Post-Liefertagen: beide Listen zusammen, ab heute, sortiert
 const abholTage = (() => {
   const heute = new Date().toISOString().substring(0, 10);
-  const alle = [...(Array.isArray(futureShippingDays) ? futureShippingDays : []), ...(Array.isArray(shippingDaysPost) ? shippingDaysPost : [])];
+  const alle = [...futureShippingDays, ...shippingDaysPost];
   const proDatum = new Map();
   for (const t of alle) if (t?.Datum && t.Datum >= heute && !proDatum.has(t.Datum)) proDatum.set(t.Datum, t);
   return [...proDatum.values()].sort((a, b) => a.Datum.localeCompare(b.Datum)).slice(0, 6);
@@ -325,8 +327,6 @@ const Sammelrechnungen = await $fetch(
 // ohne Saisonbestellung bzw. mit
 // letzter Lieferung vor mehr als NACHFASS_TAGE Tagen
 const NACHFASS_TAGE = 10;
-// airtable_get entpackt ein Einzelergebnis zum Objekt, ein leeres Ergebnis bleibt []
-const toArray = (x) => (Array.isArray(x) ? x : x ? [x] : []);
 const saisonStart = store.SaisonStartFirmen.toISOString().substring(0, 10);
 
 const nachfassKunden = toArray(

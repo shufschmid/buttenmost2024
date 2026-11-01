@@ -21,31 +21,18 @@
       </adminbar>
       <v-container
         id="rechnungen"
-        class="page-break"
+        class="page-break brief"
         v-for="Bestellung in lieferscheine.data.value"
         :key="lieferscheine.data.value.Kunde"
       >
         <v-row
-          ><v-col cols="12">
+          ><v-col cols="8" class="kopf">
             <h1>Lieferschein</h1>
-            Lieferart: {{ Bestellung.Tour }} | Kunde:
-            {{ bezeichnung(Bestellung, "Lieferung", "Name") }} </v-col
-          ><v-col cols="8" align-self="center">
+            Lieferart: {{ Bestellung.vertrieb }} | Kunde:
+            {{ bezeichnung(Bestellung, "Lieferung", "Name") }}<br />
             Datum: {{ printdate }}<br /><br />
 
-            <!-- <div v-if="Kunde[0].b2b_Rechnungsadresse">
-              <span v-html="Kunde[0].b2b_Rechnungsadresse[0]"></span>
-            </div> -->
-
-            <div>
-              {{ bezeichnung(Bestellung, "Lieferung", "Name") }}<br />
-              {{ bezeichnung(Bestellung, "Lieferung", "Adresse") }}<br />
-              {{ bezeichnung(Bestellung, "Lieferung", "Adresszusatz")
-              }}<br
-                v-show="bezeichnung(Bestellung, 'Lieferung', 'Adresszusatz')"
-              />
-              {{ bezeichnung(Bestellung, "Lieferung", "PLZundOrt") }}
-            </div>
+            <Adressfeld :data="Bestellung" art="Lieferung" />
           </v-col>
           <v-col cols="4"
             ><img src="/logo.png" width="200px" /><br />Verena Ming<br />
@@ -78,10 +65,6 @@
                     ><br />{{ Bestellung.Konfi_kl }} kleine Gläser Konfitüre à
                     CHF {{ store.konfi_klein_preis.toFixed(2) }}</span
                   >
-                  <span v-show="Bestellung.Tee > 0"
-                    ><br />{{ Bestellung.Tee }} Päckli Tee à CHF
-                    {{ store.tee_preis.toFixed(2) }}</span
-                  >
                   <span v-show="Bestellung.Lieferpauschale"
                     ><br />{{ 1 }} x Lieferpauschale</span
                   >
@@ -106,10 +89,7 @@
                       (Bestellung.Konfi_kl * store.konfi_klein_preis).toFixed(2)
                     }}</span
                   >
-                  <span v-show="Bestellung.Tee > 0"
-                    ><br />CHF
-                    {{ (Bestellung.Tee * store.tee_preis).toFixed(2) }}</span
-                  ><span v-show="Bestellung.Lieferpauschale"
+                  <span v-show="Bestellung.Lieferpauschale"
                     ><br />CHF {{ Bestellung.Lieferpauschale }}.00</span
                   >
                 </td>

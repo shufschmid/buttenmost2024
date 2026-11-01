@@ -10,25 +10,14 @@
         >
       </v-toolbar>
 
-      <v-container id="rechnungen">
+      <v-container id="rechnungen" class="brief">
         <v-row
-          ><v-col cols="12"
+          ><v-col cols="8" class="kopf"
             ><h1>Lieferschein</h1>
-            {{ bezeichnung(data, "Lieferung", "Name") }}</v-col
-          ><v-col cols="8" align-self="center">
+            {{ bezeichnung(data, "Lieferung", "Name") }}<br />
             Datum: {{ printdate(data.Lieferdatum) }}<br /><br />
 
-            <!-- <div v-if="Kunde[0].b2b_Rechnungsadresse">
-              <span v-html="Kunde[0].b2b_Rechnungsadresse[0]"></span>
-            </div> -->
-
-            <div>
-              {{ bezeichnung(data, "Lieferung", "Name") }}<br />
-              {{ bezeichnung(data, "Lieferung", "Adresse") }}<br />
-              {{ bezeichnung(data, "Lieferung", "Adresszusatz")
-              }}<br v-show="bezeichnung(data, 'Lieferung', 'Adresszusatz')" />
-              {{ bezeichnung(data, "Lieferung", "PLZundOrt") }}
-            </div>
+            <Adressfeld :data="data" art="Lieferung" />
           </v-col>
           <v-col cols="4"
             ><img src="/logo.png" width="200px" /><br />Verena Ming<br />
@@ -60,10 +49,6 @@
                     ><br />{{ data.Konfi_kl }} kleine Gläser Konfitüre à CHF
                     {{ store.konfi_klein_preis.toFixed(2) }}</span
                   >
-                  <span v-show="data.Tee > 0"
-                    ><br />{{ data.Tee }} Päckli Tee à CHF
-                    {{ store.tee_preis.toFixed(2) }}</span
-                  >
                   <span v-show="data.Typ == 'Laden'"
                     ><br />{{ 1 }} x Lieferpauschale</span
                   >
@@ -91,12 +76,9 @@
                       (data.Konfi_kl * store.konfi_klein_preis).toFixed(2)
                     }}</span
                   >
-                  <span v-show="data.Tee > 0"
-                    ><br />CHF
-                    {{ (data.Tee * store.tee_preis).toFixed(2) }}</span
-                  ><br />
+                  <br />
                   <span v-show="data.Typ == 'Laden'"
-                    >CHF {{ data.Lieferpauschale.toFixed(2) }}</span
+                    >CHF {{ (data.Lieferpauschale || 0).toFixed(2) }}</span
                   >
                 </td>
               </tr>

@@ -1,7 +1,7 @@
 <template>
     <v-container
         id="rechnungen"
-        class="page-break"
+        class="page-break brief"
         v-for="Rechnung in rechnungen.data.value"
         :key="rechnungen.data.value.Kunde"
       >

@@ -9,19 +9,16 @@
         </template>
       </adminbar>
 
-      <v-container id="rechnungen">
+      <v-alert v-if="!data.length" type="warning" variant="tonal" class="ma-4">
+        Keine offenen Posten für «{{ route.params.kunde }}» gefunden (View b2b_rechnungen).
+      </v-alert>
+      <v-container id="rechnungen" class="brief" v-else>
         <v-row
-          > <v-col cols="7"
+          > <v-col cols="7" class="kopf"
             ><h1>Rechnung</h1>
             <span class="text-no-wrap" :style="einzeilig(datumszeile)">{{ datumszeile }}</span><br/><br/><br/>
 
-            <div class="pl-14">
-              {{ bezeichnung(data[0], "Rechnung", "Name") }}<br />
-              {{ bezeichnung(data[0], "Rechnung", "Adresse") }}<br />
-              {{ bezeichnung(data[0], "Rechnung", "Adresszusatz")
-              }}<br v-show="bezeichnung(data[0], 'Rechnung', 'Adresszusatz')" />
-              {{ bezeichnung(data[0], "Rechnung", "PLZundOrt") }}
-            </div>
+            <Adressfeld :data="data[0]" art="Rechnung" />
           </v-col>
           <v-col cols="5"
             ><Firmenadresse /></v-col
@@ -136,10 +133,14 @@ const datumszeile = computed(
   () => "Datum: " + rechnungsdatum.value + " | " + route.params.kunde.split(" | ")[0]
 );
 
-const { data } = await useFetch(
+const { data: roh } = await useFetch(
   '/api/airtable_get/?basis=tblbU1zmZ2kumAXEY&view=b2b_rechnungen&filter={Kunde}="' +
     route.params.kunde +
     '"'
+);
+// airtable_get liefert bei genau einem Treffer ein Objekt, bei keinem [] -> immer Array
+const data = computed(() =>
+  Array.isArray(roh.value) ? roh.value : roh.value ? [roh.value] : []
 );
 function total() {
   return data.value

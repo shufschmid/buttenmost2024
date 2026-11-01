@@ -24,17 +24,6 @@
     variant="tonal"
     class="mx-auto my-4"
     style="max-width: 100%; font-size: 1rem; font-weight: 500"
-    border="start" v-if="!store.isSaison && !store.preSaison"
-  >
-    Die Buttenmost-Saison ist vorbei. Möchten Sie im nächsten Jahr unseren Buttenmost in ihrem Laden oder an einem Markt anbieten? Dann kontaktieren Sie uns: info@buttenmost.ch. 
-     
-    </v-alert
-  >
-          <v-alert
-    type="info"
-    variant="tonal"
-    class="mx-auto my-4"
-    style="max-width: 100%; font-size: 1rem; font-weight: 500"
     border="start" v-if="store.isSaison || store.preSaison"
   >
     Dieser Bereich ist für Wiederverkäufer gedacht. Hier können Sie Buttenmost in Kistli mit jeweils 14 1-Liter-Bechern sowie Konfis in Kartons à jeweils 6 Gläser zu Vorzugspreisen bestellen. <span v-if="showMore"><br/><br/>
@@ -44,15 +33,9 @@
     </a>
      
   </v-alert>
-  <!-- <v-alert v-if="Warnhinweis" 
-            closable
-            type="info"            
-          >Wichtige Information: Letzter Bestelltermin für Lieferungen 2026 ist der 3. November.</v-alert>
-    <v-alert v-if="Warnhinweis"
-            closable
-            type="warning"            
-          >Achtung: Bitte beachten Sie das Lieferdatum, leider können wir aktuell kein früheres Liefer- oder Abholdatum anbieten. {{ HinweisHomepage }}</v-alert> -->
-         
+  <!-- Hinweise aus Airtable (Tabelle Hinweise, Ort "Shop Firmenkunden") -->
+  <Hinweise ort="Shop Firmenkunden" />
+
           
          
   <v-banner
@@ -203,7 +186,7 @@
                 v-show="pinFalsch"
 
               closable
-              text="Achtung: Falscher PIN-Code. Entweder Adresse eingeben und auf Vorkasse bestellen oder Zurück klicken und PIN erneut eingeben. Bei Fragen: Tel 079..."
+              :text="'Achtung: Falscher PIN-Code. Entweder Adresse eingeben und auf Vorkasse bestellen oder Zurück klicken und PIN erneut eingeben. Bei Fragen: Tel ' + store.firmenadresse.telefon"
               type="info"
             ></v-alert>
             <v-form v-model="formValidity">
@@ -312,17 +295,15 @@
 </template>
 <script setup>
 const store = useButtenmostStore();
-const shippingDays = await $fetch(
+const fetchedShippingDays = await $fetch(
   "/api/airtable_get?basis=Lieferdaten&view=b2b&sort=true"
 );
-let Warnhinweis = await $fetch(
-  "/api/airtable_get?basis=Lieferdaten&view=Warnhinweis"
-);
-if (Array.isArray(Warnhinweis) && Warnhinweis.length === 0) {
-  Warnhinweis = false;
-}
-
-const HinweisHomepage = Array.isArray(Warnhinweis) ? Warnhinweis[0]?.HinweisHomepage : Warnhinweis?.HinweisHomepage;
+// airtable_get liefert bei genau einem Termin ein Objekt statt Array (wie in shop.vue)
+const shippingDays = Array.isArray(fetchedShippingDays)
+  ? fetchedShippingDays
+  : fetchedShippingDays
+    ? [fetchedShippingDays]
+    : [];
 const { data } = await useFetch(
   "/api/airtable_get?basis=Verkaufsstellen&view=website&verkaufsstellensort=true"
 );

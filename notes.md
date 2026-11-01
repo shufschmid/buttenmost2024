@@ -55,6 +55,8 @@ Server-Funktionen
         Abholbestellungen eines Lieferdatums (?datum=) mit Record-ID, vertrieb "Abholung"/"abholung", sortiert nach Menge.
     bestellungen_post.js:
         Post-Bestellungen eines Lieferdatums (?datum=JJJJ-MM-TT) MIT Airtable-Record-ID, da airtable_get nur Felder liefert. Fuer die Stapelseite.
+    hinweise.js:
+        Aktive Kundenhinweise aus der Airtable-Tabelle "Hinweise" (tblM49UTV7xEiSsVc), ?ort=Startseite|Shop Privatkunden|Shop Firmenkunden. Felder: Titel, Text (Rich Text/Markdown), Typ (Info|Warnung|Fehler|Erfolg -> v-alert), Ort (Mehrfachauswahl), Aktiv, Von/Bis (Datum, inklusiv, Auswertung zur Request-Zeit in Europe/Zurich), Reihenfolge, Schliessbar. Rendert Markdown serverseitig (markdown-it, html:false), liefert IMMER ein Array, Cache-Control no-store. Ersetzt das alte Feld HinweisHomepage in Lieferdaten.
     order.js:
         sollte ersetzt werden durch airtable.js (war für Privatbestellungen)
     payrexx.js:
@@ -72,7 +74,11 @@ utils
     
 components
     shop.vue:
-        zeigt das Bestellformular für den Post-Versand an und berechnet den Preis inkl. Zuschläge und Rabatt. Die verfügbaren Versanddaten werden vom Store berechnet und bezogen. Es hat einen zweispaltigen Aufbau für Desktop und 1-spaltig für mobile. Aus dem component wird die Unterkomponente "adress" aufgerufen, "formvalidy" wird übergeben. Der Bestellbutton wird mittels :disabled="!formValidity" aktiviert und löst den Bestellvorgang aus
+        zeigt das Bestellformular für den Post-Versand an und berechnet den Preis inkl. Zuschläge und Rabatt. Die verfügbaren Versanddaten kommen aus der Airtable-View "post" (Tabelle Lieferdaten); ob ein Termin erscheint, entscheidet allein deren Filter. Liefert die View nichts, zeigt der Shop einen Warnhinweis statt des Formulars. Es hat einen zweispaltigen Aufbau für Desktop und 1-spaltig für mobile. Der Bestellbutton wird mittels :disabled="!formValidity || !Lieferdatum" aktiviert und löst den Bestellvorgang aus
+    Hinweise.vue:
+        Kundenhinweise aus Airtable (Endpoint hinweise.js) fuer einen Ort (Prop ort). Laedt mit useFetch server:false/lazy erst im Browser, damit die vorgerenderte Startseite keinen Build-Stand zeigt. Eingebaut in index.vue (Startseite), shop.vue (Shop Privatkunden) und b2b.vue (Shop Firmenkunden).
+    Adressfeld.vue:
+        Adressblock fuer Rechnung/Sammelrechnung/Lieferschein (Props data, art=Rechnung|Lieferung). Im Druck absolut positioniert fuer Couvert C5 Fenster links (SN 010 130, Adresse bei x 22-95 / y 50-81 mm, @page margin 10mm). Seiten-Container braucht class="brief", die linke Kopfspalte class="kopf" (min-height 85mm, damit der Inhalt erst ab 95 mm beginnt). ?fenster=1 zeichnet die Fensterzonen zum Testen mit einem echten Couvert.
     adress.vue:
         überprüft die korrekte Formeingabe und übermittelt (emit) den Status "formvalidy"
     signup.vue:

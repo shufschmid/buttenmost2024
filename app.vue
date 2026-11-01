@@ -8,7 +8,14 @@
   </v-app>
 </template>
 <script setup>
-// ...dein Code...
+// Die Startseite ist vorgerendert: store.heute waere dort die Build-Zeit und bliebe es
+// bei Client-Navigation fuer die ganze Sitzung (falsche Saison-Anzeigen). Nach der
+// Hydration auf die echte Zeit setzen; isSaison/isSaisonOver rechnen reaktiv nach.
+const store = useButtenmostStore();
+onMounted(() => {
+  store.heute = new Date();
+});
+
 useHead({
   link: [
     { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

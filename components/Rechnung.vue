@@ -21,19 +21,13 @@
 </adminbar>
 
 
-      <v-container id="rechnungen">
+      <v-container id="rechnungen" class="brief">
         <v-row
-          ><v-col cols="7"
+          ><v-col cols="7" class="kopf"
             ><h1>{{isLieferschein ? "Lieferschein" : "Rechnung"}}</h1>
             <span class="text-no-wrap" :style="einzeilig(datumszeile)">{{ datumszeile }}</span><br/><br/><br/>
 
-            <div class="pl-14">
-              {{ bezeichnung(data, "Rechnung", "Name") }}<br />
-              {{ bezeichnung(data, "Rechnung", "Adresse") }}<br />
-              {{ bezeichnung(data, "Rechnung", "Adresszusatz")
-              }}<br v-show="bezeichnung(data, 'Rechnung', 'Adresszusatz')" />
-              {{ bezeichnung(data, "Rechnung", "PLZundOrt") }}
-            </div>
+            <Adressfeld :data="data" art="Rechnung" />
           </v-col>
           <v-col cols="5"
             ><Firmenadresse /></v-col
@@ -67,6 +61,7 @@ definePageMeta({
 });
 
 const store = useButtenmostStore();
+const route = useRoute();
 let buttoncolor = ref("primary")
 
 let image = ref();
