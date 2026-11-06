@@ -70,7 +70,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="lieferung in lieferungen.data.value" :key="lieferung.Id">
+                <tr v-for="lieferung in lieferungenListe" :key="lieferung.Id">
                   <td valign="top">
                     {{ lieferung.Kunde }}
                     <div v-if="lieferung.Id" class="d-print-none">
@@ -166,6 +166,13 @@ const lieferungen = await useFetch(() =>
     )
 );
 
+// airtable_get liefert bei genau einem Treffer ein einzelnes Objekt statt einer Liste
+const lieferungenListe = computed(() => {
+  const data = lieferungen.data.value;
+  if (!data) return [];
+  return Array.isArray(data) ? data : [data];
+});
+
 // Liefertag aus der Tabelle "Lieferdaten" (Spalte Stempeldatum = Wert fuer den Datumsauszeichner)
 const liefertag = await useFetch(
   "/api/airtable_get/?basis=Lieferdaten&view=alle&filter=" +
@@ -183,7 +190,7 @@ const stempeldatum = computed(() => {
 });
 
 const totale = computed(() => {
-  const data = lieferungen.data.value || [];
+  const data = lieferungenListe.value;
   return {
     kistli: Math.round(
       data.reduce((sum, l) => sum + (l.Menge || 0), 0) / store.liter_pro_kistli
@@ -196,9 +203,9 @@ const totale = computed(() => {
 const letzteBestellungen = ref({});
 
 watch(
-  () => lieferungen.data.value,
+  lieferungenListe,
   async (data) => {
-    const kunden = [...new Set((data || []).map((l) => l.Kunde))];
+    const kunden = [...new Set(data.map((l) => l.Kunde))];
     const results = {};
     await Promise.all(
       kunden.map(async (kunde) => {

@@ -4,9 +4,10 @@
 // im Fenster eines C5-Couverts "Fenster links" liegt (SN 010 130: Fenster 100 x 45 mm,
 // 20 mm von links, 65 mm von unten; A4 einmal gefaltet).
 //
-// Masse nach ePost-Vorgabe, Messpunkt obere linke Blattkante:
-//   immer sichtbar  x 20-95 mm,  y 47-81 mm  -> hier steht die Adresse
-//   evtl. sichtbar  x 15-114 mm, y 33-95 mm  -> hier darf sonst nichts stehen
+// Masse nach ePost-Vorgabe, Messpunkt obere linke Blattkante, aber 10 mm tiefer gesetzt,
+// weil die Adresse im Couvert sonst oben angeschnitten war (Test Nov. 2026):
+//   immer sichtbar  x 20-95 mm,  y 57-91 mm  -> hier steht die Adresse
+//   evtl. sichtbar  x 15-114 mm, y 43-105 mm -> hier darf sonst nichts stehen
 // Die Seite setzt @page margin 10mm, die CSS-Werte unten sind deshalb um 10 mm kleiner
 // als die Masse auf dem Blatt.
 //
@@ -51,9 +52,9 @@ const zeigeFenster = computed(() => route.query.fenster === "1");
     margin: 0;
     line-height: 1.1;
   }
-  /* Kopfspalte: Inhalt darunter (Tabelle) beginnt erst ab y = 95 mm auf dem Blatt */
+  /* Kopfspalte: Inhalt darunter (Tabelle) beginnt erst ab y = 105 mm auf dem Blatt */
   .brief .kopf {
-    min-height: 85mm;
+    min-height: 95mm;
   }
 }
 </style>
@@ -66,7 +67,7 @@ const zeigeFenster = computed(() => route.query.fenster === "1");
   .adressfeld {
     position: absolute;
     left: 12mm; /* = 22 mm auf dem Blatt */
-    top: 40mm; /* = 50 mm auf dem Blatt */
+    top: 50mm; /* = 60 mm auf dem Blatt */
     width: 73mm;
     max-height: 31mm;
     overflow: hidden;
@@ -83,13 +84,13 @@ const zeigeFenster = computed(() => route.query.fenster === "1");
   }
   .fenster-immer {
     left: 10mm;
-    top: 37mm;
+    top: 47mm;
     width: 75mm;
     height: 34mm;
   }
   .fenster-evtl {
     left: 5mm;
-    top: 23mm;
+    top: 33mm;
     width: 99mm;
     height: 62mm;
   }

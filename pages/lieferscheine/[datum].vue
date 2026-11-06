@@ -22,8 +22,8 @@
       <v-container
         id="rechnungen"
         class="page-break brief"
-        v-for="Bestellung in lieferscheine.data.value"
-        :key="lieferscheine.data.value.Kunde"
+        v-for="Bestellung in lieferscheineListe"
+        :key="Bestellung.Id"
       >
         <v-row
           ><v-col cols="8" class="kopf">
@@ -124,15 +124,18 @@ const lieferscheine = await useFetch(
     route.params.datum +
     '"'
 );
-
-
+// airtable_get liefert bei genau einem Treffer ein Objekt, bei keinem [] -> immer Array
+const lieferscheineListe = computed(() => {
+  const d = lieferscheine.data.value;
+  return Array.isArray(d) ? d : d ? [d] : [];
+});
 
 const printdate = computed(() => {
   return new Date(route.params.datum).toLocaleDateString();
 });
 
 let params = computed(() => {
-  return lieferscheine.data.value
+  return lieferscheineListe.value
     .map((item) => {
       const container = {}; //refactor array, damit es für jeden Eintrag den Vorgaben von Airtable entspricht: {    "id": "reckBfjBRf0an97CE", "fields": {"Status": "etikette" }}
       container.id = item.Id;

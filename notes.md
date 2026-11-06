@@ -78,7 +78,7 @@ components
     Hinweise.vue:
         Kundenhinweise aus Airtable (Endpoint hinweise.js) fuer einen Ort (Prop ort). Laedt mit useFetch server:false/lazy erst im Browser, damit die vorgerenderte Startseite keinen Build-Stand zeigt. Eingebaut in index.vue (Startseite), shop.vue (Shop Privatkunden) und b2b.vue (Shop Firmenkunden).
     Adressfeld.vue:
-        Adressblock fuer Rechnung/Sammelrechnung/Lieferschein (Props data, art=Rechnung|Lieferung). Im Druck absolut positioniert fuer Couvert C5 Fenster links (SN 010 130, Adresse bei x 22-95 / y 50-81 mm, @page margin 10mm). Seiten-Container braucht class="brief", die linke Kopfspalte class="kopf" (min-height 85mm, damit der Inhalt erst ab 95 mm beginnt). ?fenster=1 zeichnet die Fensterzonen zum Testen mit einem echten Couvert.
+        Adressblock fuer Rechnung/Sammelrechnung/Lieferschein (Props data, art=Rechnung|Lieferung). Im Druck absolut positioniert fuer Couvert C5 Fenster links (SN 010 130, Adresse bei x 22-95 / y 60-91 mm, 10 mm tiefer als ePost-Vorgabe, weil sonst oben angeschnitten; @page margin 10mm). Seiten-Container braucht class="brief", die linke Kopfspalte class="kopf" (min-height 95mm, damit der Inhalt erst ab 105 mm beginnt). ?fenster=1 zeichnet die Fensterzonen zum Testen mit einem echten Couvert.
     adress.vue:
         überprüft die korrekte Formeingabe und übermittelt (emit) den Status "formvalidy"
     signup.vue:

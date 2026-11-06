@@ -2,8 +2,8 @@
     <v-container
         id="rechnungen"
         class="page-break brief"
-        v-for="Rechnung in rechnungen.data.value"
-        :key="rechnungen.data.value.Kunde"
+        v-for="(Rechnung, i) in rechnungenListe"
+        :key="Rechnung.Id || i"
       >
     
     <Rechnung :data="Rechnung" />
@@ -23,6 +23,11 @@ const rechnungen = await useFetch(
     route.params.datum +
     '"'
 );
+// airtable_get liefert bei genau einem Treffer ein Objekt, bei keinem [] -> immer Array
+const rechnungenListe = computed(() => {
+  const d = rechnungen.data.value;
+  return Array.isArray(d) ? d : d ? [d] : [];
+});
 
 </script>
 
