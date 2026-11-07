@@ -229,6 +229,25 @@
           </v-list>
         </v-card>
       </v-col>
+
+      <!-- Etikette mit eigenem Text (ohne Post, ohne Airtable) -->
+      <v-col cols="12" md="4">
+        <v-card class="h-100">
+          <v-card-title>
+            <v-icon icon="mdi-format-text" class="mr-2"></v-icon>Eigene Etikette (Brother)
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-card-subtitle class="pt-3">frei eingegebener Text, gleiches Format</v-card-subtitle>
+          <v-list density="compact" nav>
+            <v-list-item
+              to="/etiketten/freitext"
+              prepend-icon="mdi-label-outline"
+              title="Etikette mit eigenem Text"
+              subtitle="Vorschau, Anzahl, Download als .bin"
+            ></v-list-item>
+          </v-list>
+        </v-card>
+      </v-col>
     </v-row>
 
     <!-- Werkzeuge -->
