@@ -27,6 +27,8 @@ pages
         [id].vue: Darstellung einzelne Verkaufsstelle (nur wenn Airtable: Homepage = true)
     admin
         Übersichtsseite für eingeloggte Administratoren, todo: Admin-Navigation
+        Karte "Nachfassen" (Stammkunden = Checkbox in Verkaufsstellen; Bestellungen aus der View "Reminder Stammkunden" ab SaisonStartFirmen), umschaltbar: Saisonstart = Stammkunden ohne Saisonbestellung; Saisonende = Lieferung in den letzten 10 Tagen (NACHFASS_TAGE), aber keine offene Bestellung. "Offen" heisst Lieferdatum ab heute; der Status taugt dafür nicht, weil gelieferte Bestellungen auf "Rechnung offen" stehen oder auf "bestellt" bleiben. Vorauswahl ab der zweiten Saisonhälfte "Saisonende". Daneben die Karte "Letzte Lieferung > 10 Tage" (überfällig).
+
     b2b.vue: Bestellformular für registrierte b2b-Kunden, berechnet das Lieferdatum anhand verfügbarer Menge Tag/Kapazität Lieferwagen pro Tour
     index.vue:
         Hauptseite der öffentlichen Website, bindet Komponenten "verkaufsstelle.vue", "signup.vue" und "shop.vue" ein

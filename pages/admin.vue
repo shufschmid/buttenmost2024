@@ -65,18 +65,34 @@
           </v-list>
         </v-card>
       </v-col>
+      <!-- Nachfassen, umschaltbar: Saisonstart (noch keine Bestellung) / Saisonende (aktiv, aber nichts offen) -->
       <v-col cols="12" md="4">
         <v-card class="h-100">
           <v-card-title>
-            <v-icon icon="mdi-account-alert-outline" class="mr-2"></v-icon>Noch keine
-            Bestellung ({{ kundenOhneBestellung.length }})
+            <v-icon :icon="nachfass.icon" class="mr-2"></v-icon>{{ nachfass.titel }}
+            ({{ nachfass.liste.length }})
           </v-card-title>
           <v-divider></v-divider>
+          <div class="px-4 pt-3 d-print-none">
+            <v-btn-toggle
+              v-model="nachfassModus"
+              mandatory
+              density="compact"
+              variant="outlined"
+              color="primary"
+              divided
+            >
+              <v-btn value="start" size="small">Saisonstart</v-btn>
+              <v-btn value="ende" size="small">Saisonende</v-btn>
+            </v-btn-toggle>
+          </div>
+          <v-card-subtitle class="pt-2 text-wrap">{{ nachfass.erklaerung }}</v-card-subtitle>
           <v-list density="compact">
             <v-list-item
-              v-for="k in kundenOhneBestellung"
+              v-for="k in nachfass.liste"
               :key="k.Id"
               :title="k.Geschaeft"
+              :subtitle="k.letzte ? letzteLieferungText(k) : undefined"
             ></v-list-item>
           </v-list>
         </v-card>
@@ -93,7 +109,7 @@
               v-for="k in kundenUeberfaellig"
               :key="k.Id"
               :title="k.Geschaeft"
-              :subtitle="ueberfaelligText(k)"
+              :subtitle="letzteLieferungText(k)"
             ></v-list-item>
           </v-list>
         </v-card>
@@ -342,11 +358,16 @@ const Sammelrechnungen = await $fetch(
   "/api/airtable_get?basis=Verkaufsstellen&view=Sammelrechnungen"
 );
 
-// --- Kunden nachfassen: alle Stammkunden (Checkbox in Airtable, unabhängig vom Vertriebskanal)
-// ohne Saisonbestellung bzw. mit
-// letzter Lieferung vor mehr als NACHFASS_TAGE Tagen
+// --- Kunden nachfassen: alle Stammkunden (Checkbox in Airtable, unabhängig vom Vertriebskanal).
+// Karte "Nachfassen" ist umschaltbar:
+//   Saisonstart: Stammkunden ohne Saisonbestellung
+//   Saisonende:  Stammkunden mit Lieferung in den letzten NACHFASS_TAGE Tagen, aber ohne offene
+//                Bestellung (Lieferdatum ab heute). Der Status taugt dafür nicht: gelieferte
+//                Bestellungen stehen auf "Rechnung offen" oder bleiben auf "bestellt".
+// Karte "Letzte Lieferung": letzte Lieferung vor mehr als NACHFASS_TAGE Tagen
 const NACHFASS_TAGE = 10;
 const saisonStart = store.SaisonStartFirmen.toISOString().substring(0, 10);
+const heuteISO = store.heute.toISOString().substring(0, 10);
 
 const nachfassKunden = toArray(
   await $fetch(
@@ -366,11 +387,14 @@ const saisonBestellungen = toArray(
 
 // Kunde -> spätestes Lieferdatum (ISO-Strings vergleichen lexikografisch korrekt)
 const letzteLieferung = {};
+// Kunden mit offener Bestellung (Lieferdatum heute oder später)
+const kundenMitOffenerBestellung = new Set();
 for (const b of saisonBestellungen) {
   if (!b.Kunde || !b.Lieferdatum) continue;
   if (!letzteLieferung[b.Kunde] || b.Lieferdatum > letzteLieferung[b.Kunde]) {
     letzteLieferung[b.Kunde] = b.Lieferdatum;
   }
+  if (b.Lieferdatum >= heuteISO) kundenMitOffenerBestellung.add(b.Kunde);
 }
 
 function tageSeit(datum) {
@@ -380,6 +404,17 @@ function tageSeit(datum) {
 const kundenOhneBestellung = nachfassKunden.filter(
   (k) => !letzteLieferung[k.Geschaeft]
 );
+// Saisonende: in den letzten NACHFASS_TAGE Tagen beliefert, aber nichts Offenes.
+// Ohne offene Bestellung liegt das späteste Lieferdatum in der Vergangenheit, tageSeit ist also >= 0.
+const kundenAktivOhneOffene = nachfassKunden
+  .filter(
+    (k) =>
+      letzteLieferung[k.Geschaeft] &&
+      !kundenMitOffenerBestellung.has(k.Geschaeft) &&
+      tageSeit(letzteLieferung[k.Geschaeft]) <= NACHFASS_TAGE
+  )
+  .map((k) => ({ ...k, letzte: letzteLieferung[k.Geschaeft] }))
+  .sort((a, b) => a.letzte.localeCompare(b.letzte)); // älteste zuerst, die fallen als nächste raus
 // künftiges Lieferdatum -> tageSeit negativ -> nicht überfällig
 const kundenUeberfaellig = nachfassKunden
   .filter(
@@ -390,11 +425,31 @@ const kundenUeberfaellig = nachfassKunden
   .map((k) => ({ ...k, letzte: letzteLieferung[k.Geschaeft] }))
   .sort((a, b) => a.letzte.localeCompare(b.letzte)); // älteste zuerst
 
-function ueberfaelligText(k) {
+function letzteLieferungText(k) {
   return (
     "zuletzt " + k.letzte + " (vor " + tageSeit(k.letzte) + " Tagen)"
   );
 }
+
+// Umschalter der Nachfass-Karte, Vorauswahl ab der zweiten Saisonhälfte "Saisonende"
+const saisonMitte =
+  (store.SaisonStartFirmen.getTime() + store.SaisonEndeFirmen.getTime()) / 2;
+const nachfassModus = ref(store.heute.getTime() > saisonMitte ? "ende" : "start");
+const nachfass = computed(() =>
+  nachfassModus.value === "ende"
+    ? {
+        icon: "mdi-account-clock-outline",
+        titel: "Aktiv, nichts offen",
+        erklaerung: `Lieferung in den letzten ${NACHFASS_TAGE} Tagen, aber keine offene Bestellung (Lieferdatum ab heute)`,
+        liste: kundenAktivOhneOffene,
+      }
+    : {
+        icon: "mdi-account-alert-outline",
+        titel: "Noch keine Bestellung",
+        erklaerung: "Stammkunden ohne Bestellung in dieser Saison",
+        liste: kundenOhneBestellung,
+      }
+);
 
 let search = ref();
 let VorrratKistli = ref(0);
