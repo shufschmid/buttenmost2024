@@ -56,7 +56,9 @@ Für Vorbestellungen ab 14 Liter nutzen Sie den
       {{ showMore ? 'Weniger anzeigen' : 'Weitere Infos hier' }}
     </a>
   </v-alert>
-  <shop id="shop-section" v-if="store.preSaison || store.isSaison"></shop><Social></Social>
+  <!-- nach Saisonende (Winterschlaf) kein Shop; sobald SaisonStart/-Ende im Store auf das
+       naechste Jahr gesetzt sind, erscheint er dank preSaison wieder vor dem Saisonstart -->
+  <shop id="shop-section" v-if="store.isSaison || (store.preSaison && !store.isSaisonOver)"></shop><Social></Social>
   <Verkaufsstellen anzahl="20" v-if="store.isSaison"></Verkaufsstellen>
 </template>
 
