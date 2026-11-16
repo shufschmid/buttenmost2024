@@ -3,8 +3,8 @@
     <v-form name="rechnung" ref="form">
       <adminbar :is-rechnung="true">
         <template #actions>
-          <v-btn @click="changeStatus" :color="buttoncolor">
-            Status auf "Rechnung" setzen</v-btn
+          <v-btn @click="changeStatus" :color="buttoncolor" :loading="statusLaeuft">
+            Status auf "Rechnung verschickt" setzen</v-btn
           ><v-btn @click="loadImage(data[0])"> QR-Code laden</v-btn>
         </template>
       </adminbar>
@@ -40,7 +40,7 @@
                   v-for="einzelbestellung in data"
                   :key="einzelbestellung.Geschäft"
                 >
-                  <td valign="top">{{ einzelbestellung.Lieferdatum }}</td>
+                  <td valign="top">{{ printdate(einzelbestellung.Lieferdatum) }}</td>
                   <td valign="top">
                     {{ einzelbestellung.Menge }} Liter Buttenmost<span
                       v-show="einzelbestellung.Typ == 'Laden'"
@@ -59,8 +59,9 @@
                       {{ store.konfi_klein_preis.toFixed(2) }}</span
                     >
                     
-                    <span v-if="einzelbestellung.Vertrieb != 'Abholung'"
-                      ><br />{{ 1 }} x Lieferpauschale</span
+                    <!-- gleiche Bedingung wie der Betrag in der Preisspalte: 0 oder leer -> keine Zeile -->
+                    <span v-if="einzelbestellung.Lieferpauschale"
+                      ><br />1 x Lieferpauschale</span
                     >
                   </td>
                   <td valign="top" class="text-right">
@@ -147,8 +148,11 @@ function total() {
     .map((item) => item.Betrag)
     .reduce((prev, curr) => prev + curr, 0);
 }
+// "2026-09-29" -> "29.9.2026", gleich wie das Rechnungsdatum. Ein reines Datum gilt in JS als UTC,
+// darum auch in UTC formatieren, sonst kann je nach Zeitzone (Server/Browser) der Vortag erscheinen.
 function printdate(datum) {
-  return new Date(datum).toLocaleDateString();
+  if (!datum) return "";
+  return new Date(datum).toLocaleDateString("de-CH", { timeZone: "UTC" });
 }
 
 async function loadImage(qrdata) {
@@ -169,26 +173,36 @@ async function loadImage(qrdata) {
       "&Rechnung_Referenz_Nummer=122"
   );
 }
-let params = computed(() => {
-  return data.value.map((item) => {
-      const container = {}; //refactor array, damit es für jeden Eintrag den Vorgaben von Airtable entspricht: {    "id": "reckBfjBRf0an97CE", "fields": {"Status": "etikette" }}
-      container.id = item.Id;
-      container.fields = {};
-      container.fields.Status = "Rechnung";
-      return container;
-    })
-    .slice(0, 9); //Airtable kann nur 10 Einträge aufs Mal umstellen auf "verschickt"
-});
+// Format fuer Airtable: { id: "rec...", fields: { Status: "Rechnung verschickt" } }
+// Der Status muss exakt einer Option des Auswahlfelds entsprechen, sonst lehnt Airtable ab.
+let params = computed(() =>
+  data.value.map((item) => ({
+    id: item.Id,
+    fields: { Status: "Rechnung verschickt" },
+  }))
+);
+
+const statusLaeuft = ref(false);
 
 async function changeStatus() {
-  console.log(params.value)
-  await $fetch("/api/airtable_update", {
-  method: "POST",
-  body: params.value,
-  });
-  buttoncolor.value = "green";
-
- navigateTo('/admin')
+  statusLaeuft.value = true;
+  try {
+    // Airtable nimmt hoechstens 10 Datensaetze pro Update an -> in 10er-Paketen senden
+    for (let i = 0; i < params.value.length; i += 10) {
+      await $fetch("/api/airtable_update", {
+        method: "POST",
+        body: params.value.slice(i, i + 10),
+      });
+    }
+    buttoncolor.value = "green";
+    navigateTo("/admin");
+  } catch (error) {
+    console.log(error);
+    buttoncolor.value = "red";
+    alert("Status konnte nicht gesetzt werden: " + (error?.data?.message || error?.message || error));
+  } finally {
+    statusLaeuft.value = false;
+  }
 }
 
 
